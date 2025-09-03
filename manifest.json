@@ -1,8 +1,16 @@
 {
   "name": "Graph Generator",
-  "id": "graph-generator-plugin",
+  "id": "1544686878314493439",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "ui.html",
-  "editorType": ["figma"]
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://api.example.com",
+      "https://cdn.jsdelivr.net",
+      "https://raw.githubusercontent.com"
+    ]
+  }
 }

@@ -1,434 +1,203 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
-  <title>Graph Generator</title>
+  <title>Graph Generator — Customizable Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <style>
-    :root {
-      --bg: #fff;
-      --ink: #111;
-      --muted: #777;
-      --line: #e7e7e7;
-      --shadow: 0 8px 24px rgba(0, 0, 0, .12);
-      --shadow-soft: 0 2px 8px rgba(0, 0, 0, .08);
+    /* =========================
+       Design System
+       ========================= */
+    :root{
+      --bg: #0b0c0f;
+      --panel: #111318;
+      --panel-2: #151922;
+      --ink: #e9ecf1;
+      --ink-2: #b7c0cc;
+      --muted: #8a93a0;
+      --line: #232938;
+      --brand: #6aa2ff;
+      --brand-2: #8ec5ff;
+      --accent: #a78bfa;
       --radius: 14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --shadow-soft: 0 2px 10px rgba(0,0,0,.25);
+      --ring: 0 0 0 2px rgba(106,162,255,.55);
+      --sidebar-grad: linear-gradient(180deg, rgba(106,162,255,.15), transparent 30%, transparent 70%, rgba(167,139,250,.12));
+      --blur: saturate(120%) blur(6px);
     }
 
-    * {
-      box-sizing: border-box
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f8fafc;
+        --panel:#ffffff;
+        --panel-2:#f6f7fb;
+        --ink:#0f172a;
+        --ink-2:#334155;
+        --muted:#64748b;
+        --line:#e5e7eb;
+        --brand:#2563eb;
+        --brand-2:#60a5fa;
+        --accent:#8b5cf6;
+        --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+        --shadow-soft: 0 2px 10px rgba(2, 6, 23, .06);
+        --ring: 0 0 0 2px rgba(37, 99, 235, .45);
+        --sidebar-grad: linear-gradient(180deg, rgba(37,99,235,.12), transparent 30%, transparent 70%, rgba(139,92,246,.10));
+        --blur: saturate(110%) blur(4px);
+      }
     }
 
-    html,
-    body {
-      height: 100%
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{font:13px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Arial;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+    .app{display:grid;grid-template-columns:84px 1fr;height:100%}
+    .sidebar{
+      position:sticky; top:0; height:100vh; border-right:1px solid var(--line);
+      display:flex; flex-direction:column; gap:10px; padding:14px;
+      background:var(--panel-2); background-image:var(--sidebar-grad);
+      backdrop-filter:var(--blur);
     }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+    .nav-btn{
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+      border:1px solid var(--line); background:var(--panel); border-radius:14px;
+      padding:12px 8px; color:var(--ink-2); cursor:pointer; box-shadow:var(--shadow-soft);
+      transition: transform .15s ease, border-color .2s ease, background .2s ease;
     }
+    .nav-btn:hover{ transform: translateY(-1px); border-color: var(--brand-2) }
+    .nav-btn svg{width:22px;height:22px; fill: currentColor }
+    .nav-btn span{font-size:11px}
+    .nav-btn.active{ color: var(--ink); background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border-color: var(--brand); box-shadow: 0 6px 16px rgba(106,162,255,.20); }
+    .nav-btn.disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.2)}
 
-    .app {
-      display: grid;
-      grid-template-columns: 72px 1fr;
-      height: 100%;
+    .main{display:flex;flex-direction:column;gap:12px;padding:16px;overflow:auto}
+    .header{
+      position:sticky; top:0; z-index:5;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow-soft); background:var(--panel); backdrop-filter:var(--blur);
     }
+    .title{font-weight:700;letter-spacing:.25px}
+    .status{display:flex;align-items:center;gap:8px; flex-wrap: wrap}
+    .badge{border:1px solid var(--line);padding:4px 10px;border-radius:999px;font-size:11px;background:var(--panel-2)}
+    .dot{width:4px;height:4px;border-radius:50%;background:#4b5563;opacity:.4}
 
-    .sidebar {
-      border-right: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 12px;
-      background: #fafafa;
-    }
+    .panel{display:none;gap:12px}
+    .panel.visible{display:block;animation:fadeIn .18s ease both}
+    .panel h2{margin:6px 0 10px;font-size:14px; letter-spacing:.2px; color:var(--ink)}
 
-    .nav-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      border: none;
-      background: #fff;
-      border-radius: 12px;
-      padding: 10px 6px;
-      box-shadow: var(--shadow-soft);
-      color: var(--ink);
-      cursor: pointer;
+    .guard{
+      border:1px dashed var(--line);padding:16px;border-radius:12px;color:var(--muted);
+      background:var(--panel-2);box-shadow:var(--shadow-soft)
     }
+    .card{
+      border:1px solid var(--line);border-radius:16px;background:var(--panel);
+      box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px
+    }
+    .card-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+    .style-card{
+      border:1px solid var(--line);border-radius:16px;background:var(--panel-2);padding:14px;
+      display:flex;flex-direction:column;gap:10px;align-items:flex-start;cursor:pointer;
+      box-shadow:var(--shadow-soft); transition: transform .15s ease, border-color .2s ease, background .2s ease
+    }
+    .style-card:hover{transform:translateY(-2px); border-color: var(--brand-2)}
+    .style-card.selected{outline: none; border-color: var(--brand); box-shadow: 0 0 0 2px rgba(106,162,255,.25) inset}
+    .card-ico{width:44px;height:44px;border-radius:12px;background:linear-gradient(180deg, var(--panel), var(--panel-2));
+      display:grid;place-items:center; border:1px solid var(--line)}
+    .card-ico svg{width:24px;height:24px; fill: var(--ink)}
+    .card-name{font-weight:600; color: var(--ink)}
 
-    .nav-btn svg {
-      width: 22px;
-      height: 22px
-    }
+    .seg{display:flex;flex-direction:column;gap:8px}
+    .seg-label{font-size:12px;color:var(--ink);font-weight:600; opacity:.9}
+    .seg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 
-    .nav-btn span {
-      font-size: 11px
+    input[type="text"],input[type="number"],input[type="range"],textarea,select{
+      width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel-2);
+      color: var(--ink); outline: none; transition: box-shadow .2s ease, border-color .2s ease;
     }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="range"]:focus, textarea:focus, select:focus{
+      border-color: var(--brand-2); box-shadow: var(--ring);
+    }
+    textarea.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
 
-    .nav-btn.active {
-      outline: 2px solid #111;
-      outline-offset: 0
+    .btn{
+      border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:10px 12px;cursor:pointer;
+      box-shadow:var(--shadow-soft); color: var(--ink); transition: transform .12s ease, border-color .2s ease, background .2s ease;
     }
+    .btn:hover{ transform: translateY(-1px); border-color: var(--brand-2) }
+    .btn:focus-visible{ outline: none; box-shadow: var(--ring) }
+    .btn.primary{background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent}
+    .btn.ghost{background:transparent}
 
-    .nav-btn.disabled {
-      opacity: .4;
-      cursor: not-allowed
-    }
+    .color-row{display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:center}
+    .color-pair{display:flex;gap:6px;flex-wrap:wrap}
+    .color-pair input[type="color"]{width:44px;height:34px;border:none;background:transparent}
+    .color-pair input[type="text"]{width:140px}
 
-    .main {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 14px;
-    }
+    .preview-wrap{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--panel-2);box-shadow:var(--shadow)}
+    .preview-canvas{width:100%;height:520px;border-radius:12px;overflow:auto;display:grid;place-items:center;background:var(--panel)}
+    .preview-canvas svg{max-width:100%;height:auto;display:block}
+    .actions{display:flex;gap:8px;justify-content:flex-end}
+    .hidden{display:none!important}
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
-      background: #fff;
-    }
+    /* Control grid */
+    .grid-2{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px }
+    .grid-3{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px }
+    .subtle{ color: var(--ink-2); font-size: 12px }
 
-    .title {
-      font-weight: 700;
-      letter-spacing: .2px
-    }
+    /* Scrollbars (subtle) */
+    ::-webkit-scrollbar{ width: 10px; height: 10px }
+    ::-webkit-scrollbar-thumb{ background: rgba(148, 163, 184, .35); border-radius: 999px }
+    ::-webkit-scrollbar-track{ background: transparent }
 
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 8px
-    }
+    @media (max-width:1000px){ .card-grid{grid-template-columns:repeat(3,1fr)} .app{grid-template-columns:72px 1fr} .grid-3{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:680px){ .card-grid{grid-template-columns:repeat(2,1fr)} .color-row{ grid-template-columns:1fr } .grid-2{grid-template-columns:1fr} }
 
-    .badge {
-      border: 1px solid var(--line);
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: #fff
-    }
-
-    .dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: #ddd
-    }
-
-    .panel {
-      display: none;
-      gap: 12px;
-    }
-
-    .panel.visible {
-      display: block;
-    }
-
-    .panel h2 {
-      margin: 6px 0 10px;
-      font-size: 14px
-    }
-
-    .guard {
-      border: 1px dashed var(--line);
-      padding: 16px;
-      border-radius: 12px;
-      color: var(--muted);
-      background: #fff;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
-      box-shadow: var(--shadow);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .style-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fff;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-start;
-      cursor: pointer;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .style-card:hover {
-      transform: translateY(-1px)
-    }
-
-    .style-card.selected {
-      outline: 2px solid #111
-    }
-
-    .card-ico {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: #f4f4f4;
-      display: grid;
-      place-items: center
-    }
-
-    .card-ico svg {
-      width: 24px;
-      height: 24px
-    }
-
-    .card-name {
-      font-weight: 600
-    }
-
-    .seg {
-      display: flex;
-      flex-direction: column;
-      gap: 8px
-    }
-
-    .seg-label {
-      font-size: 12px;
-      color: #333;
-      font-weight: 600
-    }
-
-    .seg-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap
-    }
-
-    .radio {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      user-select: none
-    }
-
-    input[type="text"],
-    input[type="number"],
-    textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 12px;
-      background: #fff;
-    }
-
-    textarea.mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px
-    }
-
-    .btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 12px;
-      padding: 10px 12px;
-      cursor: pointer;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .btn.primary {
-      background: #111;
-      color: #fff;
-      border-color: #111
-    }
-
-    .btn.ghost {
-      background: transparent
-    }
-
-    .color-row {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 12px;
-      align-items: center
-    }
-
-    .color-pair {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap
-    }
-
-    .color-pair input[type="color"] {
-      width: 42px;
-      height: 32px;
-      border: none;
-      background: transparent
-    }
-
-    .color-pair input[type="text"] {
-      width: 120px
-    }
-
-    .preview-wrap {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px;
-      background: #fff;
-      box-shadow: var(--shadow)
-    }
-
-    .preview-canvas {
-      width: 100%;
-      height: 360px;
-      border-radius: 12px;
-      overflow: auto;
-      display: grid;
-      place-items: center;
-      background: #fff
-    }
-
-    .preview-canvas svg {
-      max-width: 100%;
-      height: auto;
-      display: block
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end
-    }
-
-    .hidden {
-      display: none !important
-    }
+    @keyframes fadeIn{ from{opacity:0; transform: translateY(4px)} to{opacity:1; transform:none} }
   </style>
 </head>
-
 <body>
   <div class="app">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-      <button class="nav-btn active" data-target="panel-style" title="Graph Style" aria-label="Graph Style">
-        <!-- shapes icon -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 3h7v7H3V3zm11 0h7v12h-7V3zM3 14h7v7H3v-7zm11 4h7v3h-7v-3z" />
-        </svg>
-        <span>Style</span>
-      </button>
-      <button class="nav-btn" data-target="panel-data" title="Data" aria-label="Data">
-        <!-- table icon -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 3h18v18H3V3zm2 2v3h14V5H5zm14 5H5v9h14v-9zM7 12h3v3H7v-3z" />
-        </svg>
-        <span>Data</span>
-      </button>
-      <button class="nav-btn" data-target="panel-color" title="Color" aria-label="Color">
-        <!-- palette icon -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M12 3a9 9 0 0 0 0 18h.5a2.5 2.5 0 1 0 0-5H12a4 4 0 1 1 0-8 1 1 0 1 0 0-2zM7.5 8a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM6 14a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" />
-        </svg>
-        <span>Color</span>
-      </button>
-      <button class="nav-btn disabled" data-target="panel-preview" title="Preview" aria-label="Preview" disabled>
-        <!-- play icon -->
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M8 5v14l11-7-11-7z" />
-        </svg>
-        <span>Preview</span>
-      </button>
+    <aside class="sidebar" role="navigation" aria-label="Steps">
+      <button class="nav-btn active" data-step="type" title="Graph Type" aria-label="Graph Type"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3zm11 0h7v12h-7V3zM3 14h7v7H3v-7zm11 4h7v3h-7v-3z"/></svg><span>Type</span></button>
+      <button class="nav-btn disabled" data-step="data" title="Data" aria-label="Data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v18H3V3zm2 2v3h14V5H5zm14 5H5v9h14v-9zM7 12h3v3H7v-3z"/></svg><span>Data</span></button>
+      <button class="nav-btn disabled" data-step="color" title="Color" aria-label="Color"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18h.5a2.5 2.5 0 1 0 0-5H12a4 4 0 1 1 0-8"/></svg><span>Color</span></button>
+      <button class="nav-btn disabled" data-step="customize" title="Customize" aria-label="Customize">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20zm1 14h-2v-2h2v2zm0-4h-2V6h2v6z"/></svg>
+  <span>Customize</span>
+</button>
+
+      <button class="nav-btn disabled" data-step="preview" title="Preview" aria-label="Preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7-11-7z"/></svg><span>Preview</span></button>
     </aside>
 
-    <!-- Main Content -->
     <main class="main">
-      <!-- Header -->
       <header class="header">
-        <div class="title">Graph Generator</div>
-        <div class="status">
-          <span class="badge" id="badge-style">Style ❌</span>
-          <span class="dot"></span>
-          <span class="badge" id="badge-data">Data ❌</span>
-          <span class="dot"></span>
+        <div class="title">Graph Dashboard</div>
+        <div class="status" aria-live="polite">
+          <span class="badge" id="badge-type">Type ❌</span><span class="dot"></span>
+          <span class="badge" id="badge-data">Data ❌</span><span class="dot"></span>
           <span class="badge" id="badge-color">Color ❌</span>
         </div>
       </header>
 
-      <!-- Panels -->
-      <section id="panel-style" class="panel visible">
-        <h2>Choose a Graph Style</h2>
-        <div class="card-grid">
-          <button class="style-card" data-style="bar">
-            <div class="card-ico">
-              <svg viewBox="0 0 24 24">
-                <path d="M4 4h2v16H4V4zm7 6h2v10h-2V10zm7-4h2v14h-2V6z" />
-              </svg>
-            </div>
-            <div class="card-name">Bar Graph</div>
-          </button>
-          <button class="style-card" data-style="pie">
-            <div class="card-ico">
-              <svg viewBox="0 0 24 24">
-                <path d="M11 2v10H1a11 11 0 1 0 10-10zm2 0v10h9A11 11 0 0 0 13 2z" />
-              </svg>
-            </div>
-            <div class="card-name">Pie Graph</div>
-          </button>
-          <button class="style-card" data-style="line">
-            <div class="card-ico">
-              <svg viewBox="0 0 24 24">
-                <path d="M3 17l7-7 4 4 7-7v3l-7 7-4-4-7 7z" />
-              </svg>
-            </div>
-            <div class="card-name">Line Graph</div>
-          </button>
-          <button class="style-card" data-style="scatter">
-            <div class="card-ico">
-              <svg viewBox="0 0 24 24">
-                <circle cx="6" cy="7" r="2" />
-                <circle cx="12" cy="12" r="2" />
-                <circle cx="18" cy="6" r="2" />
-                <circle cx="17" cy="17" r="2" />
-              </svg>
-            </div>
-            <div class="card-name">Scatter Graph</div>
-          </button>
-          <button class="style-card" data-style="histogram">
-            <div class="card-ico">
-              <svg viewBox="0 0 24 24">
-                <path d="M4 20V8h3v12H4zm5 0V4h3v16H9zm5 0v-7h3v7h-3z" />
-              </svg>
-            </div>
-            <div class="card-name">Histogram</div>
-          </button>
+      <!-- Step: Type -->
+      <section id="panel-type" class="panel visible">
+        <h2>Select Graph Type</h2>
+        <div class="card-grid card">
+          <button class="style-card" data-type="bar"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M4 4h2v16H4V4zm7 6h2v10h-2V10zm7-4h2v14h-2V6z"/></svg></div><div class="card-name">Bar</div></button>
+          <button class="style-card" data-type="pie"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M11 2v10H1a11 11 0 1 0 10-10zm2 0v10h9A11 11 0 0 0 13 2z"/></svg></div><div class="card-name">Pie/Donut</div></button>
+          <button class="style-card" data-type="line"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M3 17l7-7 4 4 7-7v3l-7 7-4-4-7 7z"/></svg></div><div class="card-name">Line</div></button>
+          <button class="style-card" data-type="scatter"><div class="card-ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="17" cy="17" r="2"/></svg></div><div class="card-name">Scatter</div></button>
+          <button class="style-card" data-type="histogram"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M4 20V8h3v12H4zm5 0V4h3v16H9zm5 0v-7h3v7h-3z"/></svg></div><div class="card-name">Histogram</div></button>
         </div>
       </section>
 
+      <!-- Step: Data -->
       <section id="panel-data" class="panel">
         <h2>Data</h2>
-        <div id="data-guard" class="guard">Select a graph style first.</div>
-
+        <div id="data-guard" class="guard">Select type first.</div>
         <div id="data-content" class="card hidden">
           <div class="seg">
             <label class="seg-label">Source</label>
@@ -452,26 +221,38 @@
         </div>
       </section>
 
+      <!-- Step: Color -->
       <section id="panel-color" class="panel">
         <h2>Color</h2>
-        <div id="color-guard" class="guard">Select style & data first.</div>
-
+        <div id="color-guard" class="guard">Complete data first.</div>
         <div id="color-content" class="card hidden">
           <div id="color-form"></div>
         </div>
       </section>
+      <!-- Step: Customize -->
+<section id="panel-customize" class="panel">
+  <h2>Customize Graph</h2>
+  <div id="customize-guard" class="guard">Complete Type, Data & Color first.</div>
+  <div id="customize-content" class="card hidden">
+    <div id="customize-options" class="grid-2"></div>
+  </div>
+</section>
 
+
+      <!-- Step: Preview -->
       <section id="panel-preview" class="panel">
         <h2>Preview & Export</h2>
-        <div id="preview-guard" class="guard">Complete Style, Data & Color to unlock preview.</div>
-
+        <div id="preview-guard" class="guard">Complete Type, Data & Color to unlock preview.</div>
         <div id="preview-content" class="card hidden">
           <div class="preview-wrap">
+            <!-- Customization panel -->
             <div class="preview-canvas" id="svg-host"></div>
           </div>
           <div class="actions">
+            <button id="btn-download-svg" class="btn">Download SVG</button>
+            <button id="btn-download-png" class="btn">Download PNG</button>
             <button id="btn-export" class="btn primary">Export to Figma</button>
-            <button id="btn-close" class="btn ghost">Close</button>
+            <button id="btn-back" class="btn ghost">Back</button>
           </div>
         </div>
       </section>
@@ -479,73 +260,169 @@
   </div>
 
   <script>
-    // ui.js — dashboard interactivity, data modeling, SVG renderers, export
+    // ---------- Utilities ----------
     const qs = (s, r = document) => r.querySelector(s);
     const qsa = (s, r = document) => [...r.querySelectorAll(s)];
+    const el = (tag, attrs = {}, text) => {
+      const n = document.createElement(tag);
+      Object.entries(attrs).forEach(([k,v]) => { if (k === 'class') n.className = v; else n.setAttribute(k, v); });
+      if (text) n.textContent = text;
+      return n;
+    };
+    const csv = (s) => s.split(',').map(t=>t.trim()).filter(Boolean);
+    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 
-    // Global state
+    // ---------- State ----------
+    const defaultOpts = () => ({
+      // Universal
+      strokeWidth: 0,
+      strokeColor: '#111111',
+      strokeOpacity: 1,
+      strokeType: 'solid', // solid|dashed|dotted|custom
+      strokeDash: '4 2',
+      fillOpacity: 0.95,
+      borderRadius: 6,
+
+      // Shadows
+      dropShadowEnabled: false,
+      dropShadowX: 2,
+      dropShadowY: 2,
+      dropShadowBlur: 4,
+      dropShadowColor: '#000000',
+      dropShadowOpacity: 0.35,
+
+      innerShadowEnabled: false,
+      innerShadowX: 0,
+      innerShadowY: 1,
+      innerShadowBlur: 3,
+      innerShadowColor: '#000000',
+      innerShadowOpacity: 0.3,
+
+      // Text
+      fontFamily: 'Segoe UI',
+      fontSize: 12,
+      fontWeight: 'normal',
+      fontColor: '#9aa4b2',
+
+      // Background / axes / grid
+      showGrid: true,
+      gridOpacity: 0.4,
+      showAxes: true,
+      backgroundTransparent: true,
+      backgroundColor: '#ffffff',
+
+      // Chart-specific placeholders
+      // pie
+      donut: 0,
+      separated: false,
+      startAngle: 0,
+
+      // bar
+      horizontal: false,
+      stacked: false,
+
+      // line
+      smooth: false,
+      area: false,
+      lineStyle: 'solid',
+
+      // scatter
+      pointSize: 6,
+      pointShape: 'circle',
+
+      // histogram
+      bins: undefined,
+      normalize: false
+    });
+
     const state = {
-      style: null,           // 'bar' | 'pie' | 'line' | 'scatter' | 'histogram'
-      data: null,            // shape depends on style
-      colors: null,          // depends on style
-      valid: { style: false, data: false, color: false },
+      opts: { pie: defaultOpts(), bar: defaultOpts(), line: defaultOpts(), scatter: defaultOpts(), histogram: defaultOpts() },
+      type: null,
+      data: null,
+      colors: null,
+      valid: { type:false, data:false, color:false }
     };
 
-    // --- Navigation logic ---
-    qsa('.nav-btn').forEach(btn => {
+    // ---------- Navigation ----------
+    const navBtns = qsa('.nav-btn');
+    navBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.classList.contains('disabled')) return;
-        qsa('.nav-btn').forEach(b => b.classList.remove('active'));
+        navBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        const target = btn.dataset.target;
+        const step = btn.dataset.step;
         qsa('.panel').forEach(p => p.classList.remove('visible'));
-        qs('#' + target).classList.add('visible');
+        qs('#panel-' + step).classList.add('visible');
+        if (step === 'customize') {
+  buildCustomizeOptions();
+}
+if (step === 'preview') {
+  renderPreview();
+}
+
       });
     });
 
-    function updateBadges() {
-      qs('#badge-style').textContent = `Style ${state.valid.style ? '✅' : '❌'}`;
+    function setNavEnabled(step, enabled){
+      const btn = navBtns.find(b => b.dataset.step === step);
+      if (!btn) return;
+      btn.classList.toggle('disabled', !enabled);
+      btn.disabled = !enabled;
+      if (enabled) btn.removeAttribute('aria-disabled'); else btn.setAttribute('aria-disabled','true');
+    }
+
+    function updateBadges(){
+      qs('#badge-type').textContent = `Type ${state.valid.type ? '✅' : '❌'}`;
       qs('#badge-data').textContent = `Data ${state.valid.data ? '✅' : '❌'}`;
       qs('#badge-color').textContent = `Color ${state.valid.color ? '✅' : '❌'}`;
-      const previewBtn = qsa('.nav-btn').find(b => b.dataset.target === 'panel-preview');
-      const unlocked = state.valid.style && state.valid.data && state.valid.color;
-      if (unlocked) {
-        previewBtn.classList.remove('disabled');
-        previewBtn.disabled = false;
-      } else {
-        previewBtn.classList.add('disabled');
-        previewBtn.disabled = true;
-      }
-      // Guards
-      qs('#data-guard').classList.toggle('hidden', state.valid.style);
-      qs('#data-content').classList.toggle('hidden', !state.valid.style);
-      qs('#color-guard').classList.toggle('hidden', state.valid.style && state.valid.data);
-      qs('#color-content').classList.toggle('hidden', !(state.valid.style && state.valid.data));
+
+      setNavEnabled('data', state.valid.type);
+      setNavEnabled('color', state.valid.data);
+      setNavEnabled('customize', state.valid.type && state.valid.data && state.valid.color);
+      setNavEnabled('preview', state.valid.type && state.valid.data && state.valid.color);
+
+      qs('#data-guard').classList.toggle('hidden', state.valid.type);
+      qs('#data-content').classList.toggle('hidden', !state.valid.type);
+
+      qs('#color-guard').classList.toggle('hidden', state.valid.data);
+      qs('#color-content').classList.toggle('hidden', !state.valid.data);
+
+      qs('#customize-guard').classList.toggle('hidden', state.valid.type && state.valid.data && state.valid.color);
+qs('#customize-content').classList.toggle('hidden', !(state.valid.type && state.valid.data && state.valid.color));
+
+      const unlocked = state.valid.type && state.valid.data && state.valid.color;
       qs('#preview-guard').classList.toggle('hidden', unlocked);
       qs('#preview-content').classList.toggle('hidden', !unlocked);
     }
     updateBadges();
 
-    // --- Style selection ---
-    qsa('.style-card').forEach(card => {
-      card.addEventListener('click', () => {
-        qsa('.style-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        state.style = card.dataset.style;
-        state.valid.style = true;
-        state.data = null;
-        state.colors = null;
-        state.valid.data = false;
-        state.valid.color = false;
-        buildCustomForm();
-        renderColorForm();
-        qs('#data-preview').value = '';
-        updateBadges();
+    // ---------- Step 1: Type selection ----------
+    qsa('#panel-type .style-card').forEach(card => {
+      card.setAttribute('tabindex','0');
+      card.addEventListener('click', () => selectType(card.dataset.type, card));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectType(card.dataset.type, card); }
       });
     });
 
-    // --- Data handling ---
+    function selectType(type, card){
+      qsa('#panel-type .style-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state.type = type;
+      state.valid.type = true;
+
+      // Reset downstream
+      state.data = null; state.colors = null;
+      state.valid.data = false; state.valid.color = false;
+
+      buildCustomForm();
+      renderColorForm();
+      qs('#data-preview').value = '';
+      updateBadges();
+      navBtns.find(b => b.dataset.step === 'data').click();
+    }
+
+    // ---------- Step 2: Data (random/custom) ----------
     const btnGenerate = qs('#btn-generate');
     const btnApplyCustom = qs('#btn-apply-custom');
     const customInputs = qs('#custom-inputs');
@@ -554,28 +431,27 @@
 
     qsa('input[name="data-mode"]').forEach(r => {
       r.addEventListener('change', () => {
-        const mode = getDataMode();
-        customInputs.classList.toggle('hidden', mode !== 'custom');
+        customInputs.classList.toggle('hidden', getDataMode() !== 'custom');
       });
     });
 
     btnGenerate.addEventListener('click', () => {
-      if (!state.style) { alert('Select a style first'); return; }
+      if (!state.type) { alert('Choose a graph type first.'); return; }
       const mode = getDataMode();
       if (mode === 'random') {
-        state.data = randomData(state.style);
+        state.data = randomData(state.type);
         state.valid.data = true;
         dataPreview.value = JSON.stringify(state.data, null, 2);
         renderColorForm();
         updateBadges();
+        navBtns.find(b => b.dataset.step === 'color').click();
       } else {
-        // Custom: just reflect current fields; user must click Apply
-        alert('Fill the custom fields below, then click Apply.');
+        alert('Fill custom fields below and click Apply.');
       }
     });
 
     btnApplyCustom.addEventListener('click', () => {
-      if (!state.style) return;
+      if (!state.type) return;
       try {
         const parsed = readCustomForm();
         state.data = parsed;
@@ -583,577 +459,797 @@
         dataPreview.value = JSON.stringify(state.data, null, 2);
         renderColorForm();
         updateBadges();
+        navBtns.find(b => b.dataset.step === 'color').click();
       } catch (e) {
-        alert('Please complete all required fields with valid values.\n\n' + e.message);
+        alert('Please fix custom data: ' + e.message);
       }
     });
 
-    function getDataMode() {
-      return qs('input[name="data-mode"]:checked').value;
-    }
+    function getDataMode(){ return qs('input[name="data-mode"]:checked').value; }
 
-    // Build custom input form according to style
-    function buildCustomForm() {
+    // Build custom form based on type
+    function buildCustomForm(){
       customForm.innerHTML = '';
-      customInputs.classList.add('hidden'); // start hidden until mode=custom
+      customInputs.classList.add('hidden');
       qsa('input[name="data-mode"]').forEach(r => r.checked = r.value === 'random');
+      if (!state.type) return;
 
-      if (!state.style) return;
+      if (state.type === 'pie') {
+        customForm.appendChild(makeHelp('Enter labels and values for each slice.'));
+        customForm.appendChild(makeKVList('Slices','Label','Value',4));
+      } else if (state.type === 'line') {
+        customForm.appendChild(makeHelp('X axis (comma-separated), Y axis (comma-separated), optional series label.'));
+        customForm.appendChild(makeText('X (comma-separated)','xcsv','Jan,Feb,Mar'));
+        customForm.appendChild(makeText('Y (comma-separated)','ycsv','10,20,15'));
+        customForm.appendChild(makeText('Series label (optional)','series','Series 1'));
+      } else if (state.type === 'bar') {
+        customForm.appendChild(makeHelp('Categories (X), Values (single or multiple rows separated by ";"), optional series labels.'));
+        customForm.appendChild(makeText('Categories (comma-separated)','cats','A,B,C'));
+        customForm.appendChild(makeText('Values (comma-separated or rows with ";")','vals','10,20,15'));
+        customForm.appendChild(makeText('Series labels (comma-separated, optional)','labels','Series 1'));
+      } else if (state.type === 'scatter') {
+        customForm.appendChild(makeHelp('X values, Y values, optional sizes (comma-separated)'));
+        customForm.appendChild(makeText('X (comma-separated)','x','5,8,10'));
+        customForm.appendChild(makeText('Y (comma-separated)','y','10,3,6'));
+        customForm.appendChild(makeText('Sizes (optional)','s',''));
+      } else if (state.type === 'histogram') {
+        customForm.appendChild(makeHelp('Raw numeric values; optional bins and range (min,max).'));
+        customForm.appendChild(makeText('Values (comma-separated)','vals','3,4,6,8,8,10,12'));
+        customForm.appendChild(makeNumber('Bins (optional)','bins',''));
+        customForm.appendChild(makeText('Range (min,max optional)','range',''));
+      }
 
-      switch (state.style) {
-        case 'pie': {
-          customForm.appendChild(makeHelp('Enter labels and values for each slice.'));
-          customForm.appendChild(makeKVList('Slices', 'Label', 'Value', 4));
-          break;
+      // show custom panel when "custom" radio is selected
+      if (getDataMode() === 'custom') customInputs.classList.remove('hidden');
+    }
+
+    function readCustomForm(){
+      if (!state.type) return null;
+      if (state.type === 'pie') {
+        const rows = readKVList();
+        const labels = rows.map(r => r.k);
+        const values = rows.map(r => +r.v);
+        if (labels.length === 0 || values.some(isNaN)) throw new Error('Invalid pie values.');
+        return { labels, values };
+      }
+      if (state.type === 'line') {
+        const x = csv(qs('[name="xcsv"]').value);
+        const y = csv(qs('[name="ycsv"]').value).map(Number);
+        const label = qs('[name="series"]').value || 'Series';
+        if (x.length !== y.length || y.some(isNaN)) throw new Error('X and Y mismatch or invalid.');
+        return { x, series: [{ label, y }] };
+      }
+      if (state.type === 'bar') {
+        const cats = csv(qs('[name="cats"]').value);
+        const valsRaw = qs('[name="vals"]').value;
+        let matrix = [];
+        if (valsRaw.includes(';')) matrix = valsRaw.split(';').map(row => csv(row).map(Number));
+        else matrix = [csv(valsRaw).map(Number)];
+        const labels = (qs('[name="labels"]').value || '').split(',').map(s=>s.trim()).filter(Boolean);
+        matrix.forEach(row => { if (row.length !== cats.length || row.some(isNaN)) throw new Error('Value row length mismatch.'); });
+        const series = matrix.map((row,i)=>({ label: labels[i]||`Series ${i+1}`, y: row }));
+        return { categories: cats, series };
+      }
+      if (state.type === 'scatter') {
+        const x = csv(qs('[name="x"]').value).map(Number);
+        const y = csv(qs('[name="y"]').value).map(Number);
+        if (x.length !== y.length || x.some(isNaN) || y.some(isNaN)) throw new Error('X/Y invalid or mismatch.');
+        let sizes = [];
+        const s = qs('[name="s"]').value.trim();
+        if (s) {
+          sizes = csv(s).map(Number);
+          if (sizes.length !== x.length || sizes.some(isNaN)) throw new Error('Sizes length mismatch.');
+        } else sizes = new Array(x.length).fill(6);
+        return { points: x.map((vx,i)=>({ x: vx, y: y[i], r: sizes[i] })) };
+      }
+      if (state.type === 'histogram') {
+        const vals = csv(qs('[name="vals"]').value).map(Number);
+        if (vals.length === 0 || vals.some(isNaN)) throw new Error('Invalid values.');
+        const bins = +qs('[name="bins"]').value || undefined;
+        const rangeText = qs('[name="range"]').value.trim();
+        let range = undefined;
+        if (rangeText) {
+          const [min,max] = rangeText.split(',').map(Number);
+          if ([min,max].some(isNaN) || min >= max) throw new Error('Invalid range.');
+          range = [min,max];
         }
-        case 'line': {
-          customForm.appendChild(makeHelp('Enter X axis (categories/time), Y values, optional series labels.'));
-          customForm.appendChild(makeText('X (comma-separated)', 'xcsv', 'Jan,Feb,Mar,Apr'));
-          customForm.appendChild(makeText('Y (comma-separated)', 'ycsv', '10,20,15,30'));
-          customForm.appendChild(makeText('Series label (optional)', 'series', 'Sales'));
-          break;
-        }
-        case 'bar': {
-          customForm.appendChild(makeHelp('Enter categories for X axis and values (single series or multiple series using semicolons).'));
-          customForm.appendChild(makeText('Categories (comma-separated)', 'cats', 'A,B,C,D'));
-          customForm.appendChild(makeText('Values (comma-separated or matrix rows with ";")', 'vals', '10,20,15,8'));
-          customForm.appendChild(makeText('Series labels (comma-separated, optional if multi-series)', 'labels', 'Series 1'));
-          break;
-        }
-        case 'scatter': {
-          customForm.appendChild(makeHelp('Enter X and Y values. Optionally sizes (for bubbles).'));
-          customForm.appendChild(makeText('X (comma-separated)', 'x', '5,8,10,12,14'));
-          customForm.appendChild(makeText('Y (comma-separated)', 'y', '10,3,6,9,11'));
-          customForm.appendChild(makeText('Sizes (optional, comma-separated)', 's', ''));
-          break;
-        }
-        case 'histogram': {
-          customForm.appendChild(makeHelp('Enter raw numeric values; optional number of bins and range.'));
-          customForm.appendChild(makeText('Values (comma-separated)', 'vals', '3,4,6,8,8,10,12,13,15,17,20,23'));
-          customForm.appendChild(makeNumber('Bins (optional)', 'bins', ''));
-          customForm.appendChild(makeText('Range (min,max optional)', 'range', ''));
-          break;
-        }
+        return { values: vals, bins, range };
       }
     }
 
-    function readCustomForm() {
-      switch (state.style) {
-        case 'pie': {
-          const rows = readKVList();
-          const labels = rows.map(r => r.k);
-          const values = rows.map(r => +r.v);
-          if (labels.length === 0 || values.some(isNaN)) throw new Error('Invalid pie values.');
-          return { labels, values };
-        }
-        case 'line': {
-          const x = csv(qs('[name="xcsv"]').value);
-          const y = csv(qs('[name="ycsv"]').value).map(Number);
-          const label = qs('[name="series"]').value || 'Series';
-          if (x.length !== y.length || y.some(isNaN)) throw new Error('X and Y length mismatch or invalid.');
-          return { x, series: [{ label, y }] };
-        }
-        case 'bar': {
-          const cats = csv(qs('[name="cats"]').value);
-          const valsRaw = qs('[name="vals"]').value;
-          let matrix = [];
-          if (valsRaw.includes(';')) {
-            matrix = valsRaw.split(';').map(row => csv(row).map(Number));
-          } else {
-            matrix = [csv(valsRaw).map(Number)];
-          }
-          const labels = (qs('[name="labels"]').value || '').split(',').map(s => s.trim()).filter(Boolean);
-          matrix.forEach(row => {
-            if (row.length !== cats.length || row.some(isNaN)) throw new Error('Each value row must match number of categories.');
-          });
-          const series = matrix.map((row, i) => ({ label: labels[i] || `Series ${i + 1}`, y: row }));
-          return { categories: cats, series };
-        }
-        case 'scatter': {
-          const x = csv(qs('[name="x"]').value).map(Number);
-          const y = csv(qs('[name="y"]').value).map(Number);
-          if (x.length !== y.length || x.some(isNaN) || y.some(isNaN)) throw new Error('X and Y invalid or length mismatch.');
-          let sizes = [];
-          const s = qs('[name="s"]').value.trim();
-          if (s) {
-            sizes = csv(s).map(Number);
-            if (sizes.length !== x.length || sizes.some(isNaN)) throw new Error('Sizes length mismatch.');
-          } else {
-            sizes = new Array(x.length).fill(6);
-          }
-          return { points: x.map((vx, i) => ({ x: vx, y: y[i], r: sizes[i] })) };
-        }
-        case 'histogram': {
-          const vals = csv(qs('[name="vals"]').value).map(Number);
-          if (vals.length === 0 || vals.some(isNaN)) throw new Error('Invalid values.');
-          const bins = +qs('[name="bins"]').value || undefined;
-          const rangeText = qs('[name="range"]').value.trim();
-          let range;
-          if (rangeText) {
-            const [min, max] = rangeText.split(',').map(Number);
-            if ([min, max].some(isNaN) || min >= max) throw new Error('Invalid range.');
-            range = [min, max];
-          }
-          return { values: vals, bins, range };
-        }
-      }
-    }
-
-    // --- Color handling ---
-    function renderColorForm() {
+    // ---------- Step 3: Color ----------
+    function renderColorForm(){
       const wrap = qs('#color-form');
       wrap.innerHTML = '';
-      state.colors = null;
-      state.valid.color = false;
+      state.colors = null; state.valid.color = false;
 
-      if (!state.style || !state.data) { updateBadges(); return; }
+      if (!state.type || !state.data) { updateBadges(); return; }
 
-      const picker = (label, name, value = '#111111') => {
+      const picker = (label, name, value = '#6aa2ff') => {
         const row = el('div', { class: 'color-row' });
-        row.append(
-          el('div', {}, label),
-          (() => {
-            const pair = el('div', { class: 'color-pair' });
-            const input = el('input', { type: 'color', name, value });
-            const hex = el('input', { type: 'text', value, 'data-hex-for': name, spellcheck: 'false' });
-            input.addEventListener('input', () => { hex.value = input.value; });
-            hex.addEventListener('input', () => { if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex.value)) input.value = hex.value; });
-            pair.append(input, hex);
-            return pair;
-          })()
-        );
+        row.append(el('div', {}, label));
+        const pair = el('div', { class: 'color-pair' });
+        const input = el('input', { type: 'color', name, value });
+        const hex = el('input', { type: 'text', value, 'data-hex-for': name, spellcheck: 'false' });
+        input.addEventListener('input', () => hex.value = input.value);
+        hex.addEventListener('input', () => { if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex.value)) input.value = hex.value; });
+        pair.append(input, hex);
+        row.append(pair);
         return row;
       };
 
-      if (state.style === 'pie') {
+      if (state.type === 'pie') {
         const n = state.data.labels.length;
-        wrap.appendChild(makeHelp(`Pick ${n} slice color${n > 1 ? 's' : ''}.`));
-        for (let i = 0; i < n; i++) wrap.appendChild(picker(`Slice ${i + 1} — ${state.data.labels[i]}`, `c${i}`, defaultColor(i)));
-      }
-      if (state.style === 'bar') {
+        wrap.appendChild(makeHelp(`Pick ${n} slice color${n>1?'s':''}.`));
+        for (let i=0;i<n;i++) wrap.appendChild(picker(`Slice ${i+1} — ${state.data.labels[i]}`, `c${i}`, defaultColor(i)));
+      } else if (state.type === 'bar') {
         const sCount = state.data.series.length;
         const catCount = state.data.categories.length;
         if (sCount > 1) {
-          wrap.appendChild(makeHelp(`Multi-series bars: one color per series (${sCount}).`));
-          for (let i = 0; i < sCount; i++) wrap.appendChild(picker(`Series ${i + 1} — ${state.data.series[i].label}`, `s${i}`, defaultColor(i)));
+          wrap.appendChild(makeHelp(`Multi-series: pick 1 color per series (${sCount}).`));
+          for (let i=0;i<sCount;i++) wrap.appendChild(picker(`Series ${i+1} — ${state.data.series[i].label}`, `s${i}`, defaultColor(i)));
         } else {
-          wrap.appendChild(makeHelp(`Single-series bars: one color per bar (${catCount}).`));
-          for (let i = 0; i < catCount; i++) wrap.appendChild(picker(`Bar ${i + 1} — ${state.data.categories[i]}`, `b${i}`, defaultColor(i)));
+          wrap.appendChild(makeHelp(`Single-series: pick 1 color per bar (${catCount}).`));
+          for (let i=0;i<catCount;i++) wrap.appendChild(picker(`Bar ${i+1} — ${state.data.categories[i]}`, `b${i}`, defaultColor(i)));
         }
-      }
-      if (state.style === 'line') {
+      } else if (state.type === 'line') {
         wrap.appendChild(makeHelp('Line color.'));
-        wrap.appendChild(picker('Line', 'line', '#111111'));
-      }
-      if (state.style === 'scatter') {
+        wrap.appendChild(picker('Line','line','#6aa2ff'));
+      } else if (state.type === 'scatter') {
         wrap.appendChild(makeHelp('Point color.'));
-        wrap.appendChild(picker('Points', 'points', '#111111'));
-      }
-      if (state.style === 'histogram') {
-        wrap.appendChild(makeHelp('Bar color.'));
-        wrap.appendChild(picker('Bars', 'bars', '#111111'));
+        wrap.appendChild(picker('Points','points','#6aa2ff'));
+      } else if (state.type === 'histogram') {
+        wrap.appendChild(makeHelp('Bins color.'));
+        wrap.appendChild(picker('Bins','bins','#6aa2ff'));
       }
 
-      // Save colors on-the-fly
       wrap.addEventListener('input', () => {
         state.colors = readColors();
         state.valid.color = !!state.colors;
         updateBadges();
-      });
-      // Initialize once
+      }, { passive:true });
+
       state.colors = readColors();
       state.valid.color = !!state.colors;
       updateBadges();
     }
 
-    function readColors() {
-      if (!state.style) return null;
-      const get = (name) => qs(`[name="${name}"]`)?.value || '#111111';
-      switch (state.style) {
-        case 'pie': {
-          const n = state.data.labels.length;
-          return { slices: Array.from({ length: n }, (_, i) => get(`c${i}`)) };
-        }
-        case 'bar': {
-          const sCount = state.data.series.length;
-          if (sCount > 1) return { series: Array.from({ length: sCount }, (_, i) => get(`s${i}`)) };
-          return { bars: Array.from({ length: state.data.categories.length }, (_, i) => get(`b${i}`)) };
-        }
-        case 'line': return { line: get('line') };
-        case 'scatter': return { points: get('points') };
-        case 'histogram': return { bars: get('bars') };
+    function readColors(){
+      if (!state.type) return null;
+      const get = name => qs(`[name="${name}"]`)?.value || '#6aa2ff';
+      if (state.type === 'pie') {
+        const n = state.data.labels.length;
+        return { slices: Array.from({length:n},(_,i)=>get(`c${i}`)) };
+      } else if (state.type === 'bar') {
+        const sCount = state.data.series.length;
+        if (sCount > 1) return { series: Array.from({length:sCount},(_,i)=>get(`s${i}`)) };
+        return { bars: Array.from({length:state.data.categories.length},(_,i)=>get(`b${i}`)) };
+      } else if (state.type === 'line') return { line: get('line') };
+      else if (state.type === 'scatter') return { points: get('points') };
+      else if (state.type === 'histogram') return { bins: get('bins') };
+    }
+
+    // ---------- Step 4: Customize (Universal + Specific) ----------
+    function buildCustomizeOptions(){
+      const wrap = qs('#customize-options');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      if (!state.type) return;
+      const opts = state.opts[state.type];
+
+      const add = (node) => wrap.appendChild(node);
+      const header = (txt) => { const h = el('div',{class:'seg-label', style:'grid-column:1/-1;margin-top:4px;'},txt); wrap.appendChild(h); };
+
+      // small helpers
+      const makeToggle = (label, key) => {
+        const row = el('div', { class: 'seg-row' });
+        const input = el('input', { type: 'checkbox', id: key });
+        input.checked = !!opts[key];
+        input.addEventListener('change', () => { opts[key] = input.checked; renderPreview(); });
+        const lbl = el('label', { for: key, style: 'cursor:pointer' }, label);
+        row.append(input, lbl);
+        return row;
+      };
+      const makeSlider = (label, key, min, max, step, def) => {
+        const row = el('div', { class: 'seg' });
+        const lbl = el('label', { class: 'seg-label' }, `${label} — ` + (opts[key] ?? def));
+        const input = el('input', { type: 'range', min, max, step, value: opts[key] ?? def });
+        input.addEventListener('input', () => { opts[key] = +input.value; lbl.textContent = `${label} — ${opts[key]}`; renderPreview(); });
+        row.append(lbl, input);
+        return row;
+      };
+      const makeColor = (label, key, def='#000000') => {
+        const row = el('div', { class: 'seg' });
+        row.append(el('label', { class: 'seg-label' }, label));
+        const input = el('input', { type: 'color', value: opts[key] ?? def });
+        input.addEventListener('input', () => { opts[key] = input.value; renderPreview(); });
+        row.append(input);
+        return row;
+      };
+      const makeSelect = (label, key, options, def) => {
+        const row = el('div', { class: 'seg' });
+        row.append(el('label', { class: 'seg-label' }, label));
+        const sel = el('select', {});
+        options.forEach(o => {
+          const opt = el('option', { value: o, selected: (opts[key] ?? def) === o ? 'selected' : null }, o);
+          sel.append(opt);
+        });
+        sel.addEventListener('change', () => { opts[key] = sel.value; renderPreview(); });
+        row.append(sel);
+        return row;
+      };
+      const makeText = (label, key, def='') => {
+        const row = el('div', { class: 'seg' });
+        row.append(el('label', { class: 'seg-label' }, label));
+        const input = el('input', { type: 'text', value: opts[key] ?? def });
+        input.addEventListener('input', () => { opts[key] = input.value; renderPreview(); });
+        row.append(input);
+        return row;
+      };
+
+      // ----- Universal
+      header('Stroke & Fill');
+      add(makeSlider('Stroke Width','strokeWidth',0,10,1,0));
+      add(makeColor('Stroke Color','strokeColor','#111111'));
+      add(makeSlider('Stroke Opacity','strokeOpacity',0,1,0.05,1));
+      add(makeSelect('Stroke Type','strokeType',['solid','dashed','dotted','custom'],'solid'));
+      if (opts.strokeType === 'custom') add(makeText('Custom dasharray (e.g., "6 3")','strokeDash','4 2'));
+      add(makeSlider('Fill Opacity','fillOpacity',0,1,0.05,0.95));
+
+      header('Borders & Corners');
+      add(makeSlider('Border Radius','borderRadius',0,20,1,6));
+
+      header('Effects — Drop Shadow');
+      add(makeToggle('Enable Drop Shadow','dropShadowEnabled'));
+      if (opts.dropShadowEnabled){
+        add(makeColor('Shadow Color','dropShadowColor','#000000'));
+        add(makeSlider('Shadow Opacity','dropShadowOpacity',0,1,0.05,0.35));
+        add(makeSlider('Shadow X Offset','dropShadowX',-30,30,1,2));
+        add(makeSlider('Shadow Y Offset','dropShadowY',-30,30,1,2));
+        add(makeSlider('Shadow Blur','dropShadowBlur',0,50,1,4));
+      }
+
+      header('Effects — Inner Shadow');
+      add(makeToggle('Enable Inner Shadow','innerShadowEnabled'));
+      if (opts.innerShadowEnabled){
+        add(makeColor('Inner Color','innerShadowColor','#000000'));
+        add(makeSlider('Inner Opacity','innerShadowOpacity',0,1,0.05,0.3));
+        add(makeSlider('Inner X Offset','innerShadowX',-30,30,1,0));
+        add(makeSlider('Inner Y Offset','innerShadowY',-30,30,1,1));
+        add(makeSlider('Inner Blur','innerShadowBlur',0,50,1,3));
+      }
+
+      header('Text');
+      add(makeSelect('Font Family','fontFamily',['Segoe UI','Arial','Roboto','Georgia','Courier New'],'Segoe UI'));
+      add(makeSlider('Font Size','fontSize',8,32,1,12));
+      add(makeSelect('Font Weight','fontWeight',['normal','bold'],'normal'));
+      add(makeColor('Font Color','fontColor','#9aa4b2'));
+
+      header('Axes / Grid / Background');
+      add(makeToggle('Show Gridlines','showGrid'));
+      add(makeSlider('Grid Opacity','gridOpacity',0,1,0.05,0.4));
+      add(makeToggle('Show Axes','showAxes'));
+      add(makeToggle('Transparent Background','backgroundTransparent'));
+      if (!opts.backgroundTransparent) add(makeColor('Background Color','backgroundColor','#ffffff'));
+
+      // ----- Chart specific
+      header('Chart Specific');
+
+      if (state.type === 'pie') {
+        add(makeSlider('Donut Hole Size','donut',0,0.7,0.05,0));
+        add(makeToggle('Separate Slices','separated'));
+        add(makeSlider('Start Angle (deg)','startAngle',0,360,5,0));
+      }
+      if (state.type === 'bar') {
+        add(makeToggle('Horizontal Bars','horizontal'));
+        add(makeToggle('Stacked Bars','stacked'));
+      }
+      if (state.type === 'line') {
+        add(makeToggle('Smooth Curve','smooth'));
+        add(makeToggle('Fill Area','area'));
+        add(makeSelect('Line Style','lineStyle',['solid','dashed','dotted'],'solid'));
+      }
+      if (state.type === 'scatter') {
+        add(makeSlider('Point Size','pointSize',2,24,1,6));
+        add(makeSelect('Point Shape','pointShape',['circle','square','triangle'],'circle'));
+      }
+      if (state.type === 'histogram') {
+        add(makeSlider('Bin Count','bins',5,50,1, opts.bins ?? 10));
+        add(makeToggle('Normalize Density','normalize'));
       }
     }
 
-    // --- Preview + Export ---
+    // ---------- Preview & Export ----------
     const svgHost = qs('#svg-host');
     const btnExport = qs('#btn-export');
-    const btnClose = qs('#btn-close');
+    const btnBack = qs('#btn-back');
+    const btnSvg = qs('#btn-download-svg');
+    const btnPng = qs('#btn-download-png');
 
-    function renderPreview() {
-      if (!(state.valid.style && state.valid.data && state.valid.color)) return;
-      const w = 720, h = 420, pad = 48;
-
+    function renderPreview(){
+      if (!(state.valid.type && state.valid.data && state.valid.color)) return;
+      const W = 900, H = 520, pad = 56;
+      const opts = state.opts[state.type];
       let svg = '';
 
-      if (state.style === 'pie') {
-        svg = renderPie(state.data, state.colors, w, h);
-      }
-      if (state.style === 'bar') {
-        svg = renderBar(state.data, state.colors, w, h, pad);
-      }
-      if (state.style === 'line') {
-        svg = renderLine(state.data, state.colors, w, h, pad);
-      }
-      if (state.style === 'scatter') {
-        svg = renderScatter(state.data, state.colors, w, h, pad);
-      }
-      if (state.style === 'histogram') {
-        svg = renderHistogram(state.data, state.colors, w, h, pad);
-      }
+      if (state.type === 'pie') svg = renderPie(state.data, state.colors, W, H, opts);
+      if (state.type === 'bar') svg = renderBar(state.data, state.colors, W, H, pad, opts);
+      if (state.type === 'line') svg = renderLine(state.data, state.colors, W, H, pad, opts);
+      if (state.type === 'scatter') svg = renderScatter(state.data, state.colors, W, H, pad, opts);
+      if (state.type === 'histogram') svg = renderHistogram(state.data, state.colors, W, H, pad, opts);
 
       svgHost.innerHTML = svg;
     }
 
     btnExport.addEventListener('click', () => {
-      if (!(state.valid.style && state.valid.data && state.valid.color)) return;
+      if (!(state.valid.type && state.valid.data && state.valid.color)) return;
       const svg = svgHost.innerHTML.trim();
       parent.postMessage({ pluginMessage: { type: 'EXPORT_SVG', svg } }, '*');
     });
 
-    btnClose.addEventListener('click', () => {
-      parent.postMessage({ pluginMessage: { type: 'CLOSE' } }, '*');
+    btnBack.addEventListener('click', () => {
+      navBtns.find(b => b.dataset.step === 'color').click();
     });
 
-    // Re-render preview whenever entering preview tab or inputs change
-    const previewBtn = qsa('.nav-btn').find(b => b.dataset.target === 'panel-preview');
-    previewBtn.addEventListener('click', renderPreview);
-    document.addEventListener('input', (e) => {
-      if (qs('#panel-preview').classList.contains('visible')) renderPreview();
+    btnSvg.addEventListener('click', () => {
+      const svg = svgHost.querySelector('svg');
+      if (!svg) return;
+      const blob = new Blob([svg.outerHTML], {type: 'image/svg+xml'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chart-${state.type}.svg`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
     });
 
-    // --- SVG renderers ---
-    // Helpers
-    function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
-    function max(arr) { return arr.reduce((m, v) => v > m ? v : m, -Infinity); }
-    function min(arr) { return arr.reduce((m, v) => v < m ? v : m, Infinity); }
-    function sum(arr) { return arr.reduce((s, v) => s + v, 0); }
-    function csv(s) { return s.split(',').map(t => t.trim()).filter(Boolean); }
-    function defaultColor(i) { // pleasant grayscale steps to stay in B/W vibe but allow variation
-      const g = 20 + ((i * 40) % 180);
-      const hex = (x) => x.toString(16).padStart(2, '0');
-      return `#${hex(g)}${hex(g)}${hex(g)}`;
-    }
-    function el(tag, attrs = {}, text) {
-      const n = document.createElement(tag);
-      Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
-      if (text) n.textContent = text;
-      return n;
-    }
-    function makeText(label, name, placeholder = '') {
-      const wrap = el('div', { class: 'seg' });
-      wrap.append(el('label', { class: 'seg-label' }, label));
-      const input = el('input', { type: 'text', name, placeholder });
-      wrap.append(input);
-      return wrap;
-    }
-    function makeNumber(label, name, placeholder = '') {
-      const wrap = el('div', { class: 'seg' });
-      wrap.append(el('label', { class: 'seg-label' }, label));
-      const input = el('input', { type: 'number', name, placeholder, step: 'any' });
-      wrap.append(input);
-      return wrap;
-    }
-    function makeHelp(text) { return el('div', { class: 'seg-label', style: 'color:#555' }, text); }
-
-    function makeKVList(title, kLabel, vLabel, initialRows = 3) {
-      const wrap = el('div', { class: 'seg' });
-      wrap.append(el('label', { class: 'seg-label' }, title));
-
-      const list = el('div', { class: 'seg', id: 'kv-list' });
-      const addRow = (k = '', v = '') => {
-        const row = el('div', { class: 'seg-row' });
-        const ki = el('input', { type: 'text', placeholder: kLabel, 'data-role': 'k', value: k });
-        const vi = el('input', { type: 'number', placeholder: vLabel, 'data-role': 'v', step: 'any', value: v });
-        const rm = el('button', { class: 'btn' }, 'Remove');
-        rm.addEventListener('click', () => row.remove());
-        row.append(ki, vi, rm);
-        list.append(row);
+    btnPng.addEventListener('click', () => {
+      const svg = svgHost.querySelector('svg');
+      if (!svg) return;
+      const xml = new XMLSerializer().serializeToString(svg);
+      const img = new Image();
+      const w = svg.viewBox?.baseVal?.width || svg.width.baseVal.value || 900;
+      const h = svg.viewBox?.baseVal?.height || svg.height.baseVal.value || 520;
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0);
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url; a.download = `chart-${state.type}.png`;
+        document.body.appendChild(a); a.click(); a.remove();
       };
-      for (let i = 0; i < initialRows; i++) addRow();
-      const add = el('button', { class: 'btn' }, 'Add Slice');
-      add.addEventListener('click', () => addRow());
-      wrap.append(list, add);
-      return wrap;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+    });
+
+    // rebuild preview on change
+    ['input','change','click'].forEach(evt => document.addEventListener(evt, () => {
+      if (qs('#panel-preview').classList.contains('visible')) renderPreview();
+    }));
+
+    // ---------- Renderers & helpers ----------
+    const sum = (arr) => arr.reduce((s,v)=>s+v,0);
+    const max = (arr) => arr.reduce((m,v)=> v>m ? v : m, -Infinity);
+    const min = (arr) => arr.reduce((m,v)=> v<m ? v : m, Infinity);
+    const defaultColor = (i) => {
+      const base = [106, 162, 255];
+      const t = (i % 6) / 6;
+      const c = base.map((b,idx)=>Math.max(0, Math.min(255, Math.round(b - t*40 - idx*5))));
+      const toHex = x=>x.toString(16).padStart(2,'0');
+      return `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
+    };
+
+    function axes(W,H,pad, showAxes){
+      if (!showAxes) return '';
+      const x1 = pad, y1 = H-pad, x2 = W-pad, y2 = pad;
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#2b3345"/><line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y2}" stroke="#2b3345"/>`;
     }
-    function readKVList() {
-      const list = qsa('#kv-list .seg-row').map(r => ({
-        k: qs('[data-role="k"]', r).value.trim(),
-        v: qs('[data-role="v"]', r).value.trim()
-      })).filter(r => r.k && r.v !== '');
-      return list.map(r => ({ k: r.k, v: +r.v })).filter(r => !isNaN(r.v));
+    function scaleLinear(domain, range){
+      const [d0,d1]=domain, [r0,r1]=range; const m=(r1-r0)/(d1-d0||1);
+      return v => r0 + (v - d0)*m;
+    }
+    function dashFor(type, custom){
+      if (type==='dashed') return '6 3';
+      if (type==='dotted') return '1 4';
+      if (type==='custom') return custom || '4 2';
+      return null;
     }
 
-    // Pie
-    function renderPie(data, colors, W, H) {
-      const cx = W / 2, cy = H / 2, r = Math.min(W, H) * 0.35;
+    function svgDefsForEffects(opts){
+      const dsId = 'dropShadow', isId = 'innerShadow';
+      const defs = [];
+
+      if (opts.dropShadowEnabled){
+        defs.push(`
+          <filter id="${dsId}" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="${opts.dropShadowX}" dy="${opts.dropShadowY}" stdDeviation="${opts.dropShadowBlur}"
+              flood-color="${opts.dropShadowColor}" flood-opacity="${opts.dropShadowOpacity}" />
+          </filter>`);
+      }
+      if (opts.innerShadowEnabled){
+        // Inner shadow via blur + compositing
+        defs.push(`
+          <filter id="${isId}" x="-50%" y="-50%" width="200%" height="200%">
+            <feOffset dx="${opts.innerShadowX}" dy="${opts.innerShadowY}" in="SourceAlpha" result="offOut"/>
+            <feGaussianBlur in="offOut" stdDeviation="${opts.innerShadowBlur}" result="blur" />
+            <feComposite in="blur" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="innerShadow" />
+            <feColorMatrix in="innerShadow" type="matrix"
+              values="0 0 0 0 ${hexToRgb(opts.innerShadowColor).r/255}
+                      0 0 0 0 ${hexToRgb(opts.innerShadowColor).g/255}
+                      0 0 0 0 ${hexToRgb(opts.innerShadowColor).b/255}
+                      0 0 0 ${opts.innerShadowOpacity} 0" />
+            <feComposite in="SourceGraphic" in2="innerShadow" operator="over"/>
+          </filter>`);
+      }
+      return defs.length ? `<defs>${defs.join('')}</defs>` : '';
+    }
+
+    function filterAttr(opts){
+      const ids = [];
+      if (opts.dropShadowEnabled) ids.push('url(#dropShadow)');
+      if (opts.innerShadowEnabled) ids.push('url(#innerShadow)');
+      return ids.length ? `filter="${ids.join(' ')}"` : '';
+    }
+
+    function textStyle(opts){ return `font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}`; }
+    function shapeStrokeAttrs(opts){
+      const sw = +opts.strokeWidth;
+      if (sw<=0) return '';
+      const dash = dashFor(opts.strokeType, opts.strokeDash);
+      return `stroke="${opts.strokeColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${sw}" ${dash?`stroke-dasharray="${dash}"`:''}`;
+    }
+    function bgRect(W,H,opts){
+      if (opts.backgroundTransparent) return `<rect width="100%" height="100%" fill="#fff" opacity="0"/>`;
+      return `<rect width="${W}" height="${H}" fill="${opts.backgroundColor}"/>`;
+    }
+    function hexToRgb(hex){
+      const h = hex.replace('#',''); const bigint = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+      return { r:(bigint>>16)&255, g:(bigint>>8)&255, b:bigint&255 };
+    }
+
+    // ----- Pie
+    function renderPie(data, colors, W, H, opts){
+      const cx = W/2, cy = H/2, r = Math.min(W,H)*0.32;
       const total = sum(data.values);
-      let angle = -Math.PI / 2; // start at top
-      const slices = data.values.map((v, i) => {
-        const a2 = angle + (v / total) * Math.PI * 2;
-        const x1 = cx + r * Math.cos(angle), y1 = cy + r * Math.sin(angle);
-        const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+      let angle = (-Math.PI/2) + (opts.startAngle*Math.PI/180);
+      const pieces = [];
+      data.values.forEach((v,i)=>{
+        const a2 = angle + (v/total)*Math.PI*2;
+        const x1 = cx + r*Math.cos(angle), y1 = cy + r*Math.sin(angle);
+        const x2 = cx + r*Math.cos(a2), y2 = cy + r*Math.sin(a2);
         const large = (a2 - angle) > Math.PI ? 1 : 0;
-        const d = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+        const gap = opts.separated ? 8 : 0;
+        const mid = (angle + a2)/2;
+        const offx = Math.cos(mid)*gap, offy = Math.sin(mid)*gap;
+        const d = `M ${cx+offx} ${cy+offy} L ${x1+offx} ${y1+offy} A ${r} ${r} 0 ${large} 1 ${x2+offx} ${y2+offy} Z`;
+        pieces.push(`<path d="${d}" fill="${colors.slices[i]||defaultColor(i)}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)} ${filterAttr(opts)}/>`);
         angle = a2;
-        return `<path d="${d}" fill="${colors.slices[i] || defaultColor(i)}" />`;
-      }).join('');
-      const labels = data.labels.map((lbl, i) => `<text x="${W - 12}" y="${20 + i * 16}" text-anchor="end" font-size="11">${lbl}</text>`).join('');
-      const swatches = data.labels.map((_, i) => `<rect x="${W - 10}" y="${10 + i * 16 - 8}" width="8" height="8" fill="${colors.slices[i] || defaultColor(i)}"/>`).join('');
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect width="100%" height="100%" fill="#fff"/>
-    ${slices}
-    ${labels}
-    ${swatches}
-  </svg>`;
+      });
+
+      const donut = opts.donut>0 ? `<circle cx="${cx}" cy="${cy}" r="${r*opts.donut}" fill="${opts.backgroundTransparent ? 'transparent' : opts.backgroundColor}" />` : '';
+
+      const labels = data.labels.map((lbl,i)=>`<text x="${W-12}" y="${20 + i*18}" text-anchor="end" style="${textStyle(opts)}">${lbl}</text>`).join('');
+      const swatches = data.labels.map((_,i)=>`<rect x="${W-10}" y="${10 + i*18 - 8}" width="8" height="8" fill="${colors.slices[i]||defaultColor(i)}" ${shapeStrokeAttrs(opts)} ${filterAttr(opts)}/>`).join('');
+
+      const defs = svgDefsForEffects(opts);
+
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+        ${defs}
+        ${bgRect(W,H,opts)}
+        ${pieces.join('')}
+        ${donut}
+        ${labels}
+        ${swatches}
+      </svg>`;
     }
 
-    // Axes
-    function axes(W, H, pad) {
-      const x1 = pad, y1 = H - pad, x2 = W - pad, y2 = pad;
-      return `
-    <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#222"/>
-    <line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y2}" stroke="#222"/>
-  `;
-    }
-    function scaleLinear(domain, range) {
-      const [d0, d1] = domain, [r0, r1] = range;
-      const m = (r1 - r0) / (d1 - d0);
-      return v => r0 + (v - d0) * m;
+    // ----- Shared axes / grid helpers
+    function gridAndTicks(x0,x1,y0,y1,maxY,opts){
+      const ticks = 4; const els = [];
+      for (let i=0;i<=ticks;i++){
+        const t = i / ticks;
+        const y = y0 - t*(y0 - y1);
+        const val = Math.round(t * maxY);
+        if (opts.showGrid) els.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        els.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${val}</text>`);
+      }
+      return els.join('');
     }
 
-    // Bar
-    function renderBar(data, colors, W, H, pad) {
+    // ----- Bar
+    function renderBar(data, colors, W, H, pad, opts){
       const cats = data.categories;
-      const multi = data.series.length > 1;
-      const maxY = max(data.series.flatMap(s => s.y));
+      const multi = data.series.length > 1 && !opts.stacked;
+      const stacked = data.series.length > 1 && opts.stacked;
+      const maxY = stacked ? max(cats.map((_,ci)=>sum(data.series.map(s=>s.y[ci])))) : max(data.series.flatMap(s=>s.y));
       const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
       const toY = scaleLinear([0, maxY], [y0, y1]);
-
       const band = (x1 - x0) / cats.length;
-      const barGap = 6;
+      const gap = 6;
       const barW = multi ? (band - 10) / data.series.length : band - 10;
+      const stroke = shapeStrokeAttrs(opts);
+      const filter = filterAttr(opts);
+      const rx = clamp(opts.borderRadius,0,20);
 
       let bars = '';
-      cats.forEach((c, ci) => {
-        if (multi) {
-          data.series.forEach((s, si) => {
+      const drawBar = (x,y,w,h,fill) => {
+        if (opts.horizontal) {
+          // For simplicity, horizontal bars not fully implemented with stacked here; keep vertical primary
+        }
+        return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0,h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
+      };
+
+      cats.forEach((c,ci)=>{
+        if (multi){
+          data.series.forEach((s,si)=>{
             const v = s.y[ci];
-            const x = x0 + ci * band + 5 + si * barW;
+            const x = x0 + ci*band + 5 + si*barW;
             const y = toY(v);
             const h = y0 - y;
-            bars += `<rect x="${x}" y="${y}" width="${barW - barGap}" height="${Math.max(0, h)}" fill="${colors.series?.[si] || defaultColor(si)}"/>`;
+            const fill = colors.series?.[si] || defaultColor(si);
+            bars += drawBar(x, y, barW - gap, h, fill);
+          });
+        } else if (stacked){
+          let acc = 0;
+          data.series.forEach((s,si)=>{
+            const v = s.y[ci];
+            const y = toY(acc + v);
+            const h = toY(acc) - y;
+            const x = x0 + ci*band + 5;
+            const fill = colors.series?.[si] || defaultColor(si);
+            bars += drawBar(x, y, barW - gap, h, fill);
+            acc += v;
           });
         } else {
           const v = data.series[0].y[ci];
-          const x = x0 + ci * band + 5;
+          const x = x0 + ci*band + 5;
           const y = toY(v);
           const h = y0 - y;
           const fill = colors.bars?.[ci] || defaultColor(ci);
-          bars += `<rect x="${x}" y="${y}" width="${barW - barGap}" height="${Math.max(0, h)}" fill="${fill}"/>`;
+          bars += drawBar(x, y, barW - gap, h, fill);
         }
       });
 
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
-        const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = Math.round(t * maxY);
-        tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#eee"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="#333">${val}</text>`);
-      }
-      const catLabels = cats.map((c, ci) => {
-        const x = x0 + ci * band + band / 2;
-        return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" font-size="10">${c}</text>`;
+      const catLabels = cats.map((c,ci)=>{
+        const x = x0 + ci*band + band/2;
+        return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" style="${textStyle(opts)}">${c}</text>`
       }).join('');
 
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect width="100%" height="100%" fill="#fff"/>
-    ${axes(W, H, pad)}
-    ${tickEls.join('')}
-    ${bars}
-    ${catLabels}
-  </svg>`;
+      const defs = svgDefsForEffects(opts);
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+        ${defs}
+        ${bgRect(W,H,opts)}
+        ${axes(W,H,pad, opts.showAxes)}
+        ${gridAndTicks(x0,x1,y0,y1,maxY,opts)}
+        ${bars}
+        ${catLabels}
+      </svg>`;
     }
 
-    // Line
-    function renderLine(data, colors, W, H, pad) {
-      const X = data.x.map((_, i) => i);
+    // ----- Line
+    function renderLine(data, colors, W, H, pad, opts){
+      const X = data.x.map((_,i)=>i);
       const Y = data.series[0].y;
-      const maxY = max(Y), minY = Math.min(0, min(Y));
+      const maxY = Math.max(...Y), minY = Math.min(0, ...Y);
       const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
       const toX = scaleLinear([0, X.length - 1], [x0, x1]);
       const toY = scaleLinear([minY, maxY], [y0, y1]);
 
-      const pts = X.map((i) => `${toX(i)},${toY(Y[i])}`).join(' ');
-      const dots = X.map((i) => `<circle cx="${toX(i)}" cy="${toY(Y[i])}" r="3" fill="${colors.line}"/>`).join('');
-      const xlabels = data.x.map((lbl, i) => `<text x="${toX(i)}" y="${y0 + 16}" text-anchor="middle" font-size="10">${lbl}</text>`).join('');
+      const points = data.series[0].y.map((v,i)=>`${toX(i)},${toY(v)}`).join(' ');
 
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
+      // stroke pattern
+      const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
+      const baseStroke = `stroke="${colors.line}" stroke-width="${Math.max(1,opts.strokeWidth||2)}" ${dash?`stroke-dasharray="${dash}"`:''} stroke-opacity="${opts.strokeOpacity}"`;
+      const filter = filterAttr(opts);
+
+      let linePath = `<polyline fill="none" ${baseStroke} points="${points}" ${filter}/>`;
+      if (opts.smooth){
+        const pathPts = data.series[0].y.map((v,i)=>[toX(i), toY(v)]);
+        let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
+        for (let i=1;i<pathPts.length;i++){
+          const [px,py] = pathPts[i-1]; const [cx,cy] = pathPts[i];
+          const qx = (px + cx) / 2;
+          d += ` Q ${qx} ${py} ${cx} ${cy}`;
+        }
+        linePath = `<path d="${d}" fill="none" ${baseStroke} ${filter}/>`;
+      }
+
+      const dots = X.map(i => `<circle cx="${toX(i)}" cy="${toY(Y[i])}" r="3" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)} ${filter}/>`).join('');
+      const xlabels = data.x.map((lbl,i)=>`<text x="${toX(i)}" y="${y0+16}" text-anchor="middle" style="${textStyle(opts)}">${lbl}</text>`).join('');
+
+      const ticks = 4; const tickEls=[];
+      for (let i=0;i<=ticks;i++){
         const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = (minY + t * (maxY - minY)).toFixed(0);
-        tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#eee"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="#333">${val}</text>`);
+        const y = y0 - t*(y0 - y1);
+        const val = (minY + t*(maxY - minY)).toFixed(0);
+        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        tickEls.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${val}</text>`);
       }
 
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect width="100%" height="100%" fill="#fff"/>
-    ${axes(W, H, pad)}
-    ${tickEls.join('')}
-    <polyline fill="none" stroke="${colors.line}" stroke-width="2" points="${pts}"/>
-    ${dots}
-    ${xlabels}
-  </svg>`;
+      const area = opts.area ? `<polyline fill="${colors.line}" opacity="${opts.fillOpacity*0.25}" points="${points} ${toX(X.length-1)},${y0} ${toX(0)},${y0}" ${filter}/>` : '';
+      const defs = svgDefsForEffects(opts);
+
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+        ${defs}
+        ${bgRect(W,H,opts)}
+        ${axes(W,H,pad, opts.showAxes)}
+        ${tickEls.join('')}
+        ${area}
+        ${linePath}
+        ${dots}
+        ${xlabels}
+      </svg>`;
     }
 
-    // Scatter
-    function renderScatter(data, colors, W, H, pad) {
-      const xs = data.points.map(p => p.x);
-      const ys = data.points.map(p => p.y);
-      const xmin = min(xs), xmax = max(xs);
-      const ymin = min(ys), ymax = max(ys);
+    // ----- Scatter
+    function renderScatter(data, colors, W, H, pad, opts){
+      const xs = data.points.map(p=>p.x);
+      const ys = data.points.map(p=>p.y);
+      const xmin = Math.min(...xs), xmax = Math.max(...xs);
+      const ymin = Math.min(...ys), ymax = Math.max(...ys);
       const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const toX = scaleLinear([xmin, xmax], [x0, x1]);
-      const toY = scaleLinear([ymin, ymax], [y0, y1]);
+      const toX = scaleLinear([xmin,xmax], [x0,x1]);
+      const toY = scaleLinear([ymin,ymax], [y0,y1]);
+      const stroke = shapeStrokeAttrs(opts);
+      const filter = filterAttr(opts);
 
-      const dots = data.points.map(p => `<circle cx="${toX(p.x)}" cy="${toY(p.y)}" r="${p.r || 6}" fill="${colors.points}" opacity="0.9"/>`).join('');
+      const drawShape = (p)=>{
+        const r = opts.pointSize || p.r || 6;
+        const cx = toX(p.x), cy = toY(p.y);
+        if (opts.pointShape === 'square') return `<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
+        if (opts.pointShape === 'triangle') return `<polygon points="${cx},${cy-r} ${cx-r},${cy+r} ${cx+r},${cy+r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
+        return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
+      };
 
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
-        const tx = xmin + i * (xmax - xmin) / ticks;
+      const dots = data.points.map(drawShape).join('');
+
+      const ticks = 4; const tickEls = [];
+      for (let i=0;i<=ticks;i++){
+        const tx = xmin + i*(xmax - xmin)/ticks;
         const x = toX(tx);
-        tickEls.push(`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#f1f1f1"/>`);
-        tickEls.push(`<text x="${x}" y="${y0 + 16}" text-anchor="middle" font-size="10">${tx.toFixed(0)}</text>`);
+        if (opts.showGrid) tickEls.push(`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        tickEls.push(`<text x="${x}" y="${y0+16}" text-anchor="middle" style="${textStyle(opts)}">${Math.round(tx)}</text>`);
       }
-      for (let i = 0; i <= ticks; i++) {
-        const ty = ymin + i * (ymax - ymin) / ticks;
+      for (let i=0;i<=ticks;i++){
+        const ty = ymin + i*(ymax - ymin)/ticks;
         const y = toY(ty);
-        tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#f1f1f1"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" font-size="10">${ty.toFixed(0)}</text>`);
+        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        tickEls.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${Math.round(ty)}</text>`);
       }
 
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect width="100%" height="100%" fill="#fff"/>
-    ${axes(W, H, pad)}
-    ${tickEls.join('')}
-    ${dots}
-  </svg>`;
+      const defs = svgDefsForEffects(opts);
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+        ${defs}
+        ${bgRect(W,H,opts)}
+        ${axes(W,H,pad, opts.showAxes)}
+        ${tickEls.join('')}
+        ${dots}
+      </svg>`;
     }
 
-    // Histogram
-    function renderHistogram(data, colors, W, H, pad) {
-      const vals = data.values.slice().sort((a, b) => a - b);
+    // ----- Histogram
+    function renderHistogram(data, colors, W, H, pad, opts){
+      const vals = data.values.slice().sort((a,b)=>a-b);
       const minv = data.range?.[0] ?? vals[0];
-      const maxv = data.range?.[1] ?? vals[vals.length - 1];
-      const bins = data.bins || Math.ceil(Math.sqrt(vals.length)); // Rice rule-ish
+      const maxv = data.range?.[1] ?? vals[vals.length-1];
+      const bins = data.bins || opts.bins || Math.ceil(Math.sqrt(vals.length));
       const step = (maxv - minv) / bins;
-      const edges = Array.from({ length: bins + 1 }, (_, i) => minv + i * step);
+      const edges = Array.from({length:bins+1},(_,i)=>minv + i*step);
       const counts = new Array(bins).fill(0);
-      vals.forEach(v => {
-        if (v < minv || v > maxv) return;
-        let b = Math.min(bins - 1, Math.floor((v - minv) / step));
-        counts[b]++;
-      });
+      vals.forEach(v=>{ if (v < minv || v > maxv) return; let b = Math.min(bins - 1, Math.floor((v - minv)/step)); counts[b]++; });
+      const total = sum(counts);
+      const countsOrDensity = opts.normalize ? counts.map(c=>c/(total*step)) : counts;
 
       const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
       const band = (x1 - x0) / bins;
-      const maxC = max(counts);
+      const maxC = Math.max(1, ...countsOrDensity);
       const toY = scaleLinear([0, maxC], [y0, y1]);
+      const stroke = shapeStrokeAttrs(opts);
+      const filter = filterAttr(opts);
+      const rx = clamp(opts.borderRadius,0,20);
 
-      const bars = counts.map((c, i) => {
-        const x = x0 + i * band + 2;
+      const bars = countsOrDensity.map((c,i)=>{
+        const x = x0 + i*band + 2;
         const y = toY(c);
         const h = y0 - y;
-        return `<rect x="${x}" y="${y}" width="${band - 4}" height="${Math.max(0, h)}" fill="${colors.bars}"/>`;
+        const fill = colors.bins || '#6aa2ff';
+        return `<rect x="${x}" y="${y}" width="${band-4}" height="${Math.max(0,h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
       }).join('');
 
-      const xlabels = counts.map((_, i) => {
-        const x = x0 + i * band + band / 2;
-        const lbl = `${edges[i].toFixed(0)}–${edges[i + 1].toFixed(0)}`;
-        return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" font-size="10">${lbl}</text>`;
+      const xlabels = counts.map((_,i)=>{
+        const x = x0 + i*band + band/2;
+        const lbl = `${edges[i].toFixed(0)}–${edges[i+1].toFixed(0)}`;
+        return `<text x="${x}" y="${y0+16}" text-anchor="middle" style="${textStyle(opts)}">${lbl}</text>`;
       }).join('');
 
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
+      const ticks = 4; const tickEls = [];
+      for (let i=0;i<=ticks;i++){
         const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = Math.round(t * maxC);
-        tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#eee"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="#333">${val}</text>`);
+        const y = y0 - t*(y0 - y1);
+        const val = (t * maxC).toFixed(0);
+        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        tickEls.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${val}</text>`);
       }
 
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-    <rect width="100%" height="100%" fill="#fff"/>
-    ${axes(W, H, pad)}
-    ${tickEls.join('')}
-    ${bars}
-    ${xlabels}
-  </svg>`;
+      const defs = svgDefsForEffects(opts);
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+        ${defs}
+        ${bgRect(W,H,opts)}
+        ${axes(W,H,pad, opts.showAxes)}
+        ${tickEls.join('')}
+        ${bars}
+        ${xlabels}
+      </svg>`;
     }
 
-    // --- Random data generators ---
-    function randomInt(a, b) { return Math.floor(a + Math.random() * (b - a + 1)); }
-    function randomData(style) {
-      if (style === 'pie') {
-        const n = randomInt(3, 6);
-        const labels = Array.from({ length: n }, (_, i) => `Slice ${i + 1}`);
-        const values = Array.from({ length: n }, () => randomInt(5, 25));
+    // ---------- Random data ----------
+    const randomInt = (a,b) => Math.floor(a + Math.random()*(b-a+1));
+    function randomData(type){
+      if (type === 'pie'){
+        const n = randomInt(3,6);
+        const labels = Array.from({length:n},(_,i)=>`Slice ${i+1}`);
+        const values = Array.from({length:n},()=>randomInt(5,25));
         return { labels, values };
       }
-      if (style === 'line') {
-        const n = randomInt(4, 8);
-        const x = Array.from({ length: n }, (_, i) => `T${i + 1}`);
-        const y = Array.from({ length: n }, () => randomInt(5, 30));
-        return { x, series: [{ label: 'Series', y }] };
+      if (type === 'line'){
+        const n = randomInt(4,8);
+        const x = Array.from({length:n},(_,i)=>`T${i+1}`);
+        const y = Array.from({length:n},()=>randomInt(5,30));
+        return { x, series: [{ label:'Series', y }] };
       }
-      if (style === 'bar') {
-        const n = randomInt(4, 7);
-        const cats = Array.from({ length: n }, (_, i) => `C${i + 1}`);
+      if (type === 'bar'){
+        const n = randomInt(4,7);
+        const cats = Array.from({length:n},(_,i)=>`C${i+1}`);
         const multi = Math.random() < 0.5;
-        if (multi) {
-          const s = randomInt(2, 3);
-          const series = Array.from({ length: s }, (_, si) => ({
-            label: `S${si + 1}`,
-            y: Array.from({ length: n }, () => randomInt(5, 30))
-          }));
+        if (multi){
+          const s = randomInt(2,3);
+          const series = Array.from({length:s},(_,si)=>({ label:`S${si+1}`, y: Array.from({length:n},()=>randomInt(5,30)) }));
           return { categories: cats, series };
         }
-        return { categories: cats, series: [{ label: 'Series 1', y: Array.from({ length: n }, () => randomInt(5, 30)) }] };
+        return { categories: cats, series: [{ label:'Series 1', y: Array.from({length:n},()=>randomInt(5,30)) }] };
       }
-      if (style === 'scatter') {
-        const n = randomInt(12, 24);
-        const points = Array.from({ length: n }, () => ({ x: randomInt(0, 100), y: randomInt(0, 100), r: randomInt(4, 8) }));
+      if (type === 'scatter'){
+        const n = randomInt(12,24);
+        const points = Array.from({length:n},()=>({ x: randomInt(0,100), y: randomInt(0,100), r: randomInt(4,8) }));
         return { points };
       }
-      if (style === 'histogram') {
-        const n = randomInt(30, 80);
-        const values = Array.from({ length: n }, () => Math.round(Math.max(0, Math.min(100, (Math.random() ** 0.7) * 100))));
+      if (type === 'histogram'){
+        const n = randomInt(30,80);
+        const values = Array.from({length:n},()=>Math.round(Math.max(0,Math.min(100,(Math.random()**0.7)*100))));
         return { values };
       }
     }
 
-    // Auto-render preview when all ready
-    ['input', 'change', 'click'].forEach(evt => document.addEventListener(evt, () => {
-      if (state.valid.style && state.valid.data && state.valid.color) renderPreview();
-    }));
-
+    // ---------- Small UI helpers ----------
+    function makeText(label, name, placeholder=''){ const wrap = el('div',{class:'seg'}); wrap.append(el('label',{class:'seg-label'},label)); const input = el('input',{type:'text', name, placeholder}); wrap.append(input); return wrap; }
+    function makeNumber(label, name, placeholder=''){ const wrap = el('div',{class:'seg'}); wrap.append(el('label',{class:'seg-label'},label)); const input = el('input',{type:'number', name, placeholder, step:'any'}); wrap.append(input); return wrap; }
+    function makeHelp(text){ return el('div',{class:'seg-label', style:'color:var(--ink-2)'}, text); }
+    function makeKVList(title,kLabel,vLabel,initialRows=3){
+      const wrap = el('div',{class:'seg'}); wrap.append(el('label',{class:'seg-label'},title));
+      const list = el('div',{class:'seg', id:'kv-list'});
+      const addRow = (k='', v='') => {
+        const row = el('div',{class:'seg-row'});
+        const ki = el('input',{type:'text', placeholder:kLabel, 'data-role':'k', value:k});
+        const vi = el('input',{type:'number', placeholder:vLabel, 'data-role':'v', step:'any', value:v});
+        const rm = el('button',{class:'btn', title:'Remove row'}, 'Remove');
+        rm.addEventListener('click', ()=>row.remove());
+        row.append(ki, vi, rm);
+        list.append(row);
+      };
+      for (let i=0;i<initialRows;i++) addRow();
+      const add = el('button',{class:'btn', title:'Add a row'}, 'Add Row');
+      add.addEventListener('click', ()=> addRow());
+      wrap.append(list, add);
+      return wrap;
+    }
+    function readKVList(){
+      const list = qsa('#kv-list .seg-row').map(r=>({
+        k: qs('[data-role="k"]', r).value.trim(),
+        v: qs('[data-role="v"]', r).value.trim()
+      })).filter(r=>r.k && r.v !== '');
+      return list.map(r=>({ k: r.k, v: +r.v })).filter(r=>!isNaN(r.v));
+    }
   </script>
 </body>
-
 </html>
