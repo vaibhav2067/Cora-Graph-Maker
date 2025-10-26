@@ -1,14 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
-  <title>Graph Generator — Customizable Dashboard</title>
+  <title>Graph Generator — Interactive Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* =========================
-       Design System
-       ========================= */
-    :root{
+    :root {
       --bg: #0b0c0f;
       --panel: #111318;
       --panel-2: #151922;
@@ -19,1237 +17,3510 @@
       --brand: #6aa2ff;
       --brand-2: #8ec5ff;
       --accent: #a78bfa;
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --shadow-soft: 0 2px 10px rgba(0,0,0,.25);
-      --ring: 0 0 0 2px rgba(106,162,255,.55);
-      --sidebar-grad: linear-gradient(180deg, rgba(106,162,255,.15), transparent 30%, transparent 70%, rgba(167,139,250,.12));
-      --blur: saturate(120%) blur(6px);
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.25);
+      --ring: 0 0 0 2px rgba(106, 162, 255, 0.55);
     }
 
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg:#f8fafc;
-        --panel:#ffffff;
-        --panel-2:#f6f7fb;
-        --ink:#0f172a;
-        --ink-2:#334155;
-        --muted:#64748b;
-        --line:#e5e7eb;
-        --brand:#2563eb;
-        --brand-2:#60a5fa;
-        --accent:#8b5cf6;
-        --shadow: 0 10px 30px rgba(2, 6, 23, .08);
-        --shadow-soft: 0 2px 10px rgba(2, 6, 23, .06);
-        --ring: 0 0 0 2px rgba(37, 99, 235, .45);
-        --sidebar-grad: linear-gradient(180deg, rgba(37,99,235,.12), transparent 30%, transparent 70%, rgba(139,92,246,.10));
-        --blur: saturate(110%) blur(4px);
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --panel-2: #f6f7fb;
+        --ink: #0f172a;
+        --ink-2: #334155;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --brand: #2563eb;
+        --brand-2: #60a5fa;
+        --accent: #8b5cf6;
+        --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+        --shadow-soft: 0 2px 10px rgba(2, 6, 23, 0.06);
+        --ring: 0 0 0 2px rgba(37, 99, 235, 0.45);
       }
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{font:13px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Arial;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
-
-    .app{display:grid;grid-template-columns:84px 1fr;height:100%}
-    .sidebar{
-      position:sticky; top:0; height:100vh; border-right:1px solid var(--line);
-      display:flex; flex-direction:column; gap:10px; padding:14px;
-      background:var(--panel-2); background-image:var(--sidebar-grad);
-      backdrop-filter:var(--blur);
+    * {
+      box-sizing: border-box;
     }
 
-    .nav-btn{
-      display:flex; flex-direction:column; align-items:center; gap:6px;
-      border:1px solid var(--line); background:var(--panel); border-radius:14px;
-      padding:12px 8px; color:var(--ink-2); cursor:pointer; box-shadow:var(--shadow-soft);
-      transition: transform .15s ease, border-color .2s ease, background .2s ease;
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow:hidden ;
     }
-    .nav-btn:hover{ transform: translateY(-1px); border-color: var(--brand-2) }
-    .nav-btn svg{width:22px;height:22px; fill: currentColor }
-    .nav-btn span{font-size:11px}
-    .nav-btn.active{ color: var(--ink); background: linear-gradient(180deg, var(--panel), var(--panel-2));
-      border-color: var(--brand); box-shadow: 0 6px 16px rgba(106,162,255,.20); }
-    .nav-btn.disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.2)}
 
-    .main{display:flex;flex-direction:column;gap:12px;padding:16px;overflow:auto}
-    .header{
-      position:sticky; top:0; z-index:5;
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);
-      box-shadow:var(--shadow-soft); background:var(--panel); backdrop-filter:var(--blur);
+    body {
+      font: 13px/1.55 ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
     }
-    .title{font-weight:700;letter-spacing:.25px}
-    .status{display:flex;align-items:center;gap:8px; flex-wrap: wrap}
-    .badge{border:1px solid var(--line);padding:4px 10px;border-radius:999px;font-size:11px;background:var(--panel-2)}
-    .dot{width:4px;height:4px;border-radius:50%;background:#4b5563;opacity:.4}
 
-    .panel{display:none;gap:12px}
-    .panel.visible{display:block;animation:fadeIn .18s ease both}
-    .panel h2{margin:6px 0 10px;font-size:14px; letter-spacing:.2px; color:var(--ink)}
-
-    .guard{
-      border:1px dashed var(--line);padding:16px;border-radius:12px;color:var(--muted);
-      background:var(--panel-2);box-shadow:var(--shadow-soft)
+    .app {
+      display: grid;
+      grid-template-rows: 60px 1fr 70px;
+      grid-template-columns: 320px 1fr;
+      height: 100vh;
+      gap: 1px;
+      background: var(--line);
     }
-    .card{
-      border:1px solid var(--line);border-radius:16px;background:var(--panel);
-      box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:12px
+
+    .header {
+      grid-column: 1/-1;
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--line);
     }
-    .card-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-    .style-card{
-      border:1px solid var(--line);border-radius:16px;background:var(--panel-2);padding:14px;
-      display:flex;flex-direction:column;gap:10px;align-items:flex-start;cursor:pointer;
-      box-shadow:var(--shadow-soft); transition: transform .15s ease, border-color .2s ease, background .2s ease
+
+    .color-preset-dropdown {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px;
+      min-width: 150px;
+      box-shadow: var(--shadow);
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      position: fixed;
+      z-index: 2000;
     }
-    .style-card:hover{transform:translateY(-2px); border-color: var(--brand-2)}
-    .style-card.selected{outline: none; border-color: var(--brand); box-shadow: 0 0 0 2px rgba(106,162,255,.25) inset}
-    .card-ico{width:44px;height:44px;border-radius:12px;background:linear-gradient(180deg, var(--panel), var(--panel-2));
-      display:grid;place-items:center; border:1px solid var(--line)}
-    .card-ico svg{width:24px;height:24px; fill: var(--ink)}
-    .card-name{font-weight:600; color: var(--ink)}
 
-    .seg{display:flex;flex-direction:column;gap:8px}
-    .seg-label{font-size:12px;color:var(--ink);font-weight:600; opacity:.9}
-    .seg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-
-    input[type="text"],input[type="number"],input[type="range"],textarea,select{
-      width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel-2);
-      color: var(--ink); outline: none; transition: box-shadow .2s ease, border-color .2s ease;
+    .color-preset-dropdown.visible {
+      display: flex;
     }
-    input[type="text"]:focus, input[type="number"]:focus, input[type="range"]:focus, textarea:focus, select:focus{
-      border-color: var(--brand-2); box-shadow: var(--ring);
+
+    .color-preset-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--ink);
     }
-    textarea.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
 
-    .btn{
-      border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:10px 12px;cursor:pointer;
-      box-shadow:var(--shadow-soft); color: var(--ink); transition: transform .12s ease, border-color .2s ease, background .2s ease;
+    .color-preset-option:hover {
+      background: var(--panel-2);
     }
-    .btn:hover{ transform: translateY(-1px); border-color: var(--brand-2) }
-    .btn:focus-visible{ outline: none; box-shadow: var(--ring) }
-    .btn.primary{background:linear-gradient(180deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent}
-    .btn.ghost{background:transparent}
 
-    .color-row{display:grid;grid-template-columns:220px 1fr;gap:12px;align-items:center}
-    .color-pair{display:flex;gap:6px;flex-wrap:wrap}
-    .color-pair input[type="color"]{width:44px;height:34px;border:none;background:transparent}
-    .color-pair input[type="text"]{width:140px}
+    .color-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+    }
 
-    .preview-wrap{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--panel-2);box-shadow:var(--shadow)}
-    .preview-canvas{width:100%;height:520px;border-radius:12px;overflow:auto;display:grid;place-items:center;background:var(--panel)}
-    .preview-canvas svg{max-width:100%;height:auto;display:block}
-    .actions{display:flex;gap:8px;justify-content:flex-end}
-    .hidden{display:none!important}
+    .app-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
 
-    /* Control grid */
-    .grid-2{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px }
-    .grid-3{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px }
-    .subtle{ color: var(--ink-2); font-size: 12px }
+    .hamburger-menu {
+      position: relative;
+      background: none;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--radius);
+    }
 
-    /* Scrollbars (subtle) */
-    ::-webkit-scrollbar{ width: 10px; height: 10px }
-    ::-webkit-scrollbar-thumb{ background: rgba(148, 163, 184, .35); border-radius: 999px }
-    ::-webkit-scrollbar-track{ background: transparent }
+    .hamburger-menu:hover {
+      background: var(--panel-2);
+    }
 
-    @media (max-width:1000px){ .card-grid{grid-template-columns:repeat(3,1fr)} .app{grid-template-columns:72px 1fr} .grid-3{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:680px){ .card-grid{grid-template-columns:repeat(2,1fr)} .color-row{ grid-template-columns:1fr } .grid-2{grid-template-columns:1fr} }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px;
+      min-width: 180px;
+      box-shadow: var(--shadow);
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 1000;
+    }
 
-    @keyframes fadeIn{ from{opacity:0; transform: translateY(4px)} to{opacity:1; transform:none} }
+    .dropdown-menu.visible {
+      display: flex;
+    }
+
+    .dropdown-item {
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      text-align: left;
+      color: var(--ink);
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dropdown-item:hover {
+      background: var(--panel-2);
+    }
+
+    .left-panel {
+      background: var(--panel);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .preview-area {
+      background: var(--panel-2);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      gap: 12px;
+    }
+
+    /* OPTIMIZED GLOBAL TOOLBAR */
+    .global-toolbar {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      box-shadow: var(--shadow-soft);
+      min-height: 52px;
+      max-height: 52px;
+      position: relative;
+    }
+
+    .global-toolbar::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .global-toolbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 2px;
+    }
+
+    .toolbar-item.has-dropdown {
+      position: relative;
+    }
+
+    .toolbar-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .toolbar-item:not(:last-child):not(.no-separator)::after {
+      content: "";
+      width: 1px;
+      height: 20px;
+      background: var(--line);
+      margin-left: 8px;
+    }
+
+    #pie-controls .toolbar-item::after {
+      display: none;
+    }
+
+    /* Ensure pie controls have proper spacing */
+    #pie-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #pie-controls .tool-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    #pie-controls .tool-icon:not(.active) {
+      opacity: 0.45;
+    }
+
+    #pie-controls .tool-icon:hover {
+      background: var(--panel-2);
+      transform: translateY(-1px);
+    }
+
+    #pie-controls .tool-icon.active {
+      background: white;
+      color: black;
+    }
+
+    #pie-controls .tool-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .tool-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+      justify-content: center;
+    }
+
+    .tool-icon:not(.active) {
+      opacity: 0.45;
+    }
+
+    .tool-icon:hover {
+      background: var(--panel-2);
+      transform: translateY(-1px);
+    }
+
+    .tool-icon.active {
+      background: var(white);
+      color: rgb(0, 0, 0);
+    }
+
+    .tool-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      display: none;
+    }
+
+    .tool-icon:hover+.tooltip {
+      display: block;
+    }
+
+    /* Compact Controls */
+    .compact-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      cursor: pointer;
+    }
+
+    .compact-select {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 11px;
+      color: var(--ink);
+      min-width: 80px;
+    }
+
+    .compact-slider {
+      width: 60px;
+      height: 4px;
+      background: var(--panel-2);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .compact-toggle {
+      width: 32px;
+      height: 16px;
+      background: var(--panel-2);
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .compact-toggle.active {
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .compact-toggle::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--ink);
+      border-radius: 50%;
+      top: 1px;
+      left: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .compact-toggle.active::after {
+      left: 18px;
+      background: white;
+    }
+
+    /* More Options Dropdown */
+    .more-options {
+      position: relative;
+    }
+
+    .more-dropdown {
+      position: fixed;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px;
+      min-width: 180px;
+      box-shadow: var(--shadow);
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 2000;
+    }
+
+    .more-dropdown.visible {
+      display: flex;
+    }
+
+    #global-grid-toggle:hover,
+    #global-axes-toggle:hover {
+      background: transparent;
+      transform: none;
+    }
+
+    .preview-canvas {
+      height: 420px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      border: 1px solid var(--line);
+    }
+
+    .context-toolbar {
+      position: absolute;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 300px;
+      z-index: 100;
+    }
+
+    .slider-popup {
+      position: fixed;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      display: none;
+      flex-direction: row;
+      /* Changed from column to row */
+      align-items: center;
+      /* Center vertically */
+      gap: 12px;
+      /* Space between slider and value */
+      min-width: 140px;
+      /* Slightly wider to accommodate layout */
+      z-index: 2000;
+    }
+
+    .slider-popup.visible {
+      display: flex;
+    }
+
+    .slider-value {
+      font-size: 11px;
+      color: var(--ink-2);
+      text-align: center;
+      min-width: 40px;
+      /* Ensure consistent width for values */
+    }
+
+    .popup-slider {
+      width: 80px;
+      /* Slightly narrower to fit in row layout */
+      height: 4px;
+      background: var(--panel-2);
+      border-radius: 2px;
+      outline: none;
+      flex: 1;
+      /* Allow slider to take available space */
+    }
+
+    .context-toolbar.visible {
+      display: flex;
+    }
+
+    .footer {
+      grid-column: 1/-1;
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 0 20px;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      place-items: center;
+      z-index: 2000;
+    }
+
+    .modal.visible {
+      display: grid;
+    }
+
+    .modal-content {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-weight: 600;
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 20px;
+      padding: 4px;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    select,
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: var(--panel-2);
+      color: var(--ink);
+      outline: none;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: var(--brand);
+      box-shadow: var(--ring);
+    }
+
+    textarea.mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--brand-2);
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, var(--brand), var(--brand-2));
+      color: white;
+      border-color: transparent;
+    }
+
+    .btn.small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .color-picker {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .toolbar-label {
+      font-size: 11px;
+      color: var(--ink-2);
+      min-width: 60px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+      border: 1px solid var(--line);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: var(--panel-2);
+      font-weight: 600;
+    }
+
+    .data-table input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      outline: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chart-type-select {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.2s ease;
+    }
+
+    .chart-type-select:hover {
+      border-color: var(--brand-2);
+      box-shadow: var(--shadow);
+    }
+
+    .chart-type-select.active {
+      border-color: var(--brand);
+      box-shadow: var(--ring);
+    }
+
+    .selected-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .chart-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--ink);
+    }
+
+    .chart-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .chart-name {
+      font-weight: 600;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .dropdown-arrow {
+      color: var(--muted);
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .chart-type-select.active .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .chart-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-top: 4px;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .chart-type-select.active .chart-options {
+      display: flex;
+    }
+
+    .chart-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chart-option:last-child {
+      border-bottom: none;
+    }
+
+    .chart-option:hover {
+      background: var(--panel-2);
+    }
+
+    .chart-option.active {
+      background: var(--panel-2);
+      color: var(--brand);
+    }
+
+    .chart-option.active .chart-icon {
+      color: var(--brand);
+    }
+
+    .data-source-select {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.2s ease;
+    }
+
+    .data-source-select:hover {
+      border-color: var(--brand-2);
+      box-shadow: var(--shadow);
+    }
+
+    .data-source-select.active {
+      border-color: var(--brand);
+      box-shadow: var(--ring);
+    }
+
+    .data-source-select .selected-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+
+    .source-name {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .data-source-select .dropdown-arrow {
+      color: var(--muted);
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .data-source-select.active .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .source-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-top: 4px;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .data-source-select.active .source-options {
+      display: flex;
+    }
+
+    .source-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .source-option:last-child {
+      border-bottom: none;
+    }
+
+    .source-option:hover:not(.disabled) {
+      background: var(--panel-2);
+    }
+
+    .source-option.active {
+      background: var(--panel-2);
+      color: var(--brand);
+    }
+
+    .source-option.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .source-status {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
+    .source-option.active .source-status {
+      color: var(--brand);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .data-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .data-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .enhanced-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .enhanced-data-table th,
+    .enhanced-data-table td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+    }
+
+    .enhanced-data-table th {
+      background: var(--panel-2);
+      font-weight: 600;
+      position: relative;
+    }
+
+    .enhanced-data-table input {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      outline: none;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .enhanced-data-table input:focus {
+      border-color: var(--brand);
+      background: var(--panel);
+    }
+
+    .enhanced-data-table input[type="number"] {
+      min-width: 60px;
+    }
+
+    .enhanced-data-table input[type="color"] {
+      width: 30px;
+      height: 24px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .delete-row {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .delete-row:hover {
+      background: var(--panel-2);
+      color: #ef4444;
+    }
+
+    .series-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .delete-series {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 2px;
+      font-size: 10px;
+    }
+
+    .delete-series:hover {
+      color: #ef4444;
+    }
+
+    .color-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .color-preview {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border: 1px solid var(--line);
+    }
   </style>
 </head>
+
 <body>
   <div class="app">
-    <aside class="sidebar" role="navigation" aria-label="Steps">
-      <button class="nav-btn active" data-step="type" title="Graph Type" aria-label="Graph Type"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3zm11 0h7v12h-7V3zM3 14h7v7H3v-7zm11 4h7v3h-7v-3z"/></svg><span>Type</span></button>
-      <button class="nav-btn disabled" data-step="data" title="Data" aria-label="Data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h18v18H3V3zm2 2v3h14V5H5zm14 5H5v9h14v-9zM7 12h3v3H7v-3z"/></svg><span>Data</span></button>
-      <button class="nav-btn disabled" data-step="color" title="Color" aria-label="Color"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18h.5a2.5 2.5 0 1 0 0-5H12a4 4 0 1 1 0-8"/></svg><span>Color</span></button>
-      <button class="nav-btn disabled" data-step="customize" title="Customize" aria-label="Customize">
-  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20zm1 14h-2v-2h2v2zm0-4h-2V6h2v6z"/></svg>
-  <span>Customize</span>
-</button>
+    <header class="header">
+      <div class="app-title">Graph Generator</div>
+      <div class="hamburger-menu" id="hamburger-menu">
+        <button class="hamburger-btn">☰</button>
+        <div class="dropdown-menu" id="dropdown-menu">
+          <button class="dropdown-item" id="theme-toggle">
+            <span>🌙</span>
+            <span>Dark Mode</span>
+          </button>
+          <button class="dropdown-item" id="info-btn">
+            <span>ℹ️</span>
+            <span>Info & Roadmap</span>
+          </button>
+        </div>
+      </div>
+    </header>
 
-      <button class="nav-btn disabled" data-step="preview" title="Preview" aria-label="Preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7-11-7z"/></svg><span>Preview</span></button>
+    <aside class="left-panel">
+      <div class="form-section">
+        <h3 class="section-title">Chart Type</h3>
+        <div class="chart-type-select" id="chart-type-select">
+          <div class="selected-option">
+            <div class="chart-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M3 3V15.8571C3 16.4255 3.21852 16.9705 3.60748 17.3724C3.99645 17.7742 4.524 18 5.07407 18H17M6.11111 11.5714V14.7857M10.2593 8.35714V14.7857M14.4074 5.14286V14.7857"
+                  stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <span class="chart-name">Bar Chart</span>
+            <div class="dropdown-arrow">▼</div>
+          </div>
+
+          <div class="chart-options">
+            <div class="chart-option active" data-value="bar">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M3 3V15.8571C3 16.4255 3.21852 16.9705 3.60748 17.3724C3.99645 17.7742 4.524 18 5.07407 18H17M6.11111 11.5714V14.7857M10.2593 8.35714V14.7857M14.4074 5.14286V14.7857"
+                    stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <span>Bar Chart</span>
+            </div>
+
+            <div class="chart-option" data-value="pie">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17.9992 9.136C17.9892 9.634 17.5592 10 17.0622 10H11.0002C10.735 10 10.4806 9.89464 10.2931 9.70711C10.1056 9.51957 10.0002 9.26522 10.0002 9V2.938C10.0002 2.44 10.3662 2.011 10.8642 2.001L11.0002 2C11.9309 1.99996 12.8523 2.18552 13.7105 2.54584C14.5686 2.90615 15.3463 3.43399 15.998 4.09846C16.6497 4.76293 17.1624 5.55069 17.506 6.41566C17.8496 7.28064 18.0173 8.20545 17.9992 9.136ZM11.0002 3V9H17.0002C17.0002 7.4087 16.3681 5.88258 15.2429 4.75736C14.1176 3.63214 12.5915 3 11.0002 3ZM9.00021 4.519C9.00028 4.4501 8.9861 4.38193 8.95857 4.31877C8.93103 4.25561 8.89075 4.19882 8.84023 4.15196C8.78971 4.10511 8.73006 4.0692 8.66501 4.04649C8.59996 4.02378 8.53092 4.01476 8.46221 4.02C7.12761 4.12302 5.85053 4.60655 4.78236 5.41325C3.71418 6.21995 2.8997 7.31601 2.43545 8.5715C1.97121 9.82699 1.87668 11.1893 2.16306 12.4968C2.44943 13.8044 3.10472 15.0025 4.05123 15.949C4.99774 16.8955 6.1958 17.5508 7.50337 17.8372C8.81095 18.1235 10.1732 18.029 11.4287 17.5648C12.6842 17.1005 13.7803 16.286 14.587 15.2179C15.3937 14.1497 15.8772 12.8726 15.9802 11.538C15.9854 11.4693 15.9764 11.4003 15.9537 11.3352C15.931 11.2702 15.8951 11.2105 15.8483 11.16C15.8014 11.1095 15.7446 11.0692 15.6814 11.0416C15.6183 11.0141 15.5501 10.9999 15.4812 11H10.5002C10.1024 11 9.72086 10.842 9.43955 10.5607C9.15825 10.2794 9.00021 9.89782 9.00021 9.5V4.519ZM3.00021 11C3 9.58192 3.50206 8.20959 4.41734 7.12645C5.33263 6.0433 6.60197 5.31935 8.00021 5.083V9.5C8.00021 9.8283 8.06488 10.1534 8.19052 10.4567C8.31615 10.76 8.5003 11.0356 8.73245 11.2678C9.20129 11.7366 9.83717 12 10.5002 12H14.9172C14.6625 13.4801 13.8621 14.8109 12.6741 15.7297C11.4861 16.6485 9.99687 17.0885 8.5003 16.9629C7.00373 16.8373 5.60862 16.1552 4.59037 15.0513C3.57212 13.9474 3.00473 12.5018 3.00021 11Z"
+                    fill="currentColor" />
+                </svg>
+              </div>
+              <span>Pie Chart</span>
+            </div>
+
+            <div class="chart-option" data-value="line">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17.875 17.25C18.2202 17.25 18.5 17.5298 18.5 17.875C18.5 18.2202 18.2202 18.5 17.875 18.5H3.70343C3.17299 18.5 2.66429 18.2893 2.28921 17.9142L1.58579 17.2108C1.21071 16.8357 1 16.327 1 15.7966L1 1.625C1 1.27982 1.27982 1 1.625 1C1.97018 1 2.25 1.27982 2.25 1.625V15.25C2.25 16.3546 3.14543 17.25 4.25 17.25H17.875Z"
+                    fill="currentColor" />
+                  <path
+                    d="M16.0001 5.00875L9.86052 11.1495C9.67298 11.3371 9.4186 11.4425 9.15335 11.4425H9.09701C8.83169 11.4425 8.57724 11.3371 8.38969 11.1494L7.33232 10.0914C6.94179 9.70061 6.30839 9.70056 5.9178 10.0913L2.06762 13.9425L1.18262 13.0575L5.88972 8.35039C6.07726 8.16285 6.33161 8.0575 6.59683 8.0575H6.65323C6.91855 8.0575 7.17299 8.16294 7.36055 8.3506L8.41794 9.40864C8.80846 9.79939 9.44184 9.79946 9.83244 9.40879L15.2647 3.97546C15.4523 3.78788 15.7066 3.6825 15.9719 3.6825H16.0272C16.2924 3.6825 16.5467 3.78785 16.7343 3.97539L18.4996 5.74069C18.7436 5.98474 18.7438 6.38039 18.4999 6.62461C18.2557 6.86914 17.8595 6.86922 17.6152 6.62479L16.0001 5.00875Z"
+                    fill="currentColor" />
+                </svg>
+              </div>
+              <span>Line Chart</span>
+            </div>
+
+            <div class="chart-option" data-value="scatter">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17.875 17.25C18.2202 17.25 18.5 17.5298 18.5 17.875C18.5 18.2202 18.2202 18.5 17.875 18.5H4.11764C3.32199 18.5 2.55893 18.1839 1.99632 17.6213L1.87868 17.5037C1.31607 16.9411 1 16.178 1 15.3824V1.625C1 1.27982 1.27982 1 1.625 1C1.97018 1 2.25 1.27982 2.25 1.625V15.25C2.25 16.3546 3.14543 17.25 4.25 17.25H17.875Z"
+                    fill="currentColor" />
+                  <path
+                    d="M6 4.75C6 4.05964 6.55964 3.5 7.25 3.5C7.94036 3.5 8.5 4.05964 8.5 4.75C8.5 5.44036 7.94036 6 7.25 6C6.55964 6 6 5.44036 6 4.75ZM14.75 3.5C14.75 2.80964 15.3096 2.25 16 2.25C16.6904 2.25 17.25 2.80964 17.25 3.5C17.25 4.19036 16.6904 4.75 16 4.75C15.3096 4.75 14.75 4.19036 14.75 3.5ZM9.75 8.5C9.75 7.80964 10.3096 7.25 11 7.25C11.6904 7.25 12.25 7.80964 12.25 8.5C12.25 9.19036 11.6904 9.75 11 9.75C10.3096 9.75 9.75 9.19036 9.75 8.5ZM6 13.5C6 12.8096 6.55964 12.25 7.25 12.25C7.94036 12.25 8.5 12.8096 8.5 13.5C8.5 14.1904 7.94036 14.75 7.25 14.75C6.55964 14.75 6 14.1904 6 13.5ZM14.75 12.25C14.75 11.5596 15.3096 11 16 11C16.6904 11 17.25 11.5596 17.25 12.25C17.25 12.9404 16.6904 13.5 16 13.5C15.3096 13.5 14.75 12.9404 14.75 12.25Z"
+                    fill="currentColor" />
+                </svg>
+              </div>
+              <span>Scatter Plot</span>
+            </div>
+
+            <div class="chart-option" data-value="histogram">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17.5 17.5H8.33333C5.58333 17.5 4.20833 17.5 3.35417 16.6458C2.5 15.7917 2.5 14.4167 2.5 11.6667V2.5"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                  <path
+                    d="M10.8333 8.33336V17.5M15 10.8334V17.5M6.66667 10.8334V16.6667M17.5 6.65586C15.9667 6.65586 14.3267 6.8692 13.2308 5.41086C11.9833 3.75253 9.68333 3.75253 8.43583 5.41086C7.34 6.8692 5.7 6.65586 4.16667 6.65586H2.5"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <span>Histogram</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Data Source</h3>
+        <div class="data-source-select" id="data-source-select">
+          <div class="selected-option">
+            <span class="source-name">Default Random Data</span>
+            <div class="dropdown-arrow">▼</div>
+          </div>
+
+          <div class="source-options">
+            <div class="source-option active" data-value="default">
+              <span>Default Random Data</span>
+              <div class="source-status"></div>
+            </div>
+
+            <div class="source-option disabled" data-value="csv">
+              <span>Upload CSV File</span>
+              <div class="source-status">Coming Soon</div>
+            </div>
+
+            <div class="source-option disabled" data-value="excel">
+              <span>Upload Excel File</span>
+              <div class="source-status">Coming Soon</div>
+            </div>
+
+            <div class="source-option disabled" data-value="sheets">
+              <span>Google Sheets</span>
+              <div class="source-status">Coming Soon</div>
+            </div>
+
+            <div class="source-option disabled" data-value="json">
+              <span>JSON Data</span>
+              <div class="source-status">Coming Soon</div>
+            </div>
+
+            <div class="source-option" data-value="manual">
+              <span>Manual Input</span>
+              <div class="source-status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="default-data-section">
+        <div class="section-header">
+          <h3 class="section-title">Chart Data</h3>
+          <div class="data-controls">
+            <button class="btn small" id="btn-add-row">+ Add Row</button>
+            <button class="btn small" id="btn-add-series" style="display: none">+ Add Series</button>
+          </div>
+        </div>
+        
+        <div class="data-table-container">
+          <table class="enhanced-data-table" id="enhanced-data-table">
+            <thead id="data-table-headers">
+              <!-- Dynamic headers will be inserted here -->
+            </thead>
+            <tbody id="data-table-body">
+              <!-- Dynamic rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="data-info">
+          <span id="row-count">4 rows</span>
+          <span id="data-limits">Max: 15 rows</span>
+        </div>
+      </div>
+
+      <div class="form-section" id="manual-data-section" style="display: none">
+        <h3 class="section-title">Manual Data Input</h3>
+        <textarea id="data-input" class="mono"
+          placeholder='Format for Bar Chart:&#10;{&#10;  "categories": ["A", "B", "C"],&#10;  "series": [{"label": "Series 1", "y": [10, 20, 15]}]&#10;}'></textarea>
+        <button id="btn-apply-data" class="btn primary">Apply Data</button>
+      </div>
     </aside>
 
-    <main class="main">
-      <header class="header">
-        <div class="title">Graph Dashboard</div>
-        <div class="status" aria-live="polite">
-          <span class="badge" id="badge-type">Type ❌</span><span class="dot"></span>
-          <span class="badge" id="badge-data">Data ❌</span><span class="dot"></span>
-          <span class="badge" id="badge-color">Color ❌</span>
+    <main class="preview-area">
+      <!-- OPTIMIZED GLOBAL TOOLBAR -->
+      <div class="global-toolbar">
+        <!-- Background Color -->
+        <div class="toolbar-item">
+          <input type="color" class="compact-color" id="global-bg-color" value="#111318" title="Background Color" />
         </div>
-      </header>
 
-      <!-- Step: Type -->
-      <section id="panel-type" class="panel visible">
-        <h2>Select Graph Type</h2>
-        <div class="card-grid card">
-          <button class="style-card" data-type="bar"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M4 4h2v16H4V4zm7 6h2v10h-2V10zm7-4h2v14h-2V6z"/></svg></div><div class="card-name">Bar</div></button>
-          <button class="style-card" data-type="pie"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M11 2v10H1a11 11 0 1 0 10-10zm2 0v10h9A11 11 0 0 0 13 2z"/></svg></div><div class="card-name">Pie/Donut</div></button>
-          <button class="style-card" data-type="line"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M3 17l7-7 4 4 7-7v3l-7 7-4-4-7 7z"/></svg></div><div class="card-name">Line</div></button>
-          <button class="style-card" data-type="scatter"><div class="card-ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="17" cy="17" r="2"/></svg></div><div class="card-name">Scatter</div></button>
-          <button class="style-card" data-type="histogram"><div class="card-ico"><svg viewBox="0 0 24 24"><path d="M4 20V8h3v12H4zm5 0V4h3v16H9zm5 0v-7h3v7h-3z"/></svg></div><div class="card-name">Histogram</div></button>
+        <!-- Color Preset -->
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="color-preset-btn" title="Color Preset">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor"
+                d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5c0 .12.05.23.13.33c.41.47.64 1.06.64 1.67A2.5 2.5 0 0 1 12 22m0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5a.54.54 0 0 0-.14-.35c-.41-.46-.63-1.05-.63-1.65a2.5 2.5 0 0 1 2.5-2.5H16c2.21 0 4-1.79 4-4c0-3.86-3.59-7-8-7" />
+              <circle cx="6.5" cy="11.5" r="1.5" fill="currentColor" />
+              <circle cx="9.5" cy="7.5" r="1.5" fill="currentColor" />
+              <circle cx="14.5" cy="7.5" r="1.5" fill="currentColor" />
+              <circle cx="17.5" cy="11.5" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
         </div>
-      </section>
 
-      <!-- Step: Data -->
-      <section id="panel-data" class="panel">
-        <h2>Data</h2>
-        <div id="data-guard" class="guard">Select type first.</div>
-        <div id="data-content" class="card hidden">
-          <div class="seg">
-            <label class="seg-label">Source</label>
-            <div class="seg-row">
-              <label class="radio"><input type="radio" name="data-mode" value="random" checked /> Random</label>
-              <label class="radio"><input type="radio" name="data-mode" value="custom" /> Custom</label>
-              <button id="btn-generate" class="btn">Generate</button>
+        <!-- Font Size with Popup -->
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="font-size-btn" title="Font Size">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+              <path fill="#000"
+                d="M4.877 2.017c.31 0 .588.19.7.48l1.561 4.048l-.804 2.07l-.035-.077l-.303-.788H3.758l-.304.788a.75.75 0 1 1-1.4-.54l2.123-5.501a.75.75 0 0 1 .7-.48m-.54 4.233h1.08l-.54-1.4zM10.2 4.486a.75.75 0 0 0-1.401 0L5.733 12.5a.75.75 0 0 0 .018 1.5h.454a1 1 0 0 0 .092 0l.955-.003a.75.75 0 0 0 .087-1.495l.383-1h3.555l.386 1.008a.75.75 0 0 0 .088 1.495L13.252 14a.75.75 0 0 0 .013-1.5l-.748-1.955a1 1 0 0 0-.047-.123zM10.703 10H8.295L9.5 6.853z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Grid Toggle -->
+        <div class="toolbar-item" id="grid-axes-controls">
+          <!-- Grid Toggle -->
+          <div class="toolbar-item">
+            <div class="tool-icon active" id="global-grid-toggle" title="Grid Lines">
+              <svg viewBox="0 0 16 16" width="16" height="16">
+                <path fill="currentColor" fill-rule="evenodd"
+                  d="M5.5 2a.5.5 0 0 1 .5.5V5h4V2.5a.5.5 0 0 1 1 0V5h2.5a.5.5 0 0 1 0 1H11v4h2.5a.5.5 0 0 1 0 1H11v2.5a.5.5 0 0 1-1 0V11H6v2.5a.5.5 0 0 1-1 0V11H2.5a.5.5 0 0 1 0-1H5V6H2.5a.5.5 0 0 1 0-1H5V2.5a.5.5 0 0 1 .5-.5m.5 8h4V6H6z"
+                  clip-rule="evenodd" />
+                <path fill="currentColor" fill-rule="evenodd"
+                  d="M.327 1.64C0 2.282 0 3.12 0 4.8v6.4c0 1.68 0 2.52.327 3.16a3.02 3.02 0 0 0 1.31 1.31c.642.327 1.48.327 3.16.327h6.4c1.68 0 2.52 0 3.16-.327a3 3 0 0 0 1.31-1.31c.327-.642.327-1.48.327-3.16V4.8c0-1.68 0-2.52-.327-3.16a3 3 0 0 0-1.31-1.31c-.642-.327-1.48-.327-3.16-.327h-6.4c-1.68 0-2.52 0-3.16.327a3.02 3.02 0 0 0-1.31 1.31m10.9-.638h-6.4c-.857 0-1.44 0-1.89.038c-.438.035-.663.1-.819.18a2 2 0 0 0-.874.874c-.08.156-.145.38-.18.819c-.037.45-.038 1.03-.038 1.89v6.4c0 .857.001 1.44.038 1.89c.036.438.101.663.18.819c.192.376.498.682.874.874c.156.08.381.145.819.18c.45.036 1.03.037 1.89.037h6.4c.857 0 1.44 0 1.89-.037c.438-.036.663-.101.819-.18c.376-.192.682-.498.874-.874c.08-.156.145-.381.18-.82c.037-.45.038-1.03.038-1.89v-6.4c0-.856-.001-1.44-.038-1.89c-.036-.437-.101-.662-.18-.818a2 2 0 0 0-.874-.874c-.156-.08-.381-.145-.819-.18c-.45-.037-1.03-.038-1.89-.038"
+                  clip-rule="evenodd" />
+              </svg>
             </div>
           </div>
 
-          <div id="custom-inputs" class="seg hidden">
-            <label class="seg-label">Enter Data</label>
-            <div id="custom-form"></div>
-            <button id="btn-apply-custom" class="btn">Apply</button>
-          </div>
-
-          <div class="seg">
-            <label class="seg-label">Preview Data</label>
-            <textarea id="data-preview" class="mono" rows="7" readonly></textarea>
-          </div>
-        </div>
-      </section>
-
-      <!-- Step: Color -->
-      <section id="panel-color" class="panel">
-        <h2>Color</h2>
-        <div id="color-guard" class="guard">Complete data first.</div>
-        <div id="color-content" class="card hidden">
-          <div id="color-form"></div>
-        </div>
-      </section>
-      <!-- Step: Customize -->
-<section id="panel-customize" class="panel">
-  <h2>Customize Graph</h2>
-  <div id="customize-guard" class="guard">Complete Type, Data & Color first.</div>
-  <div id="customize-content" class="card hidden">
-    <div id="customize-options" class="grid-2"></div>
-  </div>
-</section>
-
-
-      <!-- Step: Preview -->
-      <section id="panel-preview" class="panel">
-        <h2>Preview & Export</h2>
-        <div id="preview-guard" class="guard">Complete Type, Data & Color to unlock preview.</div>
-        <div id="preview-content" class="card hidden">
-          <div class="preview-wrap">
-            <!-- Customization panel -->
-            <div class="preview-canvas" id="svg-host"></div>
-          </div>
-          <div class="actions">
-            <button id="btn-download-svg" class="btn">Download SVG</button>
-            <button id="btn-download-png" class="btn">Download PNG</button>
-            <button id="btn-export" class="btn primary">Export to Figma</button>
-            <button id="btn-back" class="btn ghost">Back</button>
+          <!-- Axes Toggle -->
+          <div class="toolbar-item">
+            <div class="tool-icon active" id="global-axes-toggle" title="Axes">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13.5 10.5L15 9M4 4v15a1 1 0 0 0 1 1h15m-15.707-.293L6 18m3-3l1.5-1.5" />
+              </svg>
+            </div>
           </div>
         </div>
-      </section>
+
+        <!-- Pie-specific controls (initially hidden) -->
+        <div class="toolbar-item" id="pie-controls" style="display: none">
+          <!-- Gap Toggle -->
+          <div class="tool-icon" id="pie-gap-toggle" title="Slice Gap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+              <g fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round"
+                  d="M20 15.552A9.215 9.215 0 0 1 11.21 22a9.21 9.21 0 0 1-8.78-12m6.018-6A9.2 9.2 0 0 0 5 5.987" />
+                <path
+                  d="M21.913 9.947a11.35 11.35 0 0 0-7.86-7.86C12.409 1.628 11 3.054 11 4.76v6.694c0 .853.692 1.545 1.545 1.545h6.694c1.707 0 3.133-1.41 2.674-3.053Z" />
+              </g>
+            </svg>
+          </div>
+
+          <!-- Donut Toggle -->
+          <div class="toolbar-item">
+            <div class="tool-icon" id="pie-donut-toggle" title="Donut Hole">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M12.91 3.05q3.223.313 5.488 2.555t2.577 5.472h-6.42q-.224-.573-.648-.993t-.997-.624zm1 1.204v4.554q.39.244.717.561t.552.708h4.592q-.523-2.173-2.105-3.756q-1.583-1.582-3.756-2.067M11.14 3.05v6.401q-.823.293-1.315.998t-.492 1.555t.502 1.526t1.305.969v6.451q-3.465-.356-5.79-2.908t-2.325-6.044T5.35 5.936t5.79-2.886m-1 1.204q-2.698.606-4.406 2.785Q4.025 9.217 4.025 12t1.709 4.962t4.407 2.796v-4.642q-.797-.552-1.302-1.36t-.506-1.766t.496-1.775t1.312-1.369zm4.416 8.63h6.419q-.315 3.222-2.58 5.487q-2.264 2.264-5.485 2.579v-6.454q.586-.203 1.004-.62q.417-.418.642-.991m.623 1q-.258.37-.568.688q-.311.318-.702.543v4.63q2.193-.504 3.766-2.086q1.573-1.583 2.096-3.775zm0 0" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Padding with Popup -->
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="padding-btn" title="Padding">
+            <svg viewBox="0 0 15 15" width="16" height="16">
+              <path fill="currentColor"
+                d="M12.333 1.01A1.86 1.86 0 0 1 14 2.857v9.286l-.01.19a1.86 1.86 0 0 1-1.657 1.657l-.19.01H2.857l-.19-.01a1.86 1.86 0 0 1-1.657-1.657l-.01-.19V2.857c0-.961.73-1.752 1.667-1.847l.19-.01h9.286zM2.857 2A.86.86 0 0 0 2 2.857v9.286c0 .473.384.857.857.857h9.286a.86.86 0 0 0 .857-.857V2.857A.86.86 0 0 0 12.143 2zM4.5 10a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m-6-3a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m6 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m-6-3a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Border Radius with Popup -->
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="border-radius-btn" title="Border Radius">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 12V8a4 4 0 0 1 4-4h4m4 0v.01M20 4v.01M20 8v.01M20 12v.01M4 16v.01M20 16v.01M4 20v.01M8 20v.01m4-.01v.01m4-.01v.01m4-.01v.01" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Reset -->
+        <div class="toolbar-item">
+          <div class="tool-icon active" id="reset-styles-btn" title="Reset Styles">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor" d="M12 16c1.671 0 3-1.331 3-3s-1.329-3-3-3s-3 1.331-3 3s1.329 3 3 3" />
+              <path fill="currentColor"
+                d="M20.817 11.186a8.9 8.9 0 0 0-1.355-3.219a9 9 0 0 0-2.43-2.43a9 9 0 0 0-3.219-1.355a9 9 0 0 0-1.838-.18V2L8 5l3.975 3V6.002c.484-.002.968.044 1.435.14a7 7 0 0 1 2.502 1.053a7 7 0 0 1 1.892 1.892A6.97 6.97 0 0 1 19 13a7 7 0 0 1-.55 2.725a7 7 0 0 1-.644 1.188a7 7 0 0 1-.858 1.039a7.03 7.03 0 0 1-3.536 1.907a7.1 7.1 0 0 1-2.822 0a7 7 0 0 1-2.503-1.054a7 7 0 0 1-1.89-1.89A7 7 0 0 1 5 13H3a9 9 0 0 0 1.539 5.034a9.1 9.1 0 0 0 2.428 2.428A8.95 8.95 0 0 0 12 22a9 9 0 0 0 1.814-.183a9 9 0 0 0 3.218-1.355a9 9 0 0 0 1.331-1.099a9 9 0 0 0 1.1-1.332A8.95 8.95 0 0 0 21 13a9 9 0 0 0-.183-1.814" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- More Options -->
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="more-options-btn" title="More Options">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor"
+                d="M12 8C13.1 8 14 7.1 14 6C14 4.9 13.1 4 12 4C10.9 4 10 4.9 10 6C10 7.1 10.9 8 12 8ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM12 16C10.9 16 10 16.9 10 18C10 19.1 10.9 20 12 20C13.1 20 14 19.1 14 18C14 16.9 13.1 16 12 16Z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- DROPDOWN CONTAINERS MOVED OUTSIDE GLOBAL TOOLBAR -->
+      <!-- Color Preset Dropdown -->
+      <div class="color-preset-dropdown" id="color-preset-dropdown">
+        <button class="color-preset-option" data-preset="default">
+          <div class="color-swatch" style="background: linear-gradient(45deg, #6aa2ff, #a78bfa)"></div>
+          <span>Default</span>
+        </button>
+        <button class="color-preset-option" data-preset="vibrant">
+          <div class="color-swatch" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4)"></div>
+          <span>Vibrant</span>
+        </button>
+        <button class="color-preset-option" data-preset="pastel">
+          <div class="color-swatch" style="background: linear-gradient(45deg, #a8e6cf, #dcedc1)"></div>
+          <span>Pastel</span>
+        </button>
+        <button class="color-preset-option" data-preset="monochrome">
+          <div class="color-swatch" style="background: linear-gradient(45deg, #666, #999)"></div>
+          <span>Monochrome</span>
+        </button>
+      </div>
+
+      <!-- Font Size Popup -->
+      <div class="slider-popup" id="font-size-popup">
+        <input type="range" class="popup-slider" id="popup-font-size" min="8" max="20" value="12" />
+        <div class="slider-value" id="font-size-value">12px</div>
+      </div>
+
+      <!-- Padding Popup -->
+      <div class="slider-popup" id="padding-popup">
+        <input type="range" class="popup-slider" id="popup-padding" min="0" max="20" value="0" />
+        <div class="slider-value" id="padding-value">0%</div>
+      </div>
+
+      <!-- Border Radius Popup -->
+      <div class="slider-popup" id="border-radius-popup">
+        <input type="range" class="popup-slider" id="popup-border-radius" min="0" max="20" value="6" />
+        <div class="slider-value" id="border-radius-value">6px</div>
+      </div>
+
+      <!-- More Options Dropdown -->
+      <div class="more-dropdown" id="more-dropdown">
+        <button class="dropdown-item" id="border-styles-btn">
+          <span>Border Styles</span>
+        </button>
+        <button class="dropdown-item" id="shadow-effects-btn">
+          <span>Shadow Effects</span>
+        </button>
+        <button class="dropdown-item" id="transparency-btn">
+          <span>Transparency</span>
+        </button>
+        <button class="dropdown-item" id="chart-specific-btn">
+          <span>Chart Specific</span>
+        </button>
+      </div>
+
+      <!-- Context Toolbar -->
+      <div id="context-toolbar" class="context-toolbar">
+        <div class="toolbar-group">
+          <span class="toolbar-label">Color:</span>
+          <input type="color" class="color-picker" id="toolbar-color" />
+        </div>
+        <div class="toolbar-group">
+          <span class="toolbar-label">Opacity:</span>
+          <input type="range" min="0" max="100" value="100" id="toolbar-opacity" />
+        </div>
+        <div class="toolbar-group">
+          <button class="btn small" id="toolbar-advanced">Advanced...</button>
+        </div>
+      </div>
+
+      <!-- Preview Canvas -->
+      <div class="preview-canvas" id="svg-host">
+        <div style="color: var(--muted); text-align: center">
+          <p>Select a chart type to see preview</p>
+          <p style="font-size: 12px; margin-top: 8px">
+            Click on chart elements to customize them
+          </p>
+        </div>
+      </div>
     </main>
+
+    <footer class="footer">
+      <button id="btn-export-svg" class="btn">Export SVG</button>
+      <button id="btn-export-png" class="btn">Export PNG</button>
+      <button id="btn-export-figma" class="btn primary">Add to Figma</button>
+    </footer>
+  </div>
+
+  <div class="modal" id="info-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Graph Generator - Info & Roadmap</h3>
+        <button class="modal-close" id="modal-close">×</button>
+      </div>
+      <div>
+        <h4>Current Features:</h4>
+        <ul>
+          <li>5 chart types (Bar, Pie, Line, Scatter, Histogram)</li>
+          <li>Interactive element customization</li>
+          <li>Default random data generation</li>
+          <li>Dark/Light theme support</li>
+          <li>Global styling controls</li>
+          <li>Export options (SVG, PNG, Figma)</li>
+        </ul>
+
+        <h4>Coming Soon:</h4>
+        <ul>
+          <li>CSV, Excel, Google Sheets import</li>
+          <li>JSON data support</li>
+          <li>Advanced styling options</li>
+          <li>Chart templates and presets</li>
+        </ul>
+
+        <h4>How to use:</h4>
+        <ol>
+          <li>Select chart type from dropdown</li>
+          <li>View default data or switch to manual input</li>
+          <li>Use global toolbar for overall styling</li>
+          <li>Click on chart elements for individual customization</li>
+          <li>Export your chart when ready</li>
+        </ol>
+      </div>
+    </div>
   </div>
 
   <script>
-    // ---------- Utilities ----------
-    const qs = (s, r = document) => r.querySelector(s);
-    const qsa = (s, r = document) => [...r.querySelectorAll(s)];
-    const el = (tag, attrs = {}, text) => {
-      const n = document.createElement(tag);
-      Object.entries(attrs).forEach(([k,v]) => { if (k === 'class') n.className = v; else n.setAttribute(k, v); });
-      if (text) n.textContent = text;
-      return n;
-    };
-    const csv = (s) => s.split(',').map(t=>t.trim()).filter(Boolean);
-    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+    // DOM Elements
+    const hamburgerMenu = document.getElementById("hamburger-menu");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    const themeToggle = document.getElementById("theme-toggle");
+    const infoBtn = document.getElementById("info-btn");
+    const infoModal = document.getElementById("info-modal");
+    const modalClose = document.getElementById("modal-close");
+    const defaultDataSection = document.getElementById("default-data-section");
+    const manualDataSection = document.getElementById("manual-data-section");
+    const btnApplyData = document.getElementById("btn-apply-data");
+    const dataInput = document.getElementById("data-input");
+    const contextToolbar = document.getElementById("context-toolbar");
+    const toolbarColor = document.getElementById("toolbar-color");
+    const toolbarOpacity = document.getElementById("toolbar-opacity");
+    const toolbarAdvanced = document.getElementById("toolbar-advanced");
+    const btnExportSvg = document.getElementById("btn-export-svg");
+    const btnExportPng = document.getElementById("btn-export-png");
+    const btnExportFigma = document.getElementById("btn-export-figma");
 
-    // ---------- State ----------
-    const defaultOpts = () => ({
-      // Universal
-      strokeWidth: 0,
-      strokeColor: '#111111',
-      strokeOpacity: 1,
-      strokeType: 'solid', // solid|dashed|dotted|custom
-      strokeDash: '4 2',
-      fillOpacity: 0.95,
-      borderRadius: 6,
+    // Global Toolbar Elements
+    const colorPresetBtn = document.getElementById("color-preset-btn");
+    const colorPresetDropdown = document.getElementById("color-preset-dropdown");
+    const fontSizeBtn = document.getElementById("font-size-btn");
+    const fontSizePopup = document.getElementById("font-size-popup");
+    const popupFontSize = document.getElementById("popup-font-size");
+    const fontSizeValue = document.getElementById("font-size-value");
+    const paddingBtn = document.getElementById("padding-btn");
+    const paddingPopup = document.getElementById("padding-popup");
+    const popupPadding = document.getElementById("popup-padding");
+    const paddingValue = document.getElementById("padding-value");
+    const borderRadiusBtn = document.getElementById("border-radius-btn");
+    const borderRadiusPopup = document.getElementById("border-radius-popup");
+    const popupBorderRadius = document.getElementById("popup-border-radius");
+    const borderRadiusValue = document.getElementById("border-radius-value");
+    const globalBgColor = document.getElementById("global-bg-color");
+    const resetStylesBtn = document.getElementById("reset-styles-btn");
+    const moreOptionsBtn = document.getElementById("more-options-btn");
+    const moreDropdown = document.getElementById("more-dropdown");
 
-      // Shadows
-      dropShadowEnabled: false,
-      dropShadowX: 2,
-      dropShadowY: 2,
-      dropShadowBlur: 4,
-      dropShadowColor: '#000000',
-      dropShadowOpacity: 0.35,
+    // Pie Chart Controls
+    const pieGapToggle = document.getElementById('pie-gap-toggle');
+    const pieDonutToggle = document.getElementById('pie-donut-toggle');
 
-      innerShadowEnabled: false,
-      innerShadowX: 0,
-      innerShadowY: 1,
-      innerShadowBlur: 3,
-      innerShadowColor: '#000000',
-      innerShadowOpacity: 0.3,
+    // Dropdown positioning and management
+    function positionDropdown(button, dropdown) {
+      const rect = button.getBoundingClientRect();
+      dropdown.style.position = "fixed";
+      dropdown.style.left = rect.left + "px";
+      dropdown.style.top = rect.bottom + 5 + "px";
+    }
 
-      // Text
-      fontFamily: 'Segoe UI',
-      fontSize: 12,
-      fontWeight: 'normal',
-      fontColor: '#9aa4b2',
+    function closeAllDropdowns() {
+      colorPresetDropdown.classList.remove("visible");
+      fontSizePopup.classList.remove("visible");
+      paddingPopup.classList.remove("visible");
+      borderRadiusPopup.classList.remove("visible");
+      moreDropdown.classList.remove("visible");
+    }
 
-      // Background / axes / grid
-      showGrid: true,
-      gridOpacity: 0.4,
-      showAxes: true,
-      backgroundTransparent: true,
-      backgroundColor: '#ffffff',
-
-      // Chart-specific placeholders
-      // pie
-      donut: 0,
-      separated: false,
-      startAngle: 0,
-
-      // bar
-      horizontal: false,
-      stacked: false,
-
-      // line
-      smooth: false,
-      area: false,
-      lineStyle: 'solid',
-
-      // scatter
-      pointSize: 6,
-      pointShape: 'circle',
-
-      // histogram
-      bins: undefined,
-      normalize: false
+    // Color Preset Dropdown
+    colorPresetBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(colorPresetBtn, colorPresetDropdown);
+      colorPresetDropdown.classList.toggle("visible");
     });
 
-    const state = {
-      opts: { pie: defaultOpts(), bar: defaultOpts(), line: defaultOpts(), scatter: defaultOpts(), histogram: defaultOpts() },
-      type: null,
-      data: null,
-      colors: null,
-      valid: { type:false, data:false, color:false }
-    };
+    // Font Size Popup
+    fontSizeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(fontSizeBtn, fontSizePopup);
+      fontSizePopup.classList.toggle("visible");
+    });
 
-    // ---------- Navigation ----------
-    const navBtns = qsa('.nav-btn');
-    navBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (btn.classList.contains('disabled')) return;
-        navBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const step = btn.dataset.step;
-        qsa('.panel').forEach(p => p.classList.remove('visible'));
-        qs('#panel-' + step).classList.add('visible');
-        if (step === 'customize') {
-  buildCustomizeOptions();
-}
-if (step === 'preview') {
-  renderPreview();
-}
+    // More Options Dropdown
+    moreOptionsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(moreOptionsBtn, moreDropdown);
+      moreDropdown.classList.toggle("visible");
+    });
 
+    // Padding Popup
+    paddingBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(paddingBtn, paddingPopup);
+      paddingPopup.classList.toggle("visible");
+    });
+
+    // Border Radius Popup
+    borderRadiusBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(borderRadiusBtn, borderRadiusPopup);
+      borderRadiusPopup.classList.toggle("visible");
+    });
+
+    // Popup slider events
+    popupFontSize.addEventListener("input", (e) => {
+      state.globalSettings.fontSize = parseInt(e.target.value);
+      fontSizeValue.textContent = e.target.value + "px";
+      updatePreview();
+    });
+
+    popupPadding.addEventListener("input", (e) => {
+      state.globalSettings.padding = parseInt(e.target.value);
+      paddingValue.textContent = e.target.value + "%";
+      updatePreview();
+    });
+
+    popupBorderRadius.addEventListener("input", (e) => {
+      state.globalSettings.borderRadius = parseInt(e.target.value);
+      borderRadiusValue.textContent = e.target.value + "px";
+      updatePreview();
+    });
+
+    // Color preset options
+    document.querySelectorAll(".color-preset-option").forEach((option) => {
+      option.addEventListener("click", (e) => {
+        const preset = e.currentTarget.dataset.preset;
+        applyColorPreset(preset);
+        colorPresetDropdown.classList.remove("visible");
       });
     });
 
-    function setNavEnabled(step, enabled){
-      const btn = navBtns.find(b => b.dataset.step === step);
-      if (!btn) return;
-      btn.classList.toggle('disabled', !enabled);
-      btn.disabled = !enabled;
-      if (enabled) btn.removeAttribute('aria-disabled'); else btn.setAttribute('aria-disabled','true');
-    }
-
-    function updateBadges(){
-      qs('#badge-type').textContent = `Type ${state.valid.type ? '✅' : '❌'}`;
-      qs('#badge-data').textContent = `Data ${state.valid.data ? '✅' : '❌'}`;
-      qs('#badge-color').textContent = `Color ${state.valid.color ? '✅' : '❌'}`;
-
-      setNavEnabled('data', state.valid.type);
-      setNavEnabled('color', state.valid.data);
-      setNavEnabled('customize', state.valid.type && state.valid.data && state.valid.color);
-      setNavEnabled('preview', state.valid.type && state.valid.data && state.valid.color);
-
-      qs('#data-guard').classList.toggle('hidden', state.valid.type);
-      qs('#data-content').classList.toggle('hidden', !state.valid.type);
-
-      qs('#color-guard').classList.toggle('hidden', state.valid.data);
-      qs('#color-content').classList.toggle('hidden', !state.valid.data);
-
-      qs('#customize-guard').classList.toggle('hidden', state.valid.type && state.valid.data && state.valid.color);
-qs('#customize-content').classList.toggle('hidden', !(state.valid.type && state.valid.data && state.valid.color));
-
-      const unlocked = state.valid.type && state.valid.data && state.valid.color;
-      qs('#preview-guard').classList.toggle('hidden', unlocked);
-      qs('#preview-content').classList.toggle('hidden', !unlocked);
-    }
-    updateBadges();
-
-    // ---------- Step 1: Type selection ----------
-    qsa('#panel-type .style-card').forEach(card => {
-      card.setAttribute('tabindex','0');
-      card.addEventListener('click', () => selectType(card.dataset.type, card));
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectType(card.dataset.type, card); }
-      });
+    // Pie Chart Controls
+    pieGapToggle.addEventListener('click', () => {
+      pieGapToggle.classList.toggle('active');
+      state.opts.pie.separated = pieGapToggle.classList.contains('active');
+      updatePreview();
     });
 
-    function selectType(type, card){
-      qsa('#panel-type .style-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      state.type = type;
-      state.valid.type = true;
-
-      // Reset downstream
-      state.data = null; state.colors = null;
-      state.valid.data = false; state.valid.color = false;
-
-      buildCustomForm();
-      renderColorForm();
-      qs('#data-preview').value = '';
-      updateBadges();
-      navBtns.find(b => b.dataset.step === 'data').click();
-    }
-
-    // ---------- Step 2: Data (random/custom) ----------
-    const btnGenerate = qs('#btn-generate');
-    const btnApplyCustom = qs('#btn-apply-custom');
-    const customInputs = qs('#custom-inputs');
-    const customForm = qs('#custom-form');
-    const dataPreview = qs('#data-preview');
-
-    qsa('input[name="data-mode"]').forEach(r => {
-      r.addEventListener('change', () => {
-        customInputs.classList.toggle('hidden', getDataMode() !== 'custom');
-      });
+    pieDonutToggle.addEventListener('click', () => {
+      pieDonutToggle.classList.toggle('active');
+      state.opts.pie.donut = pieDonutToggle.classList.contains('active');
+      updatePreview();
     });
 
-    btnGenerate.addEventListener('click', () => {
-      if (!state.type) { alert('Choose a graph type first.'); return; }
-      const mode = getDataMode();
-      if (mode === 'random') {
-        state.data = randomData(state.type);
-        state.valid.data = true;
-        dataPreview.value = JSON.stringify(state.data, null, 2);
-        renderColorForm();
-        updateBadges();
-        navBtns.find(b => b.dataset.step === 'color').click();
+    function applyColorPreset(preset) {
+      const data = state.currentData;
+      let colorCount = 0;
+
+      // Determine how many colors we need based on chart type and data
+      switch (state.chartType) {
+        case "pie":
+          colorCount = data.labels.length;
+          break;
+        case "bar":
+          colorCount =
+            data.series.length > 1
+              ? data.series.length
+              : data.categories.length;
+          break;
+        case "line":
+          colorCount = 1;
+          break;
+        case "scatter":
+          colorCount = 1;
+          break;
+        case "histogram":
+          colorCount = 1;
+          break;
+      }
+
+      // Generate new colors based on preset
+      let newColors = [];
+      switch (preset) {
+        case "monochrome":
+          newColors = generateMonochromeColors(colorCount);
+          break;
+        case "pastel":
+          newColors = generatePastelColors(colorCount);
+          break;
+        case "vibrant":
+          newColors = generateVibrantColors(colorCount);
+          break;
+        default:
+          newColors = generateDefaultColors(colorCount);
+      }
+
+      // Apply the colors to the chart
+      state.colors = generateColors(
+        state.chartType,
+        state.currentData,
+        newColors
+      );
+      updatePreview();
+    }
+
+    function updateGlobalToolbarValues() {
+      globalBgColor.value = state.globalSettings.backgroundColor;
+      popupFontSize.value = state.globalSettings.fontSize;
+      fontSizeValue.textContent = state.globalSettings.fontSize + "px";
+      popupPadding.value = state.globalSettings.padding;
+      paddingValue.textContent = state.globalSettings.padding + "%";
+      popupBorderRadius.value = state.globalSettings.borderRadius;
+      borderRadiusValue.textContent = state.globalSettings.borderRadius + "px";
+
+      // Update toggle states
+      if (state.globalSettings.showGrid) {
+        document.getElementById("global-grid-toggle").classList.add("active");
       } else {
-        alert('Fill custom fields below and click Apply.');
-      }
-    });
-
-    btnApplyCustom.addEventListener('click', () => {
-      if (!state.type) return;
-      try {
-        const parsed = readCustomForm();
-        state.data = parsed;
-        state.valid.data = true;
-        dataPreview.value = JSON.stringify(state.data, null, 2);
-        renderColorForm();
-        updateBadges();
-        navBtns.find(b => b.dataset.step === 'color').click();
-      } catch (e) {
-        alert('Please fix custom data: ' + e.message);
-      }
-    });
-
-    function getDataMode(){ return qs('input[name="data-mode"]:checked').value; }
-
-    // Build custom form based on type
-    function buildCustomForm(){
-      customForm.innerHTML = '';
-      customInputs.classList.add('hidden');
-      qsa('input[name="data-mode"]').forEach(r => r.checked = r.value === 'random');
-      if (!state.type) return;
-
-      if (state.type === 'pie') {
-        customForm.appendChild(makeHelp('Enter labels and values for each slice.'));
-        customForm.appendChild(makeKVList('Slices','Label','Value',4));
-      } else if (state.type === 'line') {
-        customForm.appendChild(makeHelp('X axis (comma-separated), Y axis (comma-separated), optional series label.'));
-        customForm.appendChild(makeText('X (comma-separated)','xcsv','Jan,Feb,Mar'));
-        customForm.appendChild(makeText('Y (comma-separated)','ycsv','10,20,15'));
-        customForm.appendChild(makeText('Series label (optional)','series','Series 1'));
-      } else if (state.type === 'bar') {
-        customForm.appendChild(makeHelp('Categories (X), Values (single or multiple rows separated by ";"), optional series labels.'));
-        customForm.appendChild(makeText('Categories (comma-separated)','cats','A,B,C'));
-        customForm.appendChild(makeText('Values (comma-separated or rows with ";")','vals','10,20,15'));
-        customForm.appendChild(makeText('Series labels (comma-separated, optional)','labels','Series 1'));
-      } else if (state.type === 'scatter') {
-        customForm.appendChild(makeHelp('X values, Y values, optional sizes (comma-separated)'));
-        customForm.appendChild(makeText('X (comma-separated)','x','5,8,10'));
-        customForm.appendChild(makeText('Y (comma-separated)','y','10,3,6'));
-        customForm.appendChild(makeText('Sizes (optional)','s',''));
-      } else if (state.type === 'histogram') {
-        customForm.appendChild(makeHelp('Raw numeric values; optional bins and range (min,max).'));
-        customForm.appendChild(makeText('Values (comma-separated)','vals','3,4,6,8,8,10,12'));
-        customForm.appendChild(makeNumber('Bins (optional)','bins',''));
-        customForm.appendChild(makeText('Range (min,max optional)','range',''));
+        document.getElementById("global-grid-toggle").classList.remove("active");
       }
 
-      // show custom panel when "custom" radio is selected
-      if (getDataMode() === 'custom') customInputs.classList.remove('hidden');
-    }
-
-    function readCustomForm(){
-      if (!state.type) return null;
-      if (state.type === 'pie') {
-        const rows = readKVList();
-        const labels = rows.map(r => r.k);
-        const values = rows.map(r => +r.v);
-        if (labels.length === 0 || values.some(isNaN)) throw new Error('Invalid pie values.');
-        return { labels, values };
-      }
-      if (state.type === 'line') {
-        const x = csv(qs('[name="xcsv"]').value);
-        const y = csv(qs('[name="ycsv"]').value).map(Number);
-        const label = qs('[name="series"]').value || 'Series';
-        if (x.length !== y.length || y.some(isNaN)) throw new Error('X and Y mismatch or invalid.');
-        return { x, series: [{ label, y }] };
-      }
-      if (state.type === 'bar') {
-        const cats = csv(qs('[name="cats"]').value);
-        const valsRaw = qs('[name="vals"]').value;
-        let matrix = [];
-        if (valsRaw.includes(';')) matrix = valsRaw.split(';').map(row => csv(row).map(Number));
-        else matrix = [csv(valsRaw).map(Number)];
-        const labels = (qs('[name="labels"]').value || '').split(',').map(s=>s.trim()).filter(Boolean);
-        matrix.forEach(row => { if (row.length !== cats.length || row.some(isNaN)) throw new Error('Value row length mismatch.'); });
-        const series = matrix.map((row,i)=>({ label: labels[i]||`Series ${i+1}`, y: row }));
-        return { categories: cats, series };
-      }
-      if (state.type === 'scatter') {
-        const x = csv(qs('[name="x"]').value).map(Number);
-        const y = csv(qs('[name="y"]').value).map(Number);
-        if (x.length !== y.length || x.some(isNaN) || y.some(isNaN)) throw new Error('X/Y invalid or mismatch.');
-        let sizes = [];
-        const s = qs('[name="s"]').value.trim();
-        if (s) {
-          sizes = csv(s).map(Number);
-          if (sizes.length !== x.length || sizes.some(isNaN)) throw new Error('Sizes length mismatch.');
-        } else sizes = new Array(x.length).fill(6);
-        return { points: x.map((vx,i)=>({ x: vx, y: y[i], r: sizes[i] })) };
-      }
-      if (state.type === 'histogram') {
-        const vals = csv(qs('[name="vals"]').value).map(Number);
-        if (vals.length === 0 || vals.some(isNaN)) throw new Error('Invalid values.');
-        const bins = +qs('[name="bins"]').value || undefined;
-        const rangeText = qs('[name="range"]').value.trim();
-        let range = undefined;
-        if (rangeText) {
-          const [min,max] = rangeText.split(',').map(Number);
-          if ([min,max].some(isNaN) || min >= max) throw new Error('Invalid range.');
-          range = [min,max];
-        }
-        return { values: vals, bins, range };
+      if (state.globalSettings.showAxes) {
+        document.getElementById("global-axes-toggle").classList.add("active");
+      } else {
+        document.getElementById("global-axes-toggle").classList.remove("active");
       }
     }
 
-    // ---------- Step 3: Color ----------
-    function renderColorForm(){
-      const wrap = qs('#color-form');
-      wrap.innerHTML = '';
-      state.colors = null; state.valid.color = false;
+    function updateToolbarForChartType() {
+      const gridAxesControls = document.getElementById('grid-axes-controls');
+      const pieControls = document.getElementById('pie-controls');
 
-      if (!state.type || !state.data) { updateBadges(); return; }
+      if (state.chartType === 'pie') {
+        gridAxesControls.style.display = 'none';
+        pieControls.style.display = 'flex';
 
-      const picker = (label, name, value = '#6aa2ff') => {
-        const row = el('div', { class: 'color-row' });
-        row.append(el('div', {}, label));
-        const pair = el('div', { class: 'color-pair' });
-        const input = el('input', { type: 'color', name, value });
-        const hex = el('input', { type: 'text', value, 'data-hex-for': name, spellcheck: 'false' });
-        input.addEventListener('input', () => hex.value = input.value);
-        hex.addEventListener('input', () => { if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(hex.value)) input.value = hex.value; });
-        pair.append(input, hex);
-        row.append(pair);
-        return row;
-      };
+        // Set initial active states for pie controls
+        document.getElementById('pie-gap-toggle').classList.toggle('active', state.opts.pie.separated);
+        document.getElementById('pie-donut-toggle').classList.toggle('active', state.opts.pie.donut > 0);
+      } else {
+        gridAxesControls.style.display = 'flex';
+        pieControls.style.display = 'none';
 
-      if (state.type === 'pie') {
-        const n = state.data.labels.length;
-        wrap.appendChild(makeHelp(`Pick ${n} slice color${n>1?'s':''}.`));
-        for (let i=0;i<n;i++) wrap.appendChild(picker(`Slice ${i+1} — ${state.data.labels[i]}`, `c${i}`, defaultColor(i)));
-      } else if (state.type === 'bar') {
-        const sCount = state.data.series.length;
-        const catCount = state.data.categories.length;
-        if (sCount > 1) {
-          wrap.appendChild(makeHelp(`Multi-series: pick 1 color per series (${sCount}).`));
-          for (let i=0;i<sCount;i++) wrap.appendChild(picker(`Series ${i+1} — ${state.data.series[i].label}`, `s${i}`, defaultColor(i)));
-        } else {
-          wrap.appendChild(makeHelp(`Single-series: pick 1 color per bar (${catCount}).`));
-          for (let i=0;i<catCount;i++) wrap.appendChild(picker(`Bar ${i+1} — ${state.data.categories[i]}`, `b${i}`, defaultColor(i)));
-        }
-      } else if (state.type === 'line') {
-        wrap.appendChild(makeHelp('Line color.'));
-        wrap.appendChild(picker('Line','line','#6aa2ff'));
-      } else if (state.type === 'scatter') {
-        wrap.appendChild(makeHelp('Point color.'));
-        wrap.appendChild(picker('Points','points','#6aa2ff'));
-      } else if (state.type === 'histogram') {
-        wrap.appendChild(makeHelp('Bins color.'));
-        wrap.appendChild(picker('Bins','bins','#6aa2ff'));
+        // Set initial active states for grid/axes
+        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
+        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
       }
-
-      wrap.addEventListener('input', () => {
-        state.colors = readColors();
-        state.valid.color = !!state.colors;
-        updateBadges();
-      }, { passive:true });
-
-      state.colors = readColors();
-      state.valid.color = !!state.colors;
-      updateBadges();
     }
 
-    function readColors(){
-      if (!state.type) return null;
-      const get = name => qs(`[name="${name}"]`)?.value || '#6aa2ff';
-      if (state.type === 'pie') {
-        const n = state.data.labels.length;
-        return { slices: Array.from({length:n},(_,i)=>get(`c${i}`)) };
-      } else if (state.type === 'bar') {
-        const sCount = state.data.series.length;
-        if (sCount > 1) return { series: Array.from({length:sCount},(_,i)=>get(`s${i}`)) };
-        return { bars: Array.from({length:state.data.categories.length},(_,i)=>get(`b${i}`)) };
-      } else if (state.type === 'line') return { line: get('line') };
-      else if (state.type === 'scatter') return { points: get('points') };
-      else if (state.type === 'histogram') return { bins: get('bins') };
+    // Application State
+    const state = {
+      chartType: "bar",
+      data: null,
+      colors: {},
+      globalSettings: {
+        backgroundColor: "#111318",
+        showGrid: true,
+        showAxes: true,
+        fontSize: 12,
+        padding: 0,
+        borderRadius: 6,
+      },
+      selectedElement: null,
+      currentData: getDefaultData("bar"),
+      opts: {
+        pie: defaultOpts(),
+        bar: defaultOpts(),
+        line: defaultOpts(),
+        scatter: defaultOpts(),
+        histogram: defaultOpts(),
+      },
+    };
+
+    function handleChartTypeChange(chartType) {
+      state.chartType = chartType;
+      currentSeries = 1;
+      state.currentData = getDefaultData(chartType);
+      updateDataTableForChartType();
+      updateToolbarForChartType();
+      updatePreview();
     }
 
-    // ---------- Step 4: Customize (Universal + Specific) ----------
-    function buildCustomizeOptions(){
-      const wrap = qs('#customize-options');
-      if (!wrap) return;
-      wrap.innerHTML = '';
-      if (!state.type) return;
-      const opts = state.opts[state.type];
+    function initChartTypeSelector() {
+      const chartSelect = document.getElementById('chart-type-select');
+      const selectedOption = chartSelect.querySelector('.selected-option');
+      const chartOptions = chartSelect.querySelectorAll('.chart-option');
 
-      const add = (node) => wrap.appendChild(node);
-      const header = (txt) => { const h = el('div',{class:'seg-label', style:'grid-column:1/-1;margin-top:4px;'},txt); wrap.appendChild(h); };
+      // Open/close dropdown
+      selectedOption.addEventListener('click', (e) => {
+        e.stopPropagation();
+        chartSelect.classList.toggle('active');
+      });
 
-      // small helpers
-      const makeToggle = (label, key) => {
-        const row = el('div', { class: 'seg-row' });
-        const input = el('input', { type: 'checkbox', id: key });
-        input.checked = !!opts[key];
-        input.addEventListener('change', () => { opts[key] = input.checked; renderPreview(); });
-        const lbl = el('label', { for: key, style: 'cursor:pointer' }, label);
-        row.append(input, lbl);
-        return row;
-      };
-      const makeSlider = (label, key, min, max, step, def) => {
-        const row = el('div', { class: 'seg' });
-        const lbl = el('label', { class: 'seg-label' }, `${label} — ` + (opts[key] ?? def));
-        const input = el('input', { type: 'range', min, max, step, value: opts[key] ?? def });
-        input.addEventListener('input', () => { opts[key] = +input.value; lbl.textContent = `${label} — ${opts[key]}`; renderPreview(); });
-        row.append(lbl, input);
-        return row;
-      };
-      const makeColor = (label, key, def='#000000') => {
-        const row = el('div', { class: 'seg' });
-        row.append(el('label', { class: 'seg-label' }, label));
-        const input = el('input', { type: 'color', value: opts[key] ?? def });
-        input.addEventListener('input', () => { opts[key] = input.value; renderPreview(); });
-        row.append(input);
-        return row;
-      };
-      const makeSelect = (label, key, options, def) => {
-        const row = el('div', { class: 'seg' });
-        row.append(el('label', { class: 'seg-label' }, label));
-        const sel = el('select', {});
-        options.forEach(o => {
-          const opt = el('option', { value: o, selected: (opts[key] ?? def) === o ? 'selected' : null }, o);
-          sel.append(opt);
+      // Handle option selection
+      chartOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          const chartType = option.dataset.value;
+          const iconHTML = option.querySelector('.chart-icon').innerHTML;
+          const name = option.querySelector('span').textContent;
+
+          // Update selected display
+          chartSelect.querySelector('.chart-icon').innerHTML = iconHTML;
+          chartSelect.querySelector('.chart-name').textContent = name;
+
+          // Update active states
+          chartOptions.forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+
+          // Close dropdown
+          chartSelect.classList.remove('active');
+
+          // Update chart
+          handleChartTypeChange(chartType);
         });
-        sel.addEventListener('change', () => { opts[key] = sel.value; renderPreview(); });
-        row.append(sel);
-        return row;
-      };
-      const makeText = (label, key, def='') => {
-        const row = el('div', { class: 'seg' });
-        row.append(el('label', { class: 'seg-label' }, label));
-        const input = el('input', { type: 'text', value: opts[key] ?? def });
-        input.addEventListener('input', () => { opts[key] = input.value; renderPreview(); });
-        row.append(input);
-        return row;
-      };
+      });
 
-      // ----- Universal
-      header('Stroke & Fill');
-      add(makeSlider('Stroke Width','strokeWidth',0,10,1,0));
-      add(makeColor('Stroke Color','strokeColor','#111111'));
-      add(makeSlider('Stroke Opacity','strokeOpacity',0,1,0.05,1));
-      add(makeSelect('Stroke Type','strokeType',['solid','dashed','dotted','custom'],'solid'));
-      if (opts.strokeType === 'custom') add(makeText('Custom dasharray (e.g., "6 3")','strokeDash','4 2'));
-      add(makeSlider('Fill Opacity','fillOpacity',0,1,0.05,0.95));
-
-      header('Borders & Corners');
-      add(makeSlider('Border Radius','borderRadius',0,20,1,6));
-
-      header('Effects — Drop Shadow');
-      add(makeToggle('Enable Drop Shadow','dropShadowEnabled'));
-      if (opts.dropShadowEnabled){
-        add(makeColor('Shadow Color','dropShadowColor','#000000'));
-        add(makeSlider('Shadow Opacity','dropShadowOpacity',0,1,0.05,0.35));
-        add(makeSlider('Shadow X Offset','dropShadowX',-30,30,1,2));
-        add(makeSlider('Shadow Y Offset','dropShadowY',-30,30,1,2));
-        add(makeSlider('Shadow Blur','dropShadowBlur',0,50,1,4));
-      }
-
-      header('Effects — Inner Shadow');
-      add(makeToggle('Enable Inner Shadow','innerShadowEnabled'));
-      if (opts.innerShadowEnabled){
-        add(makeColor('Inner Color','innerShadowColor','#000000'));
-        add(makeSlider('Inner Opacity','innerShadowOpacity',0,1,0.05,0.3));
-        add(makeSlider('Inner X Offset','innerShadowX',-30,30,1,0));
-        add(makeSlider('Inner Y Offset','innerShadowY',-30,30,1,1));
-        add(makeSlider('Inner Blur','innerShadowBlur',0,50,1,3));
-      }
-
-      header('Text');
-      add(makeSelect('Font Family','fontFamily',['Segoe UI','Arial','Roboto','Georgia','Courier New'],'Segoe UI'));
-      add(makeSlider('Font Size','fontSize',8,32,1,12));
-      add(makeSelect('Font Weight','fontWeight',['normal','bold'],'normal'));
-      add(makeColor('Font Color','fontColor','#9aa4b2'));
-
-      header('Axes / Grid / Background');
-      add(makeToggle('Show Gridlines','showGrid'));
-      add(makeSlider('Grid Opacity','gridOpacity',0,1,0.05,0.4));
-      add(makeToggle('Show Axes','showAxes'));
-      add(makeToggle('Transparent Background','backgroundTransparent'));
-      if (!opts.backgroundTransparent) add(makeColor('Background Color','backgroundColor','#ffffff'));
-
-      // ----- Chart specific
-      header('Chart Specific');
-
-      if (state.type === 'pie') {
-        add(makeSlider('Donut Hole Size','donut',0,0.7,0.05,0));
-        add(makeToggle('Separate Slices','separated'));
-        add(makeSlider('Start Angle (deg)','startAngle',0,360,5,0));
-      }
-      if (state.type === 'bar') {
-        add(makeToggle('Horizontal Bars','horizontal'));
-        add(makeToggle('Stacked Bars','stacked'));
-      }
-      if (state.type === 'line') {
-        add(makeToggle('Smooth Curve','smooth'));
-        add(makeToggle('Fill Area','area'));
-        add(makeSelect('Line Style','lineStyle',['solid','dashed','dotted'],'solid'));
-      }
-      if (state.type === 'scatter') {
-        add(makeSlider('Point Size','pointSize',2,24,1,6));
-        add(makeSelect('Point Shape','pointShape',['circle','square','triangle'],'circle'));
-      }
-      if (state.type === 'histogram') {
-        add(makeSlider('Bin Count','bins',5,50,1, opts.bins ?? 10));
-        add(makeToggle('Normalize Density','normalize'));
-      }
+      // Close dropdown when clicking outside
+      document.addEventListener('click', () => {
+        chartSelect.classList.remove('active');
+      });
     }
 
-    // ---------- Preview & Export ----------
-    const svgHost = qs('#svg-host');
-    const btnExport = qs('#btn-export');
-    const btnBack = qs('#btn-back');
-    const btnSvg = qs('#btn-download-svg');
-    const btnPng = qs('#btn-download-png');
+    function initDataSourceSelector() {
+      const dataSourceSelect = document.getElementById('data-source-select');
+      const selectedOption = dataSourceSelect.querySelector('.selected-option');
+      const sourceOptions = dataSourceSelect.querySelectorAll('.source-option');
 
-    function renderPreview(){
-      if (!(state.valid.type && state.valid.data && state.valid.color)) return;
-      const W = 900, H = 520, pad = 56;
-      const opts = state.opts[state.type];
-      let svg = '';
+      // Open/close dropdown
+      selectedOption.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dataSourceSelect.classList.toggle('active');
+      });
 
-      if (state.type === 'pie') svg = renderPie(state.data, state.colors, W, H, opts);
-      if (state.type === 'bar') svg = renderBar(state.data, state.colors, W, H, pad, opts);
-      if (state.type === 'line') svg = renderLine(state.data, state.colors, W, H, pad, opts);
-      if (state.type === 'scatter') svg = renderScatter(state.data, state.colors, W, H, pad, opts);
-      if (state.type === 'histogram') svg = renderHistogram(state.data, state.colors, W, H, pad, opts);
+      // Handle option selection
+      sourceOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+          // Don't do anything if option is disabled
+          if (option.classList.contains('disabled')) {
+            e.stopPropagation();
+            return;
+          }
 
-      svgHost.innerHTML = svg;
+          const sourceType = option.dataset.value;
+          const name = option.querySelector('span').textContent;
+
+          // Update selected display
+          dataSourceSelect.querySelector('.source-name').textContent = name;
+
+          // Update active states
+          sourceOptions.forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+
+          // Close dropdown
+          dataSourceSelect.classList.remove('active');
+
+          // Handle data source change
+          handleDataSourceChange(sourceType);
+        });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', () => {
+        dataSourceSelect.classList.remove('active');
+      });
     }
 
-    btnExport.addEventListener('click', () => {
-      if (!(state.valid.type && state.valid.data && state.valid.color)) return;
-      const svg = svgHost.innerHTML.trim();
-      parent.postMessage({ pluginMessage: { type: 'EXPORT_SVG', svg } }, '*');
-    });
+    function handleDataSourceChange(sourceType) {
+      const defaultDataSection = document.getElementById('default-data-section');
+      const manualDataSection = document.getElementById('manual-data-section');
 
-    btnBack.addEventListener('click', () => {
-      navBtns.find(b => b.dataset.step === 'color').click();
-    });
+      // Hide all sections first
+      defaultDataSection.style.display = 'none';
+      manualDataSection.style.display = 'none';
 
-    btnSvg.addEventListener('click', () => {
-      const svg = svgHost.querySelector('svg');
-      if (!svg) return;
-      const blob = new Blob([svg.outerHTML], {type: 'image/svg+xml'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `chart-${state.type}.svg`;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    });
+      switch (sourceType) {
+        case 'default':
+          defaultDataSection.style.display = 'flex';
+          // Reset to default data for current chart type
+          state.currentData = getDefaultData(state.chartType);
+          updateDataTableForChartType();
+          updatePreview();
+          break;
+        case 'manual':
+          manualDataSection.style.display = 'flex';
+          // Pre-populate the textarea with current data
+          dataInput.value = JSON.stringify(state.currentData, null, 2);
+          break;
+        case 'csv':
+        case 'excel':
+        case 'sheets':
+        case 'json':
+          // These are disabled for now
+          alert('This feature is coming soon!');
+          break;
+      }
 
-    btnPng.addEventListener('click', () => {
-      const svg = svgHost.querySelector('svg');
-      if (!svg) return;
-      const xml = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-      const w = svg.viewBox?.baseVal?.width || svg.width.baseVal.value || 900;
-      const h = svg.viewBox?.baseVal?.height || svg.height.baseVal.value || 520;
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        const url = canvas.toDataURL('image/png');
-        const a = document.createElement('a');
-        a.href = url; a.download = `chart-${state.type}.png`;
-        document.body.appendChild(a); a.click(); a.remove();
-      };
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
-    });
+      updatePreview();
+    }
 
-    // rebuild preview on change
-    ['input','change','click'].forEach(evt => document.addEventListener(evt, () => {
-      if (qs('#panel-preview').classList.contains('visible')) renderPreview();
-    }));
+    // ========== CHART RENDERING FUNCTIONS ==========
 
-    // ---------- Renderers & helpers ----------
-    const sum = (arr) => arr.reduce((s,v)=>s+v,0);
-    const max = (arr) => arr.reduce((m,v)=> v>m ? v : m, -Infinity);
-    const min = (arr) => arr.reduce((m,v)=> v<m ? v : m, Infinity);
+    // Utilities
+    const sum = (arr) => arr.reduce((s, v) => s + v, 0);
+    const max = (arr) => arr.reduce((m, v) => (v > m ? v : m), -Infinity);
+    const min = (arr) => arr.reduce((m, v) => (v < m ? v : m), Infinity);
     const defaultColor = (i) => {
       const base = [106, 162, 255];
       const t = (i % 6) / 6;
-      const c = base.map((b,idx)=>Math.max(0, Math.min(255, Math.round(b - t*40 - idx*5))));
-      const toHex = x=>x.toString(16).padStart(2,'0');
+      const c = base.map((b, idx) =>
+        Math.max(0, Math.min(255, Math.round(b - t * 40 - idx * 5)))
+      );
+      const toHex = (x) => x.toString(16).padStart(2, "0");
       return `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
     };
 
-    function axes(W,H,pad, showAxes){
-      if (!showAxes) return '';
-      const x1 = pad, y1 = H-pad, x2 = W-pad, y2 = pad;
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#2b3345"/><line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y2}" stroke="#2b3345"/>`;
+    // Color generation functions for presets
+    function generateMonochromeColors(count) {
+      const baseHue = Math.floor(Math.random() * 360);
+      return Array.from({ length: count }, (_, i) => {
+        const lightness = 30 + i * (40 / count);
+        return `hsl(${baseHue}, 50%, ${lightness}%)`;
+      });
     }
-    function scaleLinear(domain, range){
-      const [d0,d1]=domain, [r0,r1]=range; const m=(r1-r0)/(d1-d0||1);
-      return v => r0 + (v - d0)*m;
+
+    function generatePastelColors(count) {
+      return Array.from({ length: count }, (_, i) => {
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 60%, 85%)`;
+      });
     }
-    function dashFor(type, custom){
-      if (type==='dashed') return '6 3';
-      if (type==='dotted') return '1 4';
-      if (type==='custom') return custom || '4 2';
+
+    function generateVibrantColors(count) {
+      return Array.from({ length: count }, (_, i) => {
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 80%, 50%)`;
+      });
+    }
+
+    function generateDefaultColors(count) {
+      return Array.from({ length: count }, (_, i) => defaultColor(i));
+    }
+
+    function defaultOpts() {
+      return {
+        // Universal
+        strokeWidth: 1,
+        strokeColor: "#2b3345",
+        strokeOpacity: 1,
+        strokeType: "solid",
+        strokeDash: "4 2",
+        fillOpacity: 0.95,
+        borderRadius: 6,
+
+        // Shadows
+        dropShadowEnabled: false,
+        dropShadowX: 2,
+        dropShadowY: 2,
+        dropShadowBlur: 4,
+        dropShadowColor: "#000000",
+        dropShadowOpacity: 0.35,
+
+        innerShadowEnabled: false,
+        innerShadowX: 0,
+        innerShadowY: 1,
+        innerShadowBlur: 3,
+        innerShadowColor: "#000000",
+        innerShadowOpacity: 0.3,
+
+        // Pie chart specific
+        donut: false,
+        separated: false,
+
+        // Text
+        fontFamily: "Segoe UI",
+        fontSize: 12,
+        fontWeight: "normal",
+        fontColor: "#9aa4b2",
+
+        // Background / axes / grid
+        showGrid: true,
+        gridOpacity: 0.4,
+        showAxes: true,
+        backgroundTransparent: true,
+        backgroundColor: "#ffffff",
+
+        // Chart-specific placeholders
+        startAngle: 0,
+        horizontal: false,
+        stacked: false,
+        smooth: false,
+        area: false,
+        lineStyle: "solid",
+        pointSize: 6,
+        pointShape: "circle",
+        bins: 10,
+        normalize: false,
+      };
+    }
+
+    function scaleLinear(domain, range) {
+      const [d0, d1] = domain,
+        [r0, r1] = range;
+      const m = (r1 - r0) / (d1 - d0 || 1);
+      return (v) => r0 + (v - d0) * m;
+    }
+
+    function dashFor(type, custom) {
+      if (type === "dashed") return "6 3";
+      if (type === "dotted") return "1 4";
+      if (type === "custom") return custom || "4 2";
       return null;
     }
 
-    function svgDefsForEffects(opts){
-      const dsId = 'dropShadow', isId = 'innerShadow';
-      const defs = [];
-
-      if (opts.dropShadowEnabled){
-        defs.push(`
-          <filter id="${dsId}" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="${opts.dropShadowX}" dy="${opts.dropShadowY}" stdDeviation="${opts.dropShadowBlur}"
-              flood-color="${opts.dropShadowColor}" flood-opacity="${opts.dropShadowOpacity}" />
-          </filter>`);
-      }
-      if (opts.innerShadowEnabled){
-        // Inner shadow via blur + compositing
-        defs.push(`
-          <filter id="${isId}" x="-50%" y="-50%" width="200%" height="200%">
-            <feOffset dx="${opts.innerShadowX}" dy="${opts.innerShadowY}" in="SourceAlpha" result="offOut"/>
-            <feGaussianBlur in="offOut" stdDeviation="${opts.innerShadowBlur}" result="blur" />
-            <feComposite in="blur" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="innerShadow" />
-            <feColorMatrix in="innerShadow" type="matrix"
-              values="0 0 0 0 ${hexToRgb(opts.innerShadowColor).r/255}
-                      0 0 0 0 ${hexToRgb(opts.innerShadowColor).g/255}
-                      0 0 0 0 ${hexToRgb(opts.innerShadowColor).b/255}
-                      0 0 0 ${opts.innerShadowOpacity} 0" />
-            <feComposite in="SourceGraphic" in2="innerShadow" operator="over"/>
-          </filter>`);
-      }
-      return defs.length ? `<defs>${defs.join('')}</defs>` : '';
+    function axes(W, H, pad, showAxes) {
+      if (!showAxes) return "";
+      const x1 = pad,
+        y1 = H - pad,
+        x2 = W - pad,
+        y2 = pad;
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#2b3345"/><line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y2}" stroke="#2b3345"/>`;
     }
 
-    function filterAttr(opts){
-      const ids = [];
-      if (opts.dropShadowEnabled) ids.push('url(#dropShadow)');
-      if (opts.innerShadowEnabled) ids.push('url(#innerShadow)');
-      return ids.length ? `filter="${ids.join(' ')}"` : '';
+    function gridAndTicks(x0, x1, y0, y1, maxY, opts) {
+      const ticks = 4;
+      const els = [];
+      for (let i = 0; i <= ticks; i++) {
+        const t = i / ticks;
+        const y = y0 - t * (y0 - y1);
+        const val = Math.round(t * maxY);
+        if (opts.showGrid)
+          els.push(
+            `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`
+          );
+        els.push(
+          `<text x="${x0 - 6}" y="${y + 4
+          }" text-anchor="end" style="font-family:${opts.fontFamily
+          };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+          };fill:${opts.fontColor}">${val}</text>`
+        );
+      }
+      return els.join("");
     }
 
-    function textStyle(opts){ return `font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}`; }
-    function shapeStrokeAttrs(opts){
+    function shapeStrokeAttrs(opts) {
       const sw = +opts.strokeWidth;
-      if (sw<=0) return '';
+      if (sw <= 0) return "";
       const dash = dashFor(opts.strokeType, opts.strokeDash);
-      return `stroke="${opts.strokeColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${sw}" ${dash?`stroke-dasharray="${dash}"`:''}`;
+      return `stroke="${opts.strokeColor}" stroke-opacity="${opts.strokeOpacity
+        }" stroke-width="${sw}" ${dash ? `stroke-dasharray="${dash}"` : ""}`;
     }
-    function bgRect(W,H,opts){
-      if (opts.backgroundTransparent) return `<rect width="100%" height="100%" fill="#fff" opacity="0"/>`;
+
+    function bgRect(W, H, opts) {
+      if (opts.backgroundTransparent)
+        return `<rect width="100%" height="100%" fill="#fff" opacity="0"/>`;
       return `<rect width="${W}" height="${H}" fill="${opts.backgroundColor}"/>`;
     }
-    function hexToRgb(hex){
-      const h = hex.replace('#',''); const bigint = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
-      return { r:(bigint>>16)&255, g:(bigint>>8)&255, b:bigint&255 };
-    }
 
-    // ----- Pie
-    function renderPie(data, colors, W, H, opts){
-      const cx = W/2, cy = H/2, r = Math.min(W,H)*0.32;
+    // Chart Renderers
+    function renderPie(data, colors, W, H, opts) {
+      const cx = W / 2, cy = H / 2, r = Math.min(W, H) * 0.32;
       const total = sum(data.values);
-      let angle = (-Math.PI/2) + (opts.startAngle*Math.PI/180);
+      let angle = (-Math.PI / 2) + (opts.startAngle * Math.PI / 180);
       const pieces = [];
-      data.values.forEach((v,i)=>{
-        const a2 = angle + (v/total)*Math.PI*2;
-        const x1 = cx + r*Math.cos(angle), y1 = cy + r*Math.sin(angle);
-        const x2 = cx + r*Math.cos(a2), y2 = cy + r*Math.sin(a2);
-        const large = (a2 - angle) > Math.PI ? 1 : 0;
-        const gap = opts.separated ? 8 : 0;
-        const mid = (angle + a2)/2;
-        const offx = Math.cos(mid)*gap, offy = Math.sin(mid)*gap;
-        const d = `M ${cx+offx} ${cy+offy} L ${x1+offx} ${y1+offy} A ${r} ${r} 0 ${large} 1 ${x2+offx} ${y2+offy} Z`;
-        pieces.push(`<path d="${d}" fill="${colors.slices[i]||defaultColor(i)}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)} ${filterAttr(opts)}/>`);
-        angle = a2;
+
+      const padding = state.globalSettings.padding || 0;
+      const paddingFactor = Math.max(0, Math.min(0.4, padding / 100));
+      const sliceReduction = r * paddingFactor;
+      const explosionDistance = opts.separated ? r * 0.1 : 0;
+
+      data.values.forEach((v, i) => {
+        const sliceAngle = (v / total) * Math.PI * 2;
+        const midAngle = angle + sliceAngle / 2;
+        const explosionX = explosionDistance * Math.cos(midAngle);
+        const explosionY = explosionDistance * Math.sin(midAngle);
+
+        // For regular pie chart (donut: false), inner radius should be 0
+        // For donut chart (donut: true), inner radius should be 20% of r
+        const innerRadius = opts.donut ? r * 0.2 : 0;
+
+        // Apply padding reduction to both inner and outer radii
+        const paddedInnerRadius = Math.max(0, innerRadius + sliceReduction);
+        const paddedOuterRadius = Math.max(paddedInnerRadius, r - sliceReduction);
+
+        // Create the slice path
+        const slicePath = createPieSlicePath(cx + explosionX, cy + explosionY, paddedInnerRadius, paddedOuterRadius, angle, angle + sliceAngle, opts.borderRadius);
+
+        const sliceColor = colors.slices && colors.slices[i] ? colors.slices[i] : defaultColor(i);
+
+        // Draw the colored slice
+        pieces.push(`<path d="${slicePath}" fill="${sliceColor}" fill-opacity="${opts.fillOpacity}"/>`);
+
+        // Draw stroke around the entire slice (original size without padding)
+        if (opts.strokeWidth > 0) {
+          const strokePath = createPieSlicePath(cx + explosionX, cy + explosionY, innerRadius, r, angle, angle + sliceAngle, opts.borderRadius);
+          pieces.push(`<path d="${strokePath}" fill="none" stroke="${opts.strokeColor}" stroke-width="${opts.strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`);
+        }
+
+        // Add labels
+        const labelRadius = r + 30 + explosionDistance;
+        const labelX = cx + labelRadius * Math.cos(midAngle);
+        const labelY = cy + labelRadius * Math.sin(midAngle);
+
+        const textAnchor = Math.cos(midAngle) > 0 ? 'start' : 'end';
+
+        pieces.push(`<text x="${labelX}" y="${labelY}" text-anchor="${textAnchor}" dominant-baseline="middle" 
+      style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">
+      ${data.labels[i]} (${Math.round((v / total) * 100)}%)
+    </text>`);
+
+        angle = angle + sliceAngle;
       });
 
-      const donut = opts.donut>0 ? `<circle cx="${cx}" cy="${cy}" r="${r*opts.donut}" fill="${opts.backgroundTransparent ? 'transparent' : opts.backgroundColor}" />` : '';
-
-      const labels = data.labels.map((lbl,i)=>`<text x="${W-12}" y="${20 + i*18}" text-anchor="end" style="${textStyle(opts)}">${lbl}</text>`).join('');
-      const swatches = data.labels.map((_,i)=>`<rect x="${W-10}" y="${10 + i*18 - 8}" width="8" height="8" fill="${colors.slices[i]||defaultColor(i)}" ${shapeStrokeAttrs(opts)} ${filterAttr(opts)}/>`).join('');
-
-      const defs = svgDefsForEffects(opts);
-
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-        ${defs}
-        ${bgRect(W,H,opts)}
-        ${pieces.join('')}
-        ${donut}
-        ${labels}
-        ${swatches}
-      </svg>`;
+    ${bgRect(W, H, opts)}
+    ${pieces.join('')}
+  </svg>`;
     }
 
-    // ----- Shared axes / grid helpers
-    function gridAndTicks(x0,x1,y0,y1,maxY,opts){
-      const ticks = 4; const els = [];
-      for (let i=0;i<=ticks;i++){
-        const t = i / ticks;
-        const y = y0 - t*(y0 - y1);
-        const val = Math.round(t * maxY);
-        if (opts.showGrid) els.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        els.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${val}</text>`);
+    // Helper function to create pie slice path with donut hole support
+    function createPieSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle, borderRadius = 0) {
+      // If no border radius or very small, use the original path
+      if (borderRadius <= 0 || outerRadius - innerRadius < borderRadius * 2) {
+        return createSimplePieSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle);
       }
-      return els.join('');
+
+      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+      const paths = [];
+
+      // Calculate the four corner points
+      const x1 = cx + outerRadius * Math.cos(startAngle);
+      const y1 = cy + outerRadius * Math.sin(startAngle);
+      const x2 = cx + outerRadius * Math.cos(endAngle);
+      const y2 = cy + outerRadius * Math.sin(endAngle);
+      const x3 = cx + innerRadius * Math.cos(endAngle);
+      const y3 = cy + innerRadius * Math.sin(endAngle);
+      const x4 = cx + innerRadius * Math.cos(startAngle);
+      const y4 = cy + innerRadius * Math.sin(startAngle);
+
+      // For regular pie (innerRadius = 0), we need different logic
+      if (innerRadius === 0) {
+        return createRoundedPiePath(cx, cy, outerRadius, startAngle, endAngle, borderRadius);
+      }
+
+      // For donut chart with inner radius > 0
+      return createRoundedDonutPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle, borderRadius);
     }
 
-    // ----- Bar
-    function renderBar(data, colors, W, H, pad, opts){
+    function createSimplePieSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle) {
+      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+
+      const x1 = cx + outerRadius * Math.cos(startAngle);
+      const y1 = cy + outerRadius * Math.sin(startAngle);
+      const x2 = cx + outerRadius * Math.cos(endAngle);
+      const y2 = cy + outerRadius * Math.sin(endAngle);
+      const x3 = cx + innerRadius * Math.cos(endAngle);
+      const y3 = cy + innerRadius * Math.sin(endAngle);
+      const x4 = cx + innerRadius * Math.cos(startAngle);
+      const y4 = cy + innerRadius * Math.sin(startAngle);
+
+      if (innerRadius > 0) {
+        // Donut slice
+        return `M ${x1} ${y1} 
+            A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2}
+            L ${x3} ${y3}
+            A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4}
+            Z`;
+      } else {
+        // Regular pie slice
+        return `M ${cx} ${cy} 
+            L ${x1} ${y1}
+            A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2}
+            Z`;
+      }
+    }
+
+    function createRoundedPiePath(cx, cy, radius, startAngle, endAngle, borderRadius) {
+      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+
+      // Calculate points with border radius offset
+      const startAngleWithRadius = startAngle + (borderRadius / radius);
+      const endAngleWithRadius = endAngle - (borderRadius / radius);
+
+      const x1 = cx + radius * Math.cos(startAngleWithRadius);
+      const y1 = cy + radius * Math.sin(startAngleWithRadius);
+      const x2 = cx + radius * Math.cos(endAngleWithRadius);
+      const y2 = cy + radius * Math.sin(endAngleWithRadius);
+
+      // Control points for rounded corners
+      const controlDist = borderRadius * 0.8;
+      const control1X = cx + (radius - controlDist) * Math.cos(startAngle);
+      const control1Y = cy + (radius - controlDist) * Math.sin(startAngle);
+      const control2X = cx + (radius - controlDist) * Math.cos(endAngle);
+      const control2Y = cy + (radius - controlDist) * Math.sin(endAngle);
+
+      return `M ${cx} ${cy} 
+          L ${control1X} ${control1Y}
+          Q ${cx + radius * Math.cos(startAngle)} ${cy + radius * Math.sin(startAngle)} ${x1} ${y1}
+          A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}
+          Q ${cx + radius * Math.cos(endAngle)} ${cy + radius * Math.sin(endAngle)} ${control2X} ${control2Y}
+          Z`;
+    }
+
+    function createRoundedDonutPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle, borderRadius) {
+      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
+
+      // Apply border radius to both inner and outer edges
+      const outerStartAngle = startAngle + (borderRadius / outerRadius);
+      const outerEndAngle = endAngle - (borderRadius / outerRadius);
+      const innerStartAngle = startAngle + (borderRadius / innerRadius);
+      const innerEndAngle = endAngle - (borderRadius / innerRadius);
+
+      const x1 = cx + outerRadius * Math.cos(outerStartAngle);
+      const y1 = cy + outerRadius * Math.sin(outerStartAngle);
+      const x2 = cx + outerRadius * Math.cos(outerEndAngle);
+      const y2 = cy + outerRadius * Math.sin(outerEndAngle);
+      const x3 = cx + innerRadius * Math.cos(innerEndAngle);
+      const y3 = cy + innerRadius * Math.sin(innerEndAngle);
+      const x4 = cx + innerRadius * Math.cos(innerStartAngle);
+      const y4 = cy + innerRadius * Math.sin(innerStartAngle);
+
+      // Control points for rounded corners
+      const outerControlDist = borderRadius * 0.8;
+      const innerControlDist = borderRadius * 0.8;
+
+      const outerControl1X = cx + (outerRadius - outerControlDist) * Math.cos(startAngle);
+      const outerControl1Y = cy + (outerRadius - outerControlDist) * Math.sin(startAngle);
+      const outerControl2X = cx + (outerRadius - outerControlDist) * Math.cos(endAngle);
+      const outerControl2Y = cy + (outerRadius - outerControlDist) * Math.sin(endAngle);
+      const innerControl1X = cx + (innerRadius + innerControlDist) * Math.cos(startAngle);
+      const innerControl1Y = cy + (innerRadius + innerControlDist) * Math.sin(startAngle);
+      const innerControl2X = cx + (innerRadius + innerControlDist) * Math.cos(endAngle);
+      const innerControl2Y = cy + (innerRadius + innerControlDist) * Math.sin(endAngle);
+
+      return `M ${x1} ${y1}
+          A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2}
+          Q ${cx + outerRadius * Math.cos(endAngle)} ${cy + outerRadius * Math.sin(endAngle)} ${outerControl2X} ${outerControl2Y}
+          L ${innerControl2X} ${innerControl2Y}
+          Q ${cx + innerRadius * Math.cos(endAngle)} ${cy + innerRadius * Math.sin(endAngle)} ${x3} ${y3}
+          A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4}
+          Q ${cx + innerRadius * Math.cos(startAngle)} ${cy + innerRadius * Math.sin(startAngle)} ${innerControl1X} ${innerControl1Y}
+          L ${outerControl1X} ${outerControl1Y}
+          Q ${cx + outerRadius * Math.cos(startAngle)} ${cy + outerRadius * Math.sin(startAngle)} ${x1} ${y1}
+          Z`;
+    }
+
+    function renderBar(data, colors, W, H, pad, opts) {
       const cats = data.categories;
       const multi = data.series.length > 1 && !opts.stacked;
       const stacked = data.series.length > 1 && opts.stacked;
-      const maxY = stacked ? max(cats.map((_,ci)=>sum(data.series.map(s=>s.y[ci])))) : max(data.series.flatMap(s=>s.y));
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
+      const maxY = stacked
+        ? max(cats.map((_, ci) => sum(data.series.map((s) => s.y[ci]))))
+        : max(data.series.flatMap((s) => s.y));
+      const x0 = pad,
+        x1 = W - pad,
+        y0 = H - pad,
+        y1 = pad;
       const toY = scaleLinear([0, maxY], [y0, y1]);
       const band = (x1 - x0) / cats.length;
       const gap = 6;
       const barW = multi ? (band - 10) / data.series.length : band - 10;
       const stroke = shapeStrokeAttrs(opts);
-      const filter = filterAttr(opts);
-      const rx = clamp(opts.borderRadius,0,20);
+      const rx = Math.min(opts.borderRadius, 20);
 
-      let bars = '';
-      const drawBar = (x,y,w,h,fill) => {
-        if (opts.horizontal) {
-          // For simplicity, horizontal bars not fully implemented with stacked here; keep vertical primary
+      // Padding settings - convert padding value to actual pixels
+      const padding = state.globalSettings.padding || 0;
+      const hasPadding = padding > 0;
+      const hasBorder = opts.strokeWidth > 0;
+
+      let bars = "";
+      const drawBar = (x, y, w, h, fill) => {
+        if (hasPadding) {
+          // Draw outer rectangle (border area)
+          const outerBar = `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(
+            0,
+            h
+          )}" rx="${rx}" fill="transparent" ${stroke}/>`;
+
+          // Draw inner rectangle (colored fill with padding)
+          const innerX = x + padding;
+          const innerY = y + padding;
+          const innerW = Math.max(0, w - padding * 2);
+          const innerH = Math.max(0, h - padding * 2);
+          const innerRx = Math.max(0, rx - padding);
+          const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(
+            0,
+            innerH
+          )}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity
+            }"/>`;
+
+          return outerBar + innerBar;
+        } else {
+          // Original bar without padding
+          return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(
+            0,
+            h
+          )}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity
+            }" ${stroke}/>`;
         }
-        return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0,h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
       };
 
-      cats.forEach((c,ci)=>{
-        if (multi){
-          data.series.forEach((s,si)=>{
+      cats.forEach((c, ci) => {
+        if (multi) {
+          data.series.forEach((s, si) => {
             const v = s.y[ci];
-            const x = x0 + ci*band + 5 + si*barW;
+            const x = x0 + ci * band + 5 + si * barW;
             const y = toY(v);
             const h = y0 - y;
-            const fill = colors.series?.[si] || defaultColor(si);
+            const fill = colors.series?.[si];
             bars += drawBar(x, y, barW - gap, h, fill);
           });
-        } else if (stacked){
+        } else if (stacked) {
           let acc = 0;
-          data.series.forEach((s,si)=>{
+          data.series.forEach((s, si) => {
             const v = s.y[ci];
             const y = toY(acc + v);
             const h = toY(acc) - y;
-            const x = x0 + ci*band + 5;
-            const fill = colors.series?.[si] || defaultColor(si);
+            const x = x0 + ci * band + 5;
+            const fill = colors.series?.[si];
             bars += drawBar(x, y, barW - gap, h, fill);
             acc += v;
           });
         } else {
           const v = data.series[0].y[ci];
-          const x = x0 + ci*band + 5;
+          const x = x0 + ci * band + 5;
           const y = toY(v);
           const h = y0 - y;
-          const fill = colors.bars?.[ci] || defaultColor(ci);
+          const fill = colors.bars?.[ci];
           bars += drawBar(x, y, barW - gap, h, fill);
         }
       });
 
-      const catLabels = cats.map((c,ci)=>{
-        const x = x0 + ci*band + band/2;
-        return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" style="${textStyle(opts)}">${c}</text>`
-      }).join('');
+      const catLabels = cats
+        .map((c, ci) => {
+          const x = x0 + ci * band + band / 2;
+          return `<text x="${x}" y="${y0 + 16
+            }" text-anchor="middle" style="font-family:${opts.fontFamily
+            };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+            };fill:${opts.fontColor}">${c}</text>`;
+        })
+        .join("");
 
-      const defs = svgDefsForEffects(opts);
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-        ${defs}
-        ${bgRect(W,H,opts)}
-        ${axes(W,H,pad, opts.showAxes)}
-        ${gridAndTicks(x0,x1,y0,y1,maxY,opts)}
-        ${bars}
-        ${catLabels}
-      </svg>`;
+    ${bgRect(W, H, opts)}
+    ${axes(W, H, pad, opts.showAxes)}
+    ${gridAndTicks(x0, x1, y0, y1, maxY, opts)}
+    ${bars}
+    ${catLabels}
+  </svg>`;
     }
 
-    // ----- Line
-    function renderLine(data, colors, W, H, pad, opts){
-      const X = data.x.map((_,i)=>i);
+    function renderLine(data, colors, W, H, pad, opts) {
+      const X = data.x.map((_, i) => i);
       const Y = data.series[0].y;
-      const maxY = Math.max(...Y), minY = Math.min(0, ...Y);
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
+      const maxY = Math.max(...Y),
+        minY = Math.min(0, ...Y);
+      const x0 = pad,
+        x1 = W - pad,
+        y0 = H - pad,
+        y1 = pad;
       const toX = scaleLinear([0, X.length - 1], [x0, x1]);
       const toY = scaleLinear([minY, maxY], [y0, y1]);
 
-      const points = data.series[0].y.map((v,i)=>`${toX(i)},${toY(v)}`).join(' ');
+      const points = data.series[0].y
+        .map((v, i) => `${toX(i)},${toY(v)}`)
+        .join(" ");
 
-      // stroke pattern
-      const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
-      const baseStroke = `stroke="${colors.line}" stroke-width="${Math.max(1,opts.strokeWidth||2)}" ${dash?`stroke-dasharray="${dash}"`:''} stroke-opacity="${opts.strokeOpacity}"`;
-      const filter = filterAttr(opts);
+      const dash = dashFor(
+        opts.lineStyle || opts.strokeType,
+        opts.strokeDash
+      );
+      const baseStroke = `stroke="${colors.line}" stroke-width="${Math.max(
+        1,
+        opts.strokeWidth || 2
+      )}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity
+        }"`;
 
-      let linePath = `<polyline fill="none" ${baseStroke} points="${points}" ${filter}/>`;
-      if (opts.smooth){
-        const pathPts = data.series[0].y.map((v,i)=>[toX(i), toY(v)]);
+      let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+      if (opts.smooth) {
+        const pathPts = data.series[0].y.map((v, i) => [toX(i), toY(v)]);
         let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-        for (let i=1;i<pathPts.length;i++){
-          const [px,py] = pathPts[i-1]; const [cx,cy] = pathPts[i];
+        for (let i = 1; i < pathPts.length; i++) {
+          const [px, py] = pathPts[i - 1];
+          const [cx, cy] = pathPts[i];
           const qx = (px + cx) / 2;
           d += ` Q ${qx} ${py} ${cx} ${cy}`;
         }
-        linePath = `<path d="${d}" fill="none" ${baseStroke} ${filter}/>`;
+        linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
       }
 
-      const dots = X.map(i => `<circle cx="${toX(i)}" cy="${toY(Y[i])}" r="3" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)} ${filter}/>`).join('');
-      const xlabels = data.x.map((lbl,i)=>`<text x="${toX(i)}" y="${y0+16}" text-anchor="middle" style="${textStyle(opts)}">${lbl}</text>`).join('');
+      const dots = X.map(
+        (i) =>
+          `<circle cx="${toX(i)}" cy="${toY(Y[i])}" r="3" fill="${colors.line
+          }" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`
+      ).join("");
+      const xlabels = data.x
+        .map(
+          (lbl, i) =>
+            `<text x="${toX(i)}" y="${y0 + 16
+            }" text-anchor="middle" style="font-family:${opts.fontFamily
+            };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+            };fill:${opts.fontColor}">${lbl}</text>`
+        )
+        .join("");
 
-      const ticks = 4; const tickEls=[];
-      for (let i=0;i<=ticks;i++){
+      const ticks = 4;
+      const tickEls = [];
+      for (let i = 0; i <= ticks; i++) {
         const t = i / ticks;
-        const y = y0 - t*(y0 - y1);
-        const val = (minY + t*(maxY - minY)).toFixed(0);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${val}</text>`);
+        const y = y0 - t * (y0 - y1);
+        const val = (minY + t * (maxY - minY)).toFixed(0);
+        if (opts.showGrid)
+          tickEls.push(
+            `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`
+          );
+        tickEls.push(
+          `<text x="${x0 - 6}" y="${y + 4
+          }" text-anchor="end" style="font-family:${opts.fontFamily
+          };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+          };fill:${opts.fontColor}">${val}</text>`
+        );
       }
 
-      const area = opts.area ? `<polyline fill="${colors.line}" opacity="${opts.fillOpacity*0.25}" points="${points} ${toX(X.length-1)},${y0} ${toX(0)},${y0}" ${filter}/>` : '';
-      const defs = svgDefsForEffects(opts);
+      const area = opts.area
+        ? `<polyline fill="${colors.line}" opacity="${opts.fillOpacity * 0.25
+        }" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`
+        : "";
 
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-        ${defs}
-        ${bgRect(W,H,opts)}
-        ${axes(W,H,pad, opts.showAxes)}
-        ${tickEls.join('')}
-        ${area}
-        ${linePath}
-        ${dots}
-        ${xlabels}
-      </svg>`;
+      ${bgRect(W, H, opts)}
+      ${axes(W, H, pad, opts.showAxes)}
+      ${tickEls.join("")}
+      ${area}
+      ${linePath}
+      ${dots}
+      ${xlabels}
+    </svg>`;
     }
 
-    // ----- Scatter
-    function renderScatter(data, colors, W, H, pad, opts){
-      const xs = data.points.map(p=>p.x);
-      const ys = data.points.map(p=>p.y);
-      const xmin = Math.min(...xs), xmax = Math.max(...xs);
-      const ymin = Math.min(...ys), ymax = Math.max(...ys);
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const toX = scaleLinear([xmin,xmax], [x0,x1]);
-      const toY = scaleLinear([ymin,ymax], [y0,y1]);
+    function renderScatter(data, colors, W, H, pad, opts) {
+      const xs = data.points.map((p) => p.x);
+      const ys = data.points.map((p) => p.y);
+      const xmin = Math.min(...xs),
+        xmax = Math.max(...xs);
+      const ymin = Math.min(...ys),
+        ymax = Math.max(...ys);
+      const x0 = pad,
+        x1 = W - pad,
+        y0 = H - pad,
+        y1 = pad;
+      const toX = scaleLinear([xmin, xmax], [x0, x1]);
+      const toY = scaleLinear([ymin, ymax], [y0, y1]);
       const stroke = shapeStrokeAttrs(opts);
-      const filter = filterAttr(opts);
 
-      const drawShape = (p)=>{
+      const drawShape = (p) => {
         const r = opts.pointSize || p.r || 6;
-        const cx = toX(p.x), cy = toY(p.y);
-        if (opts.pointShape === 'square') return `<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
-        if (opts.pointShape === 'triangle') return `<polygon points="${cx},${cy-r} ${cx-r},${cy+r} ${cx+r},${cy+r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
-        return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
+        const cx = toX(p.x),
+          cy = toY(p.y);
+        if (opts.pointShape === "square")
+          return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r
+            }" height="${2 * r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity
+            }" ${stroke}/>`;
+        if (opts.pointShape === "triangle")
+          return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r
+            },${cy + r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity
+            }" ${stroke}/>`;
+        return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
       };
 
-      const dots = data.points.map(drawShape).join('');
+      const dots = data.points.map(drawShape).join("");
 
-      const ticks = 4; const tickEls = [];
-      for (let i=0;i<=ticks;i++){
-        const tx = xmin + i*(xmax - xmin)/ticks;
+      const ticks = 4;
+      const tickEls = [];
+      for (let i = 0; i <= ticks; i++) {
+        const tx = xmin + (i * (xmax - xmin)) / ticks;
         const x = toX(tx);
-        if (opts.showGrid) tickEls.push(`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x}" y="${y0+16}" text-anchor="middle" style="${textStyle(opts)}">${Math.round(tx)}</text>`);
+        if (opts.showGrid)
+          tickEls.push(
+            `<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#202635" opacity="${opts.gridOpacity}"/>`
+          );
+        tickEls.push(
+          `<text x="${x}" y="${y0 + 16
+          }" text-anchor="middle" style="font-family:${opts.fontFamily
+          };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+          };fill:${opts.fontColor}">${Math.round(tx)}</text>`
+        );
       }
-      for (let i=0;i<=ticks;i++){
-        const ty = ymin + i*(ymax - ymin)/ticks;
+      for (let i = 0; i <= ticks; i++) {
+        const ty = ymin + (i * (ymax - ymin)) / ticks;
         const y = toY(ty);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${Math.round(ty)}</text>`);
+        if (opts.showGrid)
+          tickEls.push(
+            `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`
+          );
+        tickEls.push(
+          `<text x="${x0 - 6}" y="${y + 4
+          }" text-anchor="end" style="font-family:${opts.fontFamily
+          };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+          };fill:${opts.fontColor}">${Math.round(ty)}</text>`
+        );
       }
 
-      const defs = svgDefsForEffects(opts);
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-        ${defs}
-        ${bgRect(W,H,opts)}
-        ${axes(W,H,pad, opts.showAxes)}
-        ${tickEls.join('')}
-        ${dots}
-      </svg>`;
+      ${bgRect(W, H, opts)}
+      ${axes(W, H, pad, opts.showAxes)}
+      ${tickEls.join("")}
+      ${dots}
+    </svg>`;
     }
 
-    // ----- Histogram
-    function renderHistogram(data, colors, W, H, pad, opts){
-      const vals = data.values.slice().sort((a,b)=>a-b);
+    function renderHistogram(data, colors, W, H, pad, opts) {
+      const vals = data.values.slice().sort((a, b) => a - b);
       const minv = data.range?.[0] ?? vals[0];
-      const maxv = data.range?.[1] ?? vals[vals.length-1];
-      const bins = data.bins || opts.bins || Math.ceil(Math.sqrt(vals.length));
+      const maxv = data.range?.[1] ?? vals[vals.length - 1];
+      const bins =
+        data.bins || opts.bins || Math.ceil(Math.sqrt(vals.length));
       const step = (maxv - minv) / bins;
-      const edges = Array.from({length:bins+1},(_,i)=>minv + i*step);
+      const edges = Array.from(
+        { length: bins + 1 },
+        (_, i) => minv + i * step
+      );
       const counts = new Array(bins).fill(0);
-      vals.forEach(v=>{ if (v < minv || v > maxv) return; let b = Math.min(bins - 1, Math.floor((v - minv)/step)); counts[b]++; });
+      vals.forEach((v) => {
+        if (v < minv || v > maxv) return;
+        let b = Math.min(bins - 1, Math.floor((v - minv) / step));
+        counts[b]++;
+      });
       const total = sum(counts);
-      const countsOrDensity = opts.normalize ? counts.map(c=>c/(total*step)) : counts;
+      const countsOrDensity = opts.normalize
+        ? counts.map((c) => c / (total * step))
+        : counts;
 
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
+      const x0 = pad,
+        x1 = W - pad,
+        y0 = H - pad,
+        y1 = pad;
       const band = (x1 - x0) / bins;
       const maxC = Math.max(1, ...countsOrDensity);
       const toY = scaleLinear([0, maxC], [y0, y1]);
       const stroke = shapeStrokeAttrs(opts);
-      const filter = filterAttr(opts);
-      const rx = clamp(opts.borderRadius,0,20);
+      const rx = Math.min(opts.borderRadius, 20);
 
-      const bars = countsOrDensity.map((c,i)=>{
-        const x = x0 + i*band + 2;
-        const y = toY(c);
-        const h = y0 - y;
-        const fill = colors.bins || '#6aa2ff';
-        return `<rect x="${x}" y="${y}" width="${band-4}" height="${Math.max(0,h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${stroke} ${filter}/>`;
-      }).join('');
+      const bars = countsOrDensity
+        .map((c, i) => {
+          const x = x0 + i * band + 2;
+          const y = toY(c);
+          const h = y0 - y;
+          const fill = colors.bins;
+          return `<rect x="${x}" y="${y}" width="${band - 4
+            }" height="${Math.max(
+              0,
+              h
+            )}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity
+            }" ${stroke}/>`;
+        })
+        .join("");
 
-      const xlabels = counts.map((_,i)=>{
-        const x = x0 + i*band + band/2;
-        const lbl = `${edges[i].toFixed(0)}–${edges[i+1].toFixed(0)}`;
-        return `<text x="${x}" y="${y0+16}" text-anchor="middle" style="${textStyle(opts)}">${lbl}</text>`;
-      }).join('');
+      const xlabels = counts
+        .map((_, i) => {
+          const x = x0 + i * band + band / 2;
+          const lbl = `${edges[i].toFixed(0)}–${edges[i + 1].toFixed(0)}`;
+          return `<text x="${x}" y="${y0 + 16
+            }" text-anchor="middle" style="font-family:${opts.fontFamily
+            };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+            };fill:${opts.fontColor}">${lbl}</text>`;
+        })
+        .join("");
 
-      const ticks = 4; const tickEls = [];
-      for (let i=0;i<=ticks;i++){
+      const ticks = 4;
+      const tickEls = [];
+      for (let i = 0; i <= ticks; i++) {
         const t = i / ticks;
-        const y = y0 - t*(y0 - y1);
+        const y = y0 - t * (y0 - y1);
         const val = (t * maxC).toFixed(0);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0-6}" y="${y+4}" text-anchor="end" style="${textStyle(opts)}">${val}</text>`);
+        if (opts.showGrid)
+          tickEls.push(
+            `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`
+          );
+        tickEls.push(
+          `<text x="${x0 - 6}" y="${y + 4
+          }" text-anchor="end" style="font-family:${opts.fontFamily
+          };font-size:${opts.fontSize}px;font-weight:${opts.fontWeight
+          };fill:${opts.fontColor}">${val}</text>`
+        );
       }
 
-      const defs = svgDefsForEffects(opts);
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-        ${defs}
-        ${bgRect(W,H,opts)}
-        ${axes(W,H,pad, opts.showAxes)}
-        ${tickEls.join('')}
-        ${bars}
-        ${xlabels}
-      </svg>`;
+      ${bgRect(W, H, opts)}
+      ${axes(W, H, pad, opts.showAxes)}
+      ${tickEls.join("")}
+      ${bars}
+      ${xlabels}
+    </svg>`;
     }
 
-    // ---------- Random data ----------
-    const randomInt = (a,b) => Math.floor(a + Math.random()*(b-a+1));
-    function randomData(type){
-      if (type === 'pie'){
-        const n = randomInt(3,6);
-        const labels = Array.from({length:n},(_,i)=>`Slice ${i+1}`);
-        const values = Array.from({length:n},()=>randomInt(5,25));
-        return { labels, values };
+    // ========== MODIFIED UPDATE PREVIEW FUNCTION ==========
+
+    function updatePreview() {
+      const svgHost = document.getElementById("svg-host");
+
+      if (!state.currentData) {
+        svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;">
+        <p>Please configure your data to see the chart preview</p>
+      </div>`;
+        return;
       }
-      if (type === 'line'){
-        const n = randomInt(4,8);
-        const x = Array.from({length:n},(_,i)=>`T${i+1}`);
-        const y = Array.from({length:n},()=>randomInt(5,30));
-        return { x, series: [{ label:'Series', y }] };
+
+      // Update chart options with global settings
+      const currentOpts = state.opts[state.chartType];
+      currentOpts.backgroundColor = state.globalSettings.backgroundColor;
+      currentOpts.fontSize = state.globalSettings.fontSize;
+      currentOpts.borderRadius = state.globalSettings.borderRadius;
+      currentOpts.backgroundTransparent = false; // Use our global background
+
+      // Disable grid and axes for pie chart
+      if (state.chartType === "pie") {
+        currentOpts.showGrid = false;
+        currentOpts.showAxes = false;
+      } else {
+        currentOpts.showGrid = state.globalSettings.showGrid;
+        currentOpts.showAxes = state.globalSettings.showAxes;
       }
-      if (type === 'bar'){
-        const n = randomInt(4,7);
-        const cats = Array.from({length:n},(_,i)=>`C${i+1}`);
-        const multi = Math.random() < 0.5;
-        if (multi){
-          const s = randomInt(2,3);
-          const series = Array.from({length:s},(_,si)=>({ label:`S${si+1}`, y: Array.from({length:n},()=>randomInt(5,30)) }));
-          return { categories: cats, series };
+
+      // Apply padding based on chart type
+      applyChartSpecificPadding(
+        state.chartType,
+        state.globalSettings.padding,
+        currentOpts
+      );
+
+      // Use the colors from state (or generate if not present)
+      const colors =
+        state.colors || generateColors(state.chartType, state.currentData);
+
+      // Get actual preview canvas dimensions
+      const previewCanvas = document.getElementById("svg-host");
+      const W = previewCanvas.clientWidth;
+      const H = previewCanvas.clientHeight;
+      const pad = Math.min(W, H) * 0.07; // Responsive padding based on size
+
+      try {
+        let svg = "";
+
+        switch (state.chartType) {
+          case "pie":
+            svg = renderPie(state.currentData, colors, W, H, currentOpts);
+            break;
+          case "bar":
+            svg = renderBar(
+              state.currentData,
+              colors,
+              W,
+              H,
+              pad,
+              currentOpts
+            );
+            break;
+          case "line":
+            svg = renderLine(
+              state.currentData,
+              colors,
+              W,
+              H,
+              pad,
+              currentOpts
+            );
+            break;
+          case "scatter":
+            svg = renderScatter(
+              state.currentData,
+              colors,
+              W,
+              H,
+              pad,
+              currentOpts
+            );
+            break;
+          case "histogram":
+            svg = renderHistogram(
+              state.currentData,
+              colors,
+              W,
+              H,
+              pad,
+              currentOpts
+            );
+            break;
+          default:
+            svg = renderBar(
+              state.currentData,
+              colors,
+              W,
+              H,
+              pad,
+              currentOpts
+            );
         }
-        return { categories: cats, series: [{ label:'Series 1', y: Array.from({length:n},()=>randomInt(5,30)) }] };
-      }
-      if (type === 'scatter'){
-        const n = randomInt(12,24);
-        const points = Array.from({length:n},()=>({ x: randomInt(0,100), y: randomInt(0,100), r: randomInt(4,8) }));
-        return { points };
-      }
-      if (type === 'histogram'){
-        const n = randomInt(30,80);
-        const values = Array.from({length:n},()=>Math.round(Math.max(0,Math.min(100,(Math.random()**0.7)*100))));
-        return { values };
+
+        svgHost.innerHTML = svg;
+
+        // Add click handlers to chart elements for interactive editing
+        setTimeout(() => {
+          addChartElementInteractivity();
+        }, 100);
+      } catch (error) {
+        console.error("Chart rendering error:", error);
+        svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;">
+        <p>Error rendering chart. Please check your data.</p>
+        <p style="font-size:12px; color:var(--ink-2);">${error.message}</p>
+      </div>`;
       }
     }
 
-    // ---------- Small UI helpers ----------
-    function makeText(label, name, placeholder=''){ const wrap = el('div',{class:'seg'}); wrap.append(el('label',{class:'seg-label'},label)); const input = el('input',{type:'text', name, placeholder}); wrap.append(input); return wrap; }
-    function makeNumber(label, name, placeholder=''){ const wrap = el('div',{class:'seg'}); wrap.append(el('label',{class:'seg-label'},label)); const input = el('input',{type:'number', name, placeholder, step:'any'}); wrap.append(input); return wrap; }
-    function makeHelp(text){ return el('div',{class:'seg-label', style:'color:var(--ink-2)'}, text); }
-    function makeKVList(title,kLabel,vLabel,initialRows=3){
-      const wrap = el('div',{class:'seg'}); wrap.append(el('label',{class:'seg-label'},title));
-      const list = el('div',{class:'seg', id:'kv-list'});
-      const addRow = (k='', v='') => {
-        const row = el('div',{class:'seg-row'});
-        const ki = el('input',{type:'text', placeholder:kLabel, 'data-role':'k', value:k});
-        const vi = el('input',{type:'number', placeholder:vLabel, 'data-role':'v', step:'any', value:v});
-        const rm = el('button',{class:'btn', title:'Remove row'}, 'Remove');
-        rm.addEventListener('click', ()=>row.remove());
-        row.append(ki, vi, rm);
-        list.append(row);
+    function applyChartSpecificPadding(chartType, padding, opts) {
+      switch (chartType) {
+        case "bar":
+          opts.barSpacing = padding;
+          break;
+        case "pie":
+          // For pie chart, padding reduces the colored fill area inside the stroke
+          // This is handled in renderPie function
+          break;
+        case "scatter":
+          opts.pointSpacing = padding;
+          break;
+        default:
+          break;
+      }
+    }
+
+    function generateColors(chartType, data, presetColors = null) {
+      const colors = {};
+      const colorArray =
+        presetColors || Array.from({ length: 10 }, (_, i) => defaultColor(i));
+
+      switch (chartType) {
+        case "pie":
+          colors.slices = data.labels.map(
+            (_, i) => colorArray[i % colorArray.length] || defaultColor(i)
+          );
+          break;
+        case "bar":
+          if (data.series.length > 1) {
+            colors.series = data.series.map(
+              (_, i) => colorArray[i % colorArray.length] || defaultColor(i)
+            );
+          } else {
+            colors.bars = data.categories.map(
+              (_, i) => colorArray[i % colorArray.length] || defaultColor(i)
+            );
+          }
+          break;
+        case "line":
+          colors.line = colorArray[0] || defaultColor(0);
+          break;
+        case "scatter":
+          colors.points = colorArray[0] || defaultColor(0);
+          break;
+        case "histogram":
+          colors.bins = colorArray[0] || defaultColor(0);
+          break;
+      }
+
+      return colors;
+    }
+
+    function addChartElementInteractivity() {
+      const svg = document.querySelector("#svg-host svg");
+      if (!svg) return;
+
+      // Add click handlers to all chart elements that can be customized
+      const interactiveElements = svg.querySelectorAll(
+        "rect, circle, path, polygon, polyline"
+      );
+
+      interactiveElements.forEach((element, index) => {
+        element.style.cursor = "pointer";
+        element.setAttribute("data-element-id", index);
+        element.setAttribute(
+          "data-original-fill",
+          element.getAttribute("fill") || "#6aa2ff"
+        );
+
+        element.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectChartElement(element);
+        });
+      });
+
+      // Click outside to deselect
+      svg.addEventListener("click", (e) => {
+        if (e.target === svg) {
+          hideContextToolbar();
+        }
+      });
+    }
+
+    function selectChartElement(element) {
+      // Remove previous selection
+      const previouslySelected = document.querySelector(
+        ".chart-element.selected"
+      );
+      if (previouslySelected) {
+        previouslySelected.classList.remove("selected");
+      }
+
+      // Select new element
+      element.classList.add("selected");
+      state.selectedElement = element;
+
+      // Show context toolbar near the element
+      const rect = element.getBoundingClientRect();
+      const previewRect = document
+        .getElementById("svg-host")
+        .getBoundingClientRect();
+
+      contextToolbar.style.left =
+        rect.left - previewRect.left + rect.width / 2 + "px";
+      contextToolbar.style.top = rect.top - previewRect.top - 80 + "px";
+      contextToolbar.classList.add("visible");
+
+      // Set toolbar values based on element
+      const currentColor =
+        element.getAttribute("fill") ||
+        element.getAttribute("stroke") ||
+        "#6aa2ff";
+      toolbarColor.value = currentColor;
+
+      const currentOpacity = Math.round(
+        parseFloat(
+          element.getAttribute("fill-opacity") ||
+          element.getAttribute("opacity") ||
+          "1"
+        ) * 100
+      );
+      toolbarOpacity.value = currentOpacity;
+    }
+
+    // ========== DATA TABLE CONFIGURATION ==========
+
+    // Data Table Configuration
+    const dataTableConfig = {
+      bar: {
+        headers: ['Category', 'Value'],
+        types: ['text', 'number'],
+        maxRows: 15,
+        maxSeries: 5,
+        defaultData: [
+          ['Category A', 25],
+          ['Category B', 40],
+          ['Category C', 30],
+          ['Category D', 35]
+        ]
+      },
+      pie: {
+        headers: ['Label', 'Value', 'Color'],
+        types: ['text', 'number', 'color'],
+        maxRows: 8,
+        maxSeries: 1,
+        defaultData: [
+          ['Slice A', 25, '#6aa2ff'],
+          ['Slice B', 40, '#a78bfa'],
+          ['Slice C', 30, '#ff6b6b'],
+          ['Slice D', 35, '#4ecdc4']
+        ]
+      },
+      line: {
+        headers: ['X-Axis', 'Value'],
+        types: ['text', 'number'],
+        maxRows: 15,
+        maxSeries: 5,
+        defaultData: [
+          ['Jan', 25],
+          ['Feb', 40],
+          ['Mar', 30],
+          ['Apr', 35]
+        ]
+      },
+      scatter: {
+        headers: ['X', 'Y', 'Size', 'Label'],
+        types: ['number', 'number', 'number', 'text'],
+        maxRows: 20,
+        maxSeries: 1,
+        defaultData: [
+          [10, 20, 6, 'Point A'],
+          [30, 40, 8, 'Point B'],
+          [50, 30, 5, 'Point C'],
+          [70, 60, 7, 'Point D']
+        ]
+      },
+      histogram: {
+        headers: ['Value'],
+        types: ['number'],
+        maxRows: 50,
+        maxSeries: 1,
+        defaultData: [
+          [12], [15], [18], [22], [25], [28], [30], [32], [35], [18], [22], [25]
+        ]
+      }
+    };
+
+    // Multi-series support
+    let currentSeries = 1;
+
+    // Initialize Enhanced Data Table
+    function initEnhancedDataTable() {
+      const addRowBtn = document.getElementById('btn-add-row');
+      const addSeriesBtn = document.getElementById('btn-add-series');
+      
+      addRowBtn.addEventListener('click', addNewRow);
+      addSeriesBtn.addEventListener('click', addNewSeries);
+    }
+
+    // Update table structure based on chart type
+    function updateDataTableForChartType() {
+      const config = dataTableConfig[state.chartType];
+      const headersContainer = document.getElementById('data-table-headers');
+      const bodyContainer = document.getElementById('data-table-body');
+      const addSeriesBtn = document.getElementById('btn-add-series');
+      
+      // Show/hide add series button
+      if (config.maxSeries > 1) {
+        addSeriesBtn.style.display = 'block';
+        currentSeries = Math.min(currentSeries, config.maxSeries);
+      } else {
+        addSeriesBtn.style.display = 'none';
+        currentSeries = 1;
+      }
+      
+      // Update headers
+      headersContainer.innerHTML = generateTableHeaders(config);
+      
+      // Update body with current data or default data
+      if (!state.currentData || !isValidDataForChart(state.currentData, state.chartType)) {
+        state.currentData = convertTableDataToChartData(config.defaultData, state.chartType);
+      }
+      
+      bodyContainer.innerHTML = generateTableRows(getTableDataFromChartData(state.currentData, state.chartType), config);
+      
+      updateRowCount();
+      updateDataLimits();
+    }
+
+    // Generate table headers
+    function generateTableHeaders(config) {
+      let headers = config.headers.slice();
+      
+      // Add series columns for multi-series charts
+      if (currentSeries > 1 && state.chartType !== 'pie') {
+        const baseHeaders = headers.slice(0, 1); // Keep first column (Category/X-Axis)
+        for (let i = 1; i <= currentSeries; i++) {
+          baseHeaders.push(`Series ${i}`);
+        }
+        headers = baseHeaders;
+      }
+      
+      // Add actions column
+      headers.push('Actions');
+      
+      return `
+        <tr>
+          ${headers.map((header, index) => {
+            if (index < headers.length - 1 && index > 0 && currentSeries > 1 && state.chartType !== 'pie') {
+              // Series header with delete button
+              return `
+                <th>
+                  <div class="series-header">
+                    <span>${header}</span>
+                    <button class="delete-series" data-series="${index}" title="Delete series">×</button>
+                  </div>
+                </th>
+              `;
+            } else {
+              return `<th>${header}</th>`;
+            }
+          }).join('')}
+        </tr>
+      `;
+    }
+
+    // Generate table rows
+    function generateTableRows(data, config) {
+      return data.map((row, rowIndex) => `
+        <tr data-row="${rowIndex}">
+          ${row.map((cell, cellIndex) => {
+            const inputType = config.types[cellIndex] || 'text';
+            
+            if (inputType === 'color') {
+              return `
+                <td class="color-cell">
+                  <div class="color-preview" style="background: ${cell}"></div>
+                  <input type="color" value="${cell}" data-cell="${cellIndex}" 
+                         title="Choose color">
+                </td>
+              `;
+            } else {
+              return `
+                <td>
+                  <input type="${inputType}" value="${cell}" data-cell="${cellIndex}" 
+                         ${inputType === 'number' ? 'min="0" step="1"' : ''}>
+                </td>
+              `;
+            }
+          }).join('')}
+          <td class="row-actions">
+            <button class="delete-row" data-row="${rowIndex}" title="Delete row">×</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Add new row
+    function addNewRow() {
+      const config = dataTableConfig[state.chartType];
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      if (currentData.length >= config.maxRows) {
+        alert(`Maximum ${config.maxRows} rows allowed for ${state.chartType} chart`);
+        return;
+      }
+      
+      // Create empty row based on current series count
+      const emptyRow = [];
+      for (let i = 0; i < config.headers.length; i++) {
+        if (i === 0) {
+          emptyRow.push(`New ${config.headers[i]}`);
+        } else if (config.types[i] === 'number') {
+          emptyRow.push(Math.floor(Math.random() * 50) + 10);
+        } else if (config.types[i] === 'color') {
+          emptyRow.push(defaultColor(currentData.length));
+        } else {
+          emptyRow.push('');
+        }
+      }
+      
+      currentData.push(emptyRow);
+      state.currentData = convertTableDataToChartData(currentData, state.chartType);
+      updateDataTableForChartType();
+      updatePreview();
+    }
+
+    // Add new series
+    function addNewSeries() {
+      const config = dataTableConfig[state.chartType];
+      
+      if (currentSeries >= config.maxSeries) {
+        alert(`Maximum ${config.maxSeries} series allowed for ${state.chartType} chart`);
+        return;
+      }
+      
+      currentSeries++;
+      updateDataTableForChartType();
+      updatePreview();
+    }
+
+    // Delete row
+    function deleteRow(rowIndex) {
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      if (currentData.length <= 1) {
+        alert('Cannot delete the last row');
+        return;
+      }
+      
+      currentData.splice(rowIndex, 1);
+      state.currentData = convertTableDataToChartData(currentData, state.chartType);
+      updateDataTableForChartType();
+      updatePreview();
+    }
+
+    // Delete series
+    function deleteSeries(seriesIndex) {
+      if (currentSeries <= 1) {
+        alert('Cannot delete the last series');
+        return;
+      }
+      
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      // Remove the series column from all rows
+      currentData.forEach(row => {
+        row.splice(seriesIndex, 1);
+      });
+      
+      currentSeries--;
+      state.currentData = convertTableDataToChartData(currentData, state.chartType);
+      updateDataTableForChartType();
+      updatePreview();
+    }
+
+    // Handle cell edits
+    function handleCellEdit(rowIndex, cellIndex, newValue) {
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      if (currentData[rowIndex]) {
+        currentData[rowIndex][cellIndex] = newValue;
+        state.currentData = convertTableDataToChartData(currentData, state.chartType);
+        updatePreview();
+      }
+    }
+
+    // Update row count display
+    function updateRowCount() {
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      document.getElementById('row-count').textContent = `${currentData.length} rows`;
+    }
+
+    // Update data limits display
+    function updateDataLimits() {
+      const config = dataTableConfig[state.chartType];
+      const seriesText = config.maxSeries > 1 ? `, ${currentSeries}/${config.maxSeries} series` : '';
+      document.getElementById('data-limits').textContent = `Max: ${config.maxRows} rows${seriesText}`;
+    }
+
+    // Data conversion functions
+    function getTableDataFromChartData(chartData, chartType) {
+      switch (chartType) {
+        case 'bar':
+          return chartData.categories.map((category, index) => {
+            const row = [category];
+            chartData.series.forEach(series => {
+              row.push(series.y[index]);
+            });
+            return row;
+          });
+          
+        case 'pie':
+          return chartData.labels.map((label, index) => [
+            label,
+            chartData.values[index],
+            state.colors?.slices?.[index] || defaultColor(index)
+          ]);
+          
+        case 'line':
+          return chartData.x.map((xValue, index) => {
+            const row = [xValue];
+            chartData.series.forEach(series => {
+              row.push(series.y[index]);
+            });
+            return row;
+          });
+          
+        case 'scatter':
+          return chartData.points.map(point => [
+            point.x,
+            point.y,
+            point.r || 6,
+            point.label || ''
+          ]);
+          
+        case 'histogram':
+          return chartData.values.map(value => [value]);
+          
+        default:
+          return [];
+      }
+    }
+
+    function convertTableDataToChartData(tableData, chartType) {
+      switch (chartType) {
+        case 'bar':
+          const categories = tableData.map(row => row[0]);
+          const series = [];
+          
+          for (let i = 1; i < tableData[0].length; i++) {
+            series.push({
+              label: `Series ${i}`,
+              y: tableData.map(row => parseInt(row[i]) || 0)
+            });
+          }
+          
+          return { categories, series };
+          
+        case 'pie':
+          const labels = tableData.map(row => row[0]);
+          const values = tableData.map(row => parseInt(row[1]) || 0);
+          const colors = tableData.map(row => row[2]);
+          
+          // Update state colors
+          if (!state.colors) state.colors = {};
+          state.colors.slices = colors;
+          
+          return { labels, values };
+          
+        case 'line':
+          const x = tableData.map(row => row[0]);
+          const lineSeries = [];
+          
+          for (let i = 1; i < tableData[0].length; i++) {
+            lineSeries.push({
+              label: `Series ${i}`,
+              y: tableData.map(row => parseInt(row[i]) || 0)
+            });
+          }
+          
+          return { x, series: lineSeries };
+          
+        case 'scatter':
+          const points = tableData.map(row => ({
+            x: parseInt(row[0]) || 0,
+            y: parseInt(row[1]) || 0,
+            r: parseInt(row[2]) || 6,
+            label: row[3] || ''
+          }));
+          
+          return { points };
+          
+        case 'histogram':
+          const histogramValues = tableData.map(row => parseInt(row[0]) || 0);
+          return { values: histogramValues };
+          
+        default:
+          return tableData;
+      }
+    }
+
+    // Event delegation for table interactions
+    function setupTableEventListeners() {
+      const table = document.getElementById('enhanced-data-table');
+      
+      table.addEventListener('input', (e) => {
+        if (e.target.matches('input')) {
+          const row = e.target.closest('tr');
+          const rowIndex = parseInt(row.dataset.row);
+          const cellIndex = parseInt(e.target.dataset.cell);
+          const newValue = e.target.value;
+          
+          handleCellEdit(rowIndex, cellIndex, newValue);
+        }
+      });
+      
+      table.addEventListener('click', (e) => {
+        if (e.target.matches('.delete-row')) {
+          const rowIndex = parseInt(e.target.dataset.row);
+          deleteRow(rowIndex);
+        }
+        
+        if (e.target.matches('.delete-series')) {
+          const seriesIndex = parseInt(e.target.dataset.series);
+          deleteSeries(seriesIndex);
+        }
+      });
+    }
+
+    // Helper function to validate data
+    function isValidDataForChart(data, chartType) {
+      if (!data) return false;
+      
+      switch (chartType) {
+        case 'bar':
+          return data.categories && data.series && data.series.length > 0;
+        case 'pie':
+          return data.labels && data.values && data.labels.length === data.values.length;
+        case 'line':
+          return data.x && data.series && data.series.length > 0;
+        case 'scatter':
+          return data.points && Array.isArray(data.points);
+        case 'histogram':
+          return data.values && Array.isArray(data.values);
+        default:
+          return false;
+      }
+    }
+
+    // ========== REST OF THE APPLICATION CODE ==========
+
+    // Data Management Functions
+    function getDefaultData(type) {
+      switch (type) {
+        case "bar":
+          return {
+            categories: [
+              "Category A",
+              "Category B",
+              "Category C",
+              "Category D",
+            ],
+            series: [{ label: "Series 1", y: [25, 40, 30, 35] }],
+          };
+        case "pie":
+          return {
+            labels: ["Slice A", "Slice B", "Slice C", "Slice D"],
+            values: [25, 40, 30, 35],
+          };
+        case "line":
+          return {
+            x: ["Jan", "Feb", "Mar", "Apr"],
+            series: [{ label: "Series 1", y: [25, 40, 30, 35] }],
+          };
+        case "scatter":
+          return {
+            points: [
+              { x: 10, y: 20, r: 6 },
+              { x: 30, y: 40, r: 8 },
+              { x: 50, y: 30, r: 5 },
+              { x: 70, y: 60, r: 7 },
+            ],
+          };
+        case "histogram":
+          return {
+            values: [
+              12, 15, 18, 22, 25, 28, 30, 32, 35, 18, 22, 25, 28, 30, 32,
+            ],
+          };
+        default:
+          return getDefaultData("bar");
+      }
+    }
+
+    function applyManualData() {
+      try {
+        const parsedData = JSON.parse(dataInput.value);
+        state.currentData = parsedData;
+        updatePreview();
+      } catch (e) {
+        alert("Invalid JSON data. Please check your input format.");
+      }
+    }
+
+    // Initialize the application
+    function init() {
+      setupEventListeners();
+      initChartTypeSelector();
+      initDataSourceSelector();
+      initEnhancedDataTable();
+      setupTableEventListeners();
+      updateDataTableForChartType();
+      updateToolbarForChartType();
+      updatePreview();
+      updateGlobalToolbarValues();
+    }
+
+    // Event Listeners Setup
+    function setupEventListeners() {
+      // Hamburger Menu
+      hamburgerMenu.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle("visible");
+      });
+
+      document.addEventListener("click", () => {
+        dropdownMenu.classList.remove("visible");
+      });
+
+      // Theme Toggle
+      themeToggle.addEventListener("click", toggleTheme);
+
+      // Info Modal
+      infoBtn.addEventListener("click", () => {
+        infoModal.classList.add("visible");
+        dropdownMenu.classList.remove("visible");
+      });
+
+      modalClose.addEventListener("click", () => {
+        infoModal.classList.remove("visible");
+      });
+
+      infoModal.addEventListener("click", (e) => {
+        if (e.target === infoModal) {
+          infoModal.classList.remove("visible");
+        }
+      });
+
+      // Apply Manual Data
+      btnApplyData.addEventListener("click", applyManualData);
+
+      // Global Toolbar Controls
+      globalBgColor.addEventListener("input", (e) => {
+        state.globalSettings.backgroundColor = e.target.value;
+        // Also update the chart-specific options
+        state.opts[state.chartType].backgroundColor = e.target.value;
+        state.opts[state.chartType].backgroundTransparent = false;
+        updatePreview();
+      });
+
+      // Grid Toggle - fix the selector
+      document.getElementById("global-grid-toggle").addEventListener("click", function() {
+        this.classList.toggle("active");
+        state.globalSettings.showGrid = this.classList.contains("active");
+        
+        // Also update chart-specific options
+        if (state.chartType !== "pie") {
+          state.opts[state.chartType].showGrid = state.globalSettings.showGrid;
+        }
+        
+        updatePreview();
+      });
+
+      // Axes Toggle - fix the selector  
+      document.getElementById("global-axes-toggle").addEventListener("click", function() {
+        this.classList.toggle("active");
+        state.globalSettings.showAxes = this.classList.contains("active");
+        
+        // Also update chart-specific options
+        if (state.chartType !== "pie") {
+          state.opts[state.chartType].showAxes = state.globalSettings.showAxes;
+        }
+        
+        updatePreview();
+      });
+
+      resetStylesBtn.addEventListener("click", () => {
+        // Reset to defaults
+        state.globalSettings = {
+          backgroundColor: "#111318",
+          showGrid: true,
+          showAxes: true,
+          fontSize: 12,
+          padding: 0,
+          borderRadius: 6,
+        };
+        updateGlobalToolbarValues();
+        updatePreview();
+      });
+
+      // Close all dropdowns when clicking outside
+      document.addEventListener("click", (e) => {
+        // Only close if the click is NOT on a dropdown button or inside a dropdown
+        if (
+          !e.target.closest(".has-dropdown") &&
+          !e.target.closest(".dropdown-menu") &&
+          !e.target.closest(".slider-popup") &&
+          !e.target.closest(".color-preset-dropdown")
+        ) {
+          closeAllDropdowns();
+        }
+      });
+
+      // Context Toolbar
+      toolbarColor.addEventListener("input", (e) => {
+        if (state.selectedElement) {
+          state.selectedElement.setAttribute("fill", e.target.value);
+        }
+      });
+
+      toolbarOpacity.addEventListener("input", (e) => {
+        if (state.selectedElement) {
+          state.selectedElement.setAttribute(
+            "fill-opacity",
+            (e.target.value / 100).toString()
+          );
+        }
+      });
+
+      toolbarAdvanced.addEventListener("click", () => {
+        alert("Advanced options will be implemented in the next phase");
+      });
+
+      // Export Buttons
+      btnExportSvg.addEventListener("click", exportSVG);
+      btnExportPng.addEventListener("click", exportPNG);
+      btnExportFigma.addEventListener("click", exportToFigma);
+    }
+
+    // Theme Management
+    function toggleTheme() {
+      const isDark =
+        document.documentElement.style.getPropertyValue("--bg") ===
+        "#0b0c0f" ||
+        !document.documentElement.style.getPropertyValue("--bg");
+
+      if (isDark) {
+        applyLightTheme();
+        themeToggle.innerHTML = "<span>☀️</span><span>Light Mode</span>";
+      } else {
+        applyDarkTheme();
+        themeToggle.innerHTML = "<span>🌙</span><span>Dark Mode</span>";
+      }
+      updatePreview();
+    }
+
+    function applyLightTheme() {
+      document.documentElement.style.setProperty("--bg", "#f8fafc");
+      document.documentElement.style.setProperty("--panel", "#ffffff");
+      document.documentElement.style.setProperty("--panel-2", "#f6f7fb");
+      document.documentElement.style.setProperty("--ink", "#0f172a");
+      document.documentElement.style.setProperty("--ink-2", "#334155");
+      document.documentElement.style.setProperty("--muted", "#64748b");
+      document.documentElement.style.setProperty("--line", "#e5e7eb");
+      document.documentElement.style.setProperty("--brand", "#2563eb");
+      document.documentElement.style.setProperty("--brand-2", "#60a5fa");
+      document.documentElement.style.setProperty("--accent", "#8b5cf6");
+    }
+
+    function applyDarkTheme() {
+      document.documentElement.style.removeProperty("--bg");
+      document.documentElement.style.removeProperty("--panel");
+      document.documentElement.style.removeProperty("--panel-2");
+      document.documentElement.style.removeProperty("--ink");
+      document.documentElement.style.removeProperty("--ink-2");
+      document.documentElement.style.removeProperty("--muted");
+      document.documentElement.style.removeProperty("--line");
+      document.documentElement.style.removeProperty("--brand");
+      document.documentElement.style.removeProperty("--brand-2");
+      document.documentElement.style.removeProperty("--accent");
+    }
+
+    function hideContextToolbar() {
+      contextToolbar.classList.remove("visible");
+      state.selectedElement = null;
+
+      const selected = document.querySelector(".chart-element.selected");
+      if (selected) {
+        selected.classList.remove("selected");
+      }
+    }
+
+    // Export Functions
+    function exportSVG() {
+      const svg = document.querySelector("#svg-host svg");
+      if (!svg) {
+        alert("No chart to export. Please generate a chart first.");
+        return;
+      }
+
+      const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `chart-${state.chartType}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportPNG() {
+      const svg = document.querySelector("#svg-host svg");
+      if (!svg) {
+        alert("No chart to export. Please generate a chart first.");
+        return;
+      }
+
+      const xml = new XMLSerializer().serializeToString(svg);
+      const img = new Image();
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = 800;
+      canvas.height = 380;
+
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0);
+        const url = canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `chart-${state.chartType}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
       };
-      for (let i=0;i<initialRows;i++) addRow();
-      const add = el('button',{class:'btn', title:'Add a row'}, 'Add Row');
-      add.addEventListener('click', ()=> addRow());
-      wrap.append(list, add);
-      return wrap;
+
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
     }
-    function readKVList(){
-      const list = qsa('#kv-list .seg-row').map(r=>({
-        k: qs('[data-role="k"]', r).value.trim(),
-        v: qs('[data-role="v"]', r).value.trim()
-      })).filter(r=>r.k && r.v !== '');
-      return list.map(r=>({ k: r.k, v: +r.v })).filter(r=>!isNaN(r.v));
+
+    function exportToFigma() {
+      const svg = document.querySelector("#svg-host svg");
+      if (!svg) {
+        alert("No chart to export. Please generate a chart first.");
+        return;
+      }
+
+      // Send SVG to Figma plugin
+      if (typeof parent !== "undefined" && parent.postMessage) {
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "EXPORT_SVG",
+              svg: svg.outerHTML,
+            },
+          },
+          "*"
+        );
+        alert("Chart sent to Figma canvas!");
+      } else {
+        alert(
+          "Figma export is only available when running as a Figma plugin"
+        );
+      }
     }
+
+    // Initialize the application when DOM is loaded
+    document.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
