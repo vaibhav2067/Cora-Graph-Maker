@@ -395,11 +395,19 @@
       left: 18px;
       background: white;
     }
-
+    
+    #context-actions {
+      justify-content: space-between;
+      margin-top: 8px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    
     /* More Options Dropdown */
     .more-options {
       position: relative;
     }
+    
 
     .more-dropdown {
       position: fixed;
@@ -445,7 +453,7 @@
       display: none;
       flex-wrap: wrap;
       gap: 8px;
-      max-width: 300px;
+      max-width: 280px;
       z-index: 100;
     }
 
@@ -615,11 +623,6 @@
       border-color: transparent;
     }
 
-    .btn.small {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-
     .color-picker {
       width: 30px;
       height: 30px;
@@ -635,39 +638,28 @@
       align-items: center;
       gap: 8px;
       padding: 4px 0;
+      width: 100%;
     }
 
     .toolbar-label {
       font-size: 11px;
       color: var(--ink-2);
-      min-width: 60px;
+      min-width: 80px;
+      font-weight: 500;
     }
 
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
+    .bar-specific, .pie-specific {
+      display: none;
     }
 
-    .data-table th,
-    .data-table td {
-      border: 1px solid var(--line);
-      padding: 6px 8px;
-      text-align: left;
+    .context-toolbar.bar-mode .bar-specific {
+      display: flex;
     }
 
-    .data-table th {
-      background: var(--panel-2);
-      font-weight: 600;
+    .context-toolbar.pie-mode .pie-specific {
+      display: flex;
     }
 
-    .data-table input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: var(--ink);
-      outline: none;
-    }
 
     ::-webkit-scrollbar {
       width: 8px;
@@ -897,129 +889,321 @@
       color: var(--brand);
     }
 
-    .section-header {
+    .data-section-modern {
+      background: var(--panel);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .data-section-header {
+      background: var(--panel-2);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
     }
 
-    .data-controls {
+    .data-section-title {
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .data-controls-modern {
       display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-modern {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-modern:hover {
+      background: var(--panel-2);
+      border-color: var(--brand);
+      transform: translateY(-1px);
+    }
+
+    .btn-modern.primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: white;
+    }
+
+    .btn-modern.primary:hover {
+      background: var(--brand-2);
+      border-color: var(--brand-2);
+    }
+
+    .btn-modern.danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+
+    .btn-modern.danger:hover {
+      background: #fecaca;
+      border-color: #fca5a5;
+    }
+
+    .btn-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .modern-data-table-container {
+      padding: 0;
+      overflow-x: auto;
+    }
+
+    .modern-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 400px;
+    }
+
+    .modern-data-table th {
+      background: var(--panel-2);
+      font-weight: 600;
+      color: var(--ink);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 2px solid var(--line);
+      position: sticky;
+      top: 0;
+    }
+
+    .modern-data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      transition: background-color 0.2s ease;
+    }
+
+    .modern-data-table tbody tr:hover {
+      background: var(--panel-2);
+    }
+
+    .modern-data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .modern-data-table input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 6px 8px;
+      background: var(--panel);
+      color: var(--ink);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .modern-data-table input:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(106, 162, 255, 0.1);
+    }
+
+    .modern-data-table input[type="color"] {
+      width: 32px;
+      height: 24px;
+      padding: 2px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+    }
+
+    .color-cell-modern {
+      display: flex;
+      align-items: center;
       gap: 8px;
     }
 
-    .data-info {
+    .color-preview-modern {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .row-actions-modern {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .delete-row-btn {
+      background: none;
+      border: none;
+      padding: 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: var(--muted);
+    }
+
+    .delete-row-btn:hover {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .delete-row-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .series-header-modern {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    .delete-series-btn {
+      background: none;
+      border: none;
+      padding: 2px;
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      transition: all 0.2s ease;
+    }
+
+    .delete-series-btn:hover {
+      color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .delete-series-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .data-info-modern {
       display: flex;
       justify-content: space-between;
-      margin-top: 12px;
+      align-items: center;
+      padding: 12px 20px;
+      background: var(--panel-2);
+      border-top: 1px solid var(--line);
       font-size: 11px;
       color: var(--muted);
     }
 
-    .enhanced-data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
+    .data-stats {
+      display: flex;
+      gap: 16px;
     }
 
-    .enhanced-data-table th,
-    .enhanced-data-table td {
+    .data-limit {
+      color: var(--ink-2);
+      font-weight: 500;
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .data-section-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .data-controls-modern {
+        justify-content: space-between;
+      }
+
+      .modern-data-table {
+        font-size: 11px;
+      }
+
+      .modern-data-table th,
+      .modern-data-table td {
+        padding: 8px 12px;
+      }
+    }
+
+    /* Shape Popup Styles */
+    .shape-popup {
+      position: fixed;
+      background: var(--panel);
       border: 1px solid var(--line);
+      border-radius: var(--radius);
       padding: 8px;
-      text-align: left;
+      box-shadow: var(--shadow);
+      display: none;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      z-index: 2000;
+      min-width: 80px;
     }
 
-    .enhanced-data-table th {
+    .shape-popup.visible {
+      display: grid;
+    }
+
+    .shape-option {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
       background: var(--panel-2);
-      font-weight: 600;
-      position: relative;
-    }
-
-    .enhanced-data-table input {
-      width: 100%;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--ink);
-      outline: none;
-      padding: 4px;
-      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .enhanced-data-table input:focus {
-      border-color: var(--brand);
+    .shape-option:hover {
       background: var(--panel);
+      border-color: var(--brand);
     }
 
-    .enhanced-data-table input[type="number"] {
-      min-width: 60px;
+    .shape-option.active {
+      background: var(--brand);
+      border-color: var(--brand);
     }
 
-    .enhanced-data-table input[type="color"] {
-      width: 30px;
-      height: 24px;
-      cursor: pointer;
-      border: 1px solid var(--line);
-      border-radius: 4px;
+    .shape-option.active svg {
+      color: white;
     }
 
-    .row-actions {
-      display: flex;
-      gap: 4px;
-      justify-content: center;
+    /* Hide toolbar items completely */
+    .toolbar-item.hidden {
+      display: none !important;
     }
-
-    .delete-row {
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .delete-row:hover {
-      background: var(--panel-2);
-      color: #ef4444;
-    }
-
-    .series-header {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .delete-series {
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      padding: 2px;
-      border-radius: 2px;
-      font-size: 10px;
-    }
-
-    .delete-series:hover {
-      color: #ef4444;
-    }
-
-    .color-cell {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .color-preview {
-      width: 16px;
-      height: 16px;
-      border-radius: 3px;
-      border: 1px solid var(--line);
-    }
-  </style>
+      </style>
 </head>
 
 <body>
@@ -1168,28 +1352,51 @@
       </div>
 
       <div class="form-section" id="default-data-section">
-        <div class="section-header">
-          <h3 class="section-title">Chart Data</h3>
-          <div class="data-controls">
-            <button class="btn small" id="btn-add-row">+ Add Row</button>
-            <button class="btn small" id="btn-add-series" style="display: none">+ Add Series</button>
+        <div class="data-section-modern">
+          <div class="data-section-header">
+            <h3 class="data-section-title">Chart Data</h3>
+            <div class="data-controls-modern">
+              <button class="btn-modern" id="btn-add-row-modern">
+                <span class="btn-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M8 15c-3.86 0-7-3.14-7-7s3.14-7 7-7s7 3.14 7 7s-3.14 7-7 7M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6"/>
+                    <path fill="currentColor" d="M8 11.5c-.28 0-.5-.22-.5-.5V5c0-.28.22-.5.5-.5s.5.22.5.5v6c0 .28-.22.5-.5.5"/>
+                    <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
+                  </svg>
+                </span>
+                Add Row
+              </button>
+              <button class="btn-modern" id="btn-add-series-modern" style="display: none">
+                <span class="btn-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M8 15c-3.86 0-7-3.14-7-7s3.14-7 7-7s7 3.14 7 7s-3.14 7-7 7M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6"/>
+                    <path fill="currentColor" d="M8 11.5c-.28 0-.5-.22-.5-.5V5c0-.28.22-.5.5-.5s.5.22.5.5v6c0 .28-.22.5-.5.5"/>
+                    <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
+                  </svg>
+                </span>
+                Add Series
+              </button>
+            </div>
           </div>
-        </div>
-        
-        <div class="data-table-container">
-          <table class="enhanced-data-table" id="enhanced-data-table">
-            <thead id="data-table-headers">
-              <!-- Dynamic headers will be inserted here -->
-            </thead>
-            <tbody id="data-table-body">
-              <!-- Dynamic rows will be inserted here -->
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="data-info">
-          <span id="row-count">4 rows</span>
-          <span id="data-limits">Max: 15 rows</span>
+
+          <div class="modern-data-table-container">
+            <table class="modern-data-table" id="modern-data-table">
+              <thead id="modern-data-table-headers">
+                <!-- Dynamic headers will be inserted here -->
+              </thead>
+              <tbody id="modern-data-table-body">
+                <!-- Dynamic rows will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="data-info-modern">
+            <div class="data-stats">
+              <span id="modern-row-count">4 rows</span>
+              <span id="modern-series-count" style="display: none">1 series</span>
+            </div>
+            <span class="data-limit" id="modern-data-limits">Max: 15 rows</span>
+          </div>
         </div>
       </div>
 
@@ -1263,27 +1470,85 @@
         <!-- Pie-specific controls (initially hidden) -->
         <div class="toolbar-item" id="pie-controls" style="display: none">
           <!-- Gap Toggle -->
-          <div class="tool-icon" id="pie-gap-toggle" title="Slice Gap">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round"
-                  d="M20 15.552A9.215 9.215 0 0 1 11.21 22a9.21 9.21 0 0 1-8.78-12m6.018-6A9.2 9.2 0 0 0 5 5.987" />
-                <path
-                  d="M21.913 9.947a11.35 11.35 0 0 0-7.86-7.86C12.409 1.628 11 3.054 11 4.76v6.694c0 .853.692 1.545 1.545 1.545h6.694c1.707 0 3.133-1.41 2.674-3.053Z" />
-              </g>
-            </svg>
+          <div class="toolbar-item">
+            <div class="tool-icon" id="pie-gap-toggle" title="Slice Gap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 24 24">
+                <g fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round"
+                    d="M20 15.552A9.215 9.215 0 0 1 11.21 22a9.21 9.21 0 0 1-8.78-12m6.018-6A9.2 9.2 0 0 0 5 5.987" />
+                  <path
+                    d="M21.913 9.947a11.35 11.35 0 0 0-7.86-7.86C12.409 1.628 11 3.054 11 4.76v6.694c0 .853.692 1.545 1.545 1.545h6.694c1.707 0 3.133-1.41 2.674-3.053Z" />
+                </g>
+              </svg>
+            </div>
           </div>
 
           <!-- Donut Toggle -->
           <div class="toolbar-item">
             <div class="tool-icon" id="pie-donut-toggle" title="Donut Hole">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                 <path fill="currentColor"
                   d="M12.91 3.05q3.223.313 5.488 2.555t2.577 5.472h-6.42q-.224-.573-.648-.993t-.997-.624zm1 1.204v4.554q.39.244.717.561t.552.708h4.592q-.523-2.173-2.105-3.756q-1.583-1.582-3.756-2.067M11.14 3.05v6.401q-.823.293-1.315.998t-.492 1.555t.502 1.526t1.305.969v6.451q-3.465-.356-5.79-2.908t-2.325-6.044T5.35 5.936t5.79-2.886m-1 1.204q-2.698.606-4.406 2.785Q4.025 9.217 4.025 12t1.709 4.962t4.407 2.796v-4.642q-.797-.552-1.302-1.36t-.506-1.766t.496-1.775t1.312-1.369zm4.416 8.63h6.419q-.315 3.222-2.58 5.487q-2.264 2.264-5.485 2.579v-6.454q.586-.203 1.004-.62q.417-.418.642-.991m.623 1q-.258.37-.568.688q-.311.318-.702.543v4.63q2.193-.504 3.766-2.086q1.573-1.583 2.096-3.775zm0 0" />
               </svg>
             </div>
           </div>
         </div>
+
+        <!-- Line Chart Specific Controls -->
+        <div class="toolbar-item" id="line-controls" style="display: none">
+          <!-- Area Under Line Toggle -->
+          <div class="toolbar-item">
+            <div class="tool-icon" id="line-area-toggle" title="Fill Area Under Line">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512">
+                <path fill="currentColor" d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64v336c0 44.2 35.8 80 80 80h400c17.7 0 32-14.3 32-32s-14.3-32-32-32H80c-8.8 0-16-7.2-16-16zm96 288h288c17.7 0 32-14.3 32-32v-68.2c0-7.6-2.7-15-7.7-20.8l-65.8-76.8c-12.1-14.2-33.7-15-46.9-1.8l-21 21c-10 10-26.4 9.2-35.4-1.6l-39.2-47c-12.6-15.1-35.7-15.4-48.7-.6L135.9 215c-5.1 5.8-7.9 13.3-7.9 21.1v84c0 17.7 14.3 32 32 32z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Line Curve Toggle -->
+          <div class="toolbar-item">
+            <div class="tool-icon" id="line-curve-toggle" title="Smooth Line Curves">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 256 256">
+                <g fill="currentColor">
+                  <path d="M152 80a24 24 0 1 1-24-24a24 24 0 0 1 24 24M40 152a24 24 0 1 0 24 24a24 24 0 0 0-24-24m176 0a24 24 0 1 0 24 24a24 24 0 0 0-24-24" opacity="0.2"/>
+                  <path d="M221.07 144.41A96.68 96.68 0 0 0 181 88h59a8 8 0 0 0 0-16h-81a32 32 0 0 0-62 0H16a8 8 0 0 0 0 16h59a96.68 96.68 0 0 0-40.07 56.41A32 32 0 1 0 51.08 146A80.6 80.6 0 0 1 99 93.44a32 32 0 0 0 58.06 0A80.6 80.6 0 0 1 204.92 146a32 32 0 1 0 16.15-1.57ZM56 176a16 16 0 1 1-16-16a16 16 0 0 1 16 16m72-80a16 16 0 1 1 16-16a16 16 0 0 1-16 16m88 96a16 16 0 1 1 16-16a16 16 0 0 1-16 16"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Line Width Slider -->
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="line-width-btn" title="Line Width">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20">
+                <path fill="currentColor" d="m15.503 15.003l-.735.71a.75.75 0 1 0 1.042 1.078l1.886-1.82a1 1 0 0 0 0-1.44l-1.886-1.82a.75.75 0 0 0-1.042 1.079l.739.713H12.75a.75.75 0 0 0 0 1.5zM15 3a2 2 0 0 1 2 2v4.25a.75.75 0 0 1-1.5 0V5a.5.5 0 0 0-.5-.5H5a.5.5 0 0 0-.5.5v4.25a.75.75 0 0 1-1.5 0V5a2 2 0 0 1 2-2zM5.234 15.712l-.735-.71h2.752a.75.75 0 1 0 0-1.5H4.495l.739-.713a.75.75 0 0 0-1.042-1.078l-1.886 1.82a1 1 0 0 0 0 1.44l1.886 1.82a.75.75 0 0 0 1.042-1.079"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Point Shapes Popup -->
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="point-shapes-btn" title="Point Shapes">
+              <!-- This icon will change based on selection -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scatter Chart Specific Controls -->
+      <div class="toolbar-item" id="scatter-controls" style="display: none">
+        <!-- Point Shapes Popup -->
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="scatter-point-shapes-btn" title="Point Shapes">
+            <!-- This icon will change based on selection -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
 
         <!-- Padding with Popup -->
         <div class="toolbar-item has-dropdown">
@@ -1365,6 +1630,60 @@
         <input type="range" class="popup-slider" id="popup-border-radius" min="0" max="20" value="6" />
         <div class="slider-value" id="border-radius-value">6px</div>
       </div>
+      
+      <!-- Line Width Popup -->
+      <div class="slider-popup" id="line-width-popup">
+        <input type="range" class="popup-slider" id="popup-line-width" min="1" max="10" value="2" />
+        <div class="slider-value" id="line-width-value">2px</div>
+      </div>
+
+      <!-- Point Shapes Popup -->
+      <div class="shape-popup" id="point-shapes-popup">
+        <button class="shape-option" data-shape="none" title="No Points">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15">
+            <path fill="currentColor" d="M7.5.877c1.648 0 3.155.604 4.315 1.6l.832-.83a.5.5 0 0 1 .707.707l-.832.83a6.623 6.623 0 0 1-9.337 9.337l-.831.833a.5.5 0 0 1-.707-.707l.83-.832A6.623 6.623 0 0 1 7.499.877M3.856 11.85a5.673 5.673 0 0 0 7.991-7.991zM7.5 1.826A5.674 5.674 0 0 0 1.826 7.5a5.65 5.65 0 0 0 1.325 3.642l7.99-7.99a5.65 5.65 0 0 0-3.642-1.325"/>
+          </svg>
+        </button>
+        <button class="shape-option active" data-shape="circle" title="Circle Points">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+          </svg>
+        </button>
+        <button class="shape-option" data-shape="square" title="Square Points">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/>
+          </svg>
+        </button>
+        <button class="shape-option" data-shape="triangle" title="Triangle Points">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/>
+          </svg>
+        </button>
+      </div>
+
+     <!-- Scatter Point Shapes Popup -->
+    <div class="shape-popup" id="scatter-point-shapes-popup">
+      <button class="shape-option active" data-shape="circle" title="Circle Points">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+        </svg>
+      </button>
+      <button class="shape-option" data-shape="square" title="Square Points">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/>
+        </svg>
+      </button>
+      <button class="shape-option" data-shape="triangle" title="Triangle Points">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/>
+        </svg>
+      </button>
+      <button class="shape-option" data-shape="diamond" title="Diamond Points">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="none" stroke="currentColor" stroke-width="2" d="M4.511 13.542c-.681-.852-.681-2.232 0-3.084l6.256-7.82c.68-.85 1.785-.85 2.467 0l6.255 7.82c.681.852.681 2.232 0 3.084l-6.256 7.82c-.68.85-1.785.85-2.466 0z"/>
+        </svg>
+      </button>
+    </div>
 
       <!-- More Options Dropdown -->
       <div class="more-dropdown" id="more-dropdown">
@@ -1384,16 +1703,78 @@
 
       <!-- Context Toolbar -->
       <div id="context-toolbar" class="context-toolbar">
-        <div class="toolbar-group">
+        <!-- Universal Options -->
+        <div class="toolbar-group" id="universal-color">
           <span class="toolbar-label">Color:</span>
           <input type="color" class="color-picker" id="toolbar-color" />
         </div>
-        <div class="toolbar-group">
+        
+        <div class="toolbar-group" id="universal-opacity">
           <span class="toolbar-label">Opacity:</span>
           <input type="range" min="0" max="100" value="100" id="toolbar-opacity" />
+          <span class="slider-value" id="opacity-value">100%</span>
         </div>
-        <div class="toolbar-group">
-          <button class="btn small" id="toolbar-advanced">Advanced...</button>
+
+        <!-- Bar Chart Specific Options -->
+        <div class="toolbar-group bar-specific" id="bar-border-color">
+          <span class="toolbar-label">Border:</span>
+          <input type="color" class="color-picker" id="toolbar-border-color" value="#2b3345" />
+        </div>
+        
+        <div class="toolbar-group bar-specific" id="bar-border-width">
+          <span class="toolbar-label">Border Width:</span>
+          <input type="range" min="0" max="10" value="1" id="toolbar-border-width" />
+          <span class="slider-value" id="border-width-value">1px</span>
+        </div>
+        
+        <div class="toolbar-group bar-specific" id="bar-width">
+          <span class="toolbar-label">Bar Width:</span>
+          <input type="range" min="10" max="100" value="40" id="toolbar-bar-width" />
+          <span class="slider-value" id="bar-width-value">40px</span>
+        </div>
+        
+        <div class="toolbar-group bar-specific" id="bar-corner-radius">
+          <span class="toolbar-label">Corner Radius:</span>
+          <input type="range" min="0" max="20" value="6" id="toolbar-corner-radius" />
+          <span class="slider-value" id="corner-radius-value">6px</span>
+        </div>
+        
+        <div class="toolbar-group bar-specific" id="bar-value-display">
+          <span class="toolbar-label">Show Value:</span>
+          <label class="compact-toggle" id="toolbar-value-display">
+            <input type="checkbox" checked style="display: none;">
+          </label>
+        </div>
+
+        <!-- Pie Chart Specific Options -->
+        <div class="toolbar-group pie-specific" id="pie-slice-padding">
+          <span class="toolbar-label">Slice Padding:</span>
+          <input type="range" min="0" max="20" value="0" id="toolbar-slice-padding" />
+          <span class="slider-value" id="slice-padding-value">0%</span>
+        </div>
+        
+        <div class="toolbar-group pie-specific" id="pie-slice-border">
+          <span class="toolbar-label">Slice Border:</span>
+          <input type="color" class="color-picker" id="toolbar-slice-border-color" value="#2b3345" />
+        </div>
+        
+        <div class="toolbar-group pie-specific" id="pie-border-radius">
+          <span class="toolbar-label">Border Radius:</span>
+          <input type="range" min="0" max="20" value="0" id="toolbar-slice-border-radius" />
+          <span class="slider-value" id="slice-border-radius-value">0px</span>
+        </div>
+        
+        <div class="toolbar-group pie-specific" id="pie-label-display">
+          <span class="toolbar-label">Show Label:</span>
+          <label class="compact-toggle" id="toolbar-label-display">
+            <input type="checkbox" checked style="display: none;">
+          </label>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="toolbar-group" id="context-actions">
+          <button class="btn small" id="toolbar-reset">Reset</button>
+          <button class="btn small" id="toolbar-apply-all">Apply to All</button>
         </div>
       </div>
 
@@ -1467,7 +1848,7 @@
     const contextToolbar = document.getElementById("context-toolbar");
     const toolbarColor = document.getElementById("toolbar-color");
     const toolbarOpacity = document.getElementById("toolbar-opacity");
-    const toolbarAdvanced = document.getElementById("toolbar-advanced");
+    const opacityValue = document.getElementById("opacity-value");
     const btnExportSvg = document.getElementById("btn-export-svg");
     const btnExportPng = document.getElementById("btn-export-png");
     const btnExportFigma = document.getElementById("btn-export-figma");
@@ -1496,6 +1877,97 @@
     const pieGapToggle = document.getElementById('pie-gap-toggle');
     const pieDonutToggle = document.getElementById('pie-donut-toggle');
 
+    // Bar Chart Elements
+    const toolbarBorderColor = document.getElementById("toolbar-border-color");
+    const toolbarBorderWidth = document.getElementById("toolbar-border-width");
+    const borderWidthValue = document.getElementById("border-width-value");
+    const toolbarBarWidth = document.getElementById("toolbar-bar-width");
+    const barWidthValue = document.getElementById("bar-width-value");
+    const toolbarCornerRadius = document.getElementById("toolbar-corner-radius");
+    const cornerRadiusValue = document.getElementById("corner-radius-value");
+    const toolbarValueDisplay = document.getElementById("toolbar-value-display");
+
+    // Pie Chart Elements
+    const toolbarSlicePadding = document.getElementById("toolbar-slice-padding");
+    const slicePaddingValue = document.getElementById("slice-padding-value");
+    const toolbarSliceBorderColor = document.getElementById("toolbar-slice-border-color");
+    const toolbarSliceBorderRadius = document.getElementById("toolbar-slice-border-radius");
+    const sliceBorderRadiusValue = document.getElementById("slice-border-radius-value");
+    const toolbarLabelDisplay = document.getElementById("toolbar-label-display");
+
+    // Action Buttons
+    const toolbarReset = document.getElementById("toolbar-reset");
+    const toolbarApplyAll = document.getElementById("toolbar-apply-all");
+
+    // Line Chart Controls
+    const lineAreaToggle = document.getElementById('line-area-toggle');
+    const lineCurveToggle = document.getElementById('line-curve-toggle');
+    const lineWidthBtn = document.getElementById('line-width-btn');
+    const lineWidthPopup = document.getElementById('line-width-popup');
+    const popupLineWidth = document.getElementById('popup-line-width');
+    const lineWidthValue = document.getElementById('line-width-value');
+    const pointShapesBtn = document.getElementById('point-shapes-btn');
+    const pointShapesPopup = document.getElementById('point-shapes-popup');
+
+    // Area Toggle
+    lineAreaToggle.addEventListener('click', () => {
+      lineAreaToggle.classList.toggle('active');
+      state.opts.line.areaFill = lineAreaToggle.classList.contains('active');
+      updatePreview();
+    });
+
+    // Curve Toggle
+    lineCurveToggle.addEventListener('click', () => {
+      lineCurveToggle.classList.toggle('active');
+      state.opts.line.smooth = lineCurveToggle.classList.contains('active');
+      updatePreview();
+    });
+
+    // Line Width Popup
+    lineWidthBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(lineWidthBtn, lineWidthPopup);
+      lineWidthPopup.classList.toggle('visible');
+    });
+
+    // Line Width Slider
+    popupLineWidth.addEventListener('input', (e) => {
+      state.opts.line.lineWidth = parseInt(e.target.value);
+      lineWidthValue.textContent = e.target.value + 'px';
+      updatePreview();
+    });
+
+    // Point Shapes Popup
+    pointShapesBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(pointShapesBtn, pointShapesPopup);
+      pointShapesPopup.classList.toggle('visible');
+    });
+
+    // Point Shape Selection
+    document.querySelectorAll('.shape-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        const shape = e.currentTarget.dataset.shape;
+        
+        // Update active state
+        document.querySelectorAll('.shape-option').forEach(opt => {
+          opt.classList.remove('active');
+        });
+        e.currentTarget.classList.add('active');
+        
+        // Update state and icon
+        state.opts.line.pointShape = shape;
+        state.opts.line.showPoints = shape !== 'none';
+        updatePointShapeIcon(shape);
+        updatePreview();
+        
+        // Close popup
+        pointShapesPopup.classList.remove('visible');
+      });
+    });
+
     // Dropdown positioning and management
     function positionDropdown(button, dropdown) {
       const rect = button.getBoundingClientRect();
@@ -1510,6 +1982,9 @@
       paddingPopup.classList.remove("visible");
       borderRadiusPopup.classList.remove("visible");
       moreDropdown.classList.remove("visible");
+      lineWidthPopup.classList.remove("visible"); 
+      pointShapesPopup.classList.remove("visible");
+      scatterPointShapesPopup.classList.remove("visible");
     }
 
     // Color Preset Dropdown
@@ -1670,22 +2145,155 @@
     function updateToolbarForChartType() {
       const gridAxesControls = document.getElementById('grid-axes-controls');
       const pieControls = document.getElementById('pie-controls');
+      const lineControls = document.getElementById('line-controls');
+      const scatterControls = document.getElementById('scatter-controls');
+      
+      // Get the individual toolbar items that should be hidden for specific charts
+      const paddingBtn = document.getElementById('padding-btn').closest('.toolbar-item');
+      const borderRadiusBtn = document.getElementById('border-radius-btn').closest('.toolbar-item');
+      const gridToggle = document.getElementById('global-grid-toggle').closest('.toolbar-item');
+      const axesToggle = document.getElementById('global-axes-toggle').closest('.toolbar-item');
 
-      if (state.chartType === 'pie') {
-        gridAxesControls.style.display = 'none';
+      // Hide all specialized toolbars first
+      gridAxesControls.style.display = 'none';
+      pieControls.style.display = 'none';
+      lineControls.style.display = 'none';
+      scatterControls.style.display = 'none';
+      
+      // Reset all hidden states first
+      paddingBtn.classList.remove('hidden');
+      borderRadiusBtn.classList.remove('hidden');
+      gridToggle.classList.remove('hidden');
+      axesToggle.classList.remove('hidden');
+
+      // Handle each chart type specifically
+      if (state.chartType === 'line') {
+        lineControls.style.display = 'flex';
+        lineControls.style.display = 'flex';
+        gridAxesControls.style.display = 'flex';
+        paddingBtn.classList.add('hidden');
+        borderRadiusBtn.classList.add('hidden');
+        
+        // Set initial active states for line controls
+        document.getElementById('line-area-toggle').classList.toggle('active', state.opts.line.areaFill);
+        document.getElementById('line-curve-toggle').classList.toggle('active', state.opts.line.smooth);
+        updatePointShapeIcon(state.opts.line.pointShape);
+        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
+        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
+      } 
+      else if (state.chartType === 'pie') {
         pieControls.style.display = 'flex';
-
-        // Set initial active states for pie controls
+        gridToggle.classList.add('hidden');
+        axesToggle.classList.add('hidden');
         document.getElementById('pie-gap-toggle').classList.toggle('active', state.opts.pie.separated);
         document.getElementById('pie-donut-toggle').classList.toggle('active', state.opts.pie.donut > 0);
-      } else {
+      } 
+      else if (state.chartType === 'scatter') {
+        scatterControls.style.display = 'flex'; // SHOW SCATTER CONTROLS
         gridAxesControls.style.display = 'flex';
-        pieControls.style.display = 'none';
-
-        // Set initial active states for grid/axes
+        paddingBtn.classList.add('hidden');
+        borderRadiusBtn.classList.add('hidden');
+        updateScatterPointShapeIcon(state.opts.scatter.pointShape);
         document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
         document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
       }
+      else {
+        gridAxesControls.style.display = 'flex';
+        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
+        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
+      }
+    }
+
+    // Scatter Chart Controls
+    const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
+    const scatterPointShapesPopup = document.getElementById('scatter-point-shapes-popup');
+
+    // Helper function to update scatter point shape icon
+    function updateScatterPointShapeIcon(shape) {
+      const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
+      let iconHTML = '';
+      
+      switch (shape) {
+        case 'square':
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/>
+          </svg>`;
+          break;
+        case 'triangle':
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/>
+          </svg>`;
+          break;
+        case 'diamond':
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-width="2" d="M4.511 13.542c-.681-.852-.681-2.232 0-3.084l6.256-7.82c.68-.85 1.785-.85 2.467 0l6.255 7.82c.681.852.681 2.232 0 3.084l-6.256 7.82c-.68.85-1.785.85-2.466 0z"/>
+          </svg>`;
+          break;
+        default: // circle
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+          </svg>`;
+      }
+      
+      scatterPointShapesBtn.innerHTML = iconHTML;
+    }
+
+    // Scatter Point Shapes Popup
+    scatterPointShapesBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllDropdowns();
+      positionDropdown(scatterPointShapesBtn, scatterPointShapesPopup);
+      scatterPointShapesPopup.classList.toggle('visible');
+    });
+
+    // Scatter Point Shape Selection
+    document.querySelectorAll('#scatter-point-shapes-popup .shape-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        const shape = e.currentTarget.dataset.shape;
+        
+        // Update active state
+        document.querySelectorAll('#scatter-point-shapes-popup .shape-option').forEach(opt => {
+          opt.classList.remove('active');
+        });
+        e.currentTarget.classList.add('active');
+        
+        // Update state and icon
+        state.opts.scatter.pointShape = shape;
+        updateScatterPointShapeIcon(shape);
+        updatePreview();
+        
+        // Close popup
+        scatterPointShapesPopup.classList.remove('visible');
+      });
+    });
+
+    function updatePointShapeIcon(shape) {
+      const pointShapesBtn = document.getElementById('point-shapes-btn');
+      let iconHTML = '';
+      
+      switch (shape) {
+        case 'none':
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15">
+            <path fill="currentColor" d="M7.5.877c1.648 0 3.155.604 4.315 1.6l.832-.83a.5.5 0 0 1 .707.707l-.832.83a6.623 6.623 0 0 1-9.337 9.337l-.831.833a.5.5 0 0 1-.707-.707l.83-.832A6.623 6.623 0 0 1 7.499.877M3.856 11.85a5.673 5.673 0 0 0 7.991-7.991zM7.5 1.826A5.674 5.674 0 0 0 1.826 7.5a5.65 5.65 0 0 0 1.325 3.642l7.99-7.99a5.65 5.65 0 0 0-3.642-1.325"/>
+          </svg>`;
+          break;
+        case 'square':
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/>
+          </svg>`;
+          break;
+        case 'triangle':
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/>
+          </svg>`;
+          break;
+        default: // circle
+          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+          </svg>`;
+      }
+      
+      pointShapesBtn.innerHTML = iconHTML;
     }
 
     // Application State
@@ -1706,8 +2314,18 @@
       opts: {
         pie: defaultOpts(),
         bar: defaultOpts(),
-        line: defaultOpts(),
-        scatter: defaultOpts(),
+        line: {
+          ...defaultOpts(), // Keep all default options
+          areaFill: false,   // Add line-specific defaults
+          smooth: false, 
+          lineWidth: 2,
+          pointShape: 'circle',
+          showPoints: true
+        },
+        scatter: {
+          ...defaultOpts(),
+          pointShape: 'circle'
+        },
         histogram: defaultOpts(),
       },
     };
@@ -1716,7 +2334,7 @@
       state.chartType = chartType;
       currentSeries = 1;
       state.currentData = getDefaultData(chartType);
-      updateDataTableForChartType();
+      updateModernDataTableForChartType();
       updateToolbarForChartType();
       updatePreview();
     }
@@ -1818,7 +2436,7 @@
           defaultDataSection.style.display = 'flex';
           // Reset to default data for current chart type
           state.currentData = getDefaultData(state.chartType);
-          updateDataTableForChartType();
+          updateModernDataTableForChartType(); // Changed from updateDataTableForChartType
           updatePreview();
           break;
         case 'manual':
@@ -1837,7 +2455,7 @@
 
       updatePreview();
     }
-
+    
     // ========== CHART RENDERING FUNCTIONS ==========
 
     // Utilities
@@ -1910,6 +2528,13 @@
         // Pie chart specific
         donut: false,
         separated: false,
+
+        // Line chart specific
+        areaFill: false,
+        smooth: false,
+        lineWidth: 2,
+        pointShape: 'circle',
+        showPoints: true,
 
         // Text
         fontFamily: "Segoe UI",
@@ -2309,30 +2934,74 @@
         opts.lineStyle || opts.strokeType,
         opts.strokeDash
       );
+      
+      // USE LINE WIDTH FROM NEW OPTION
       const baseStroke = `stroke="${colors.line}" stroke-width="${Math.max(
         1,
-        opts.strokeWidth || 2
+        opts.lineWidth || 2
       )}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity
         }"`;
 
       let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+      
+      // USE SMOOTH CURVE FROM NEW OPTION - IMPROVED VERSION
       if (opts.smooth) {
         const pathPts = data.series[0].y.map((v, i) => [toX(i), toY(v)]);
-        let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-        for (let i = 1; i < pathPts.length; i++) {
-          const [px, py] = pathPts[i - 1];
-          const [cx, cy] = pathPts[i];
-          const qx = (px + cx) / 2;
-          d += ` Q ${qx} ${py} ${cx} ${cy}`;
+        
+        if (pathPts.length < 2) {
+          linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+        } else {
+          let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
+          
+          // For smooth curves, use cubic Bézier with control points
+          for (let i = 1; i < pathPts.length - 1; i++) {
+            const [x0, y0] = pathPts[i - 1];
+            const [x1, y1] = pathPts[i];
+            const [x2, y2] = pathPts[i + 1];
+            
+            // Calculate control points for smooth curve
+            const control1X = x0 + (x1 - x0) * 0.5;
+            const control1Y = y0 + (y1 - y0) * 0.5;
+            const control2X = x1 - (x2 - x0) * 0.1;
+            const control2Y = y1 - (y2 - y0) * 0.1;
+            
+            d += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
+          }
+          
+          // Add the last segment
+          const lastIndex = pathPts.length - 1;
+          if (lastIndex > 0) {
+            const [prevX, prevY] = pathPts[lastIndex - 1];
+            const [lastX, lastY] = pathPts[lastIndex];
+            
+            const controlX = prevX + (lastX - prevX) * 0.5;
+            const controlY = prevY + (lastY - prevY) * 0.5;
+            
+            d += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
+          }
+          
+          linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
         }
-        linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
       }
 
-      const dots = X.map(
-        (i) =>
-          `<circle cx="${toX(i)}" cy="${toY(Y[i])}" r="3" fill="${colors.line
-          }" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`
-      ).join("");
+      // USE POINT SHAPES FROM NEW OPTION
+      const dots = opts.showPoints ? X.map((i) => {
+        const cx = toX(i);
+        const cy = toY(Y[i]);
+        const r = 3;
+        
+        switch (opts.pointShape) {
+          case 'square':
+            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+          case 'triangle':
+            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+          case 'none':
+            return '';
+          default: // circle
+            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+        }
+      }).filter(Boolean).join("") : '';
+
       const xlabels = data.x
         .map(
           (lbl, i) =>
@@ -2361,20 +3030,54 @@
         );
       }
 
-      const area = opts.area
-        ? `<polyline fill="${colors.line}" opacity="${opts.fillOpacity * 0.25
-        }" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`
-        : "";
-
+      // USE AREA FILL FROM NEW OPTION
+      let area = "";
+      if (opts.areaFill) {
+        if (opts.smooth && pathPts && pathPts.length > 1) {
+          // For smooth curves, recreate the path for area fill
+          let areaD = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
+          
+          for (let i = 1; i < pathPts.length - 1; i++) {
+            const [x0, y0] = pathPts[i - 1];
+            const [x1, y1] = pathPts[i];
+            const [x2, y2] = pathPts[i + 1];
+            
+            const control1X = x0 + (x1 - x0) * 0.5;
+            const control1Y = y0 + (y1 - y0) * 0.5;
+            const control2X = x1 - (x2 - x0) * 0.1;
+            const control2Y = y1 - (y2 - y0) * 0.1;
+            
+            areaD += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
+          }
+          
+          // Close the area path
+          const lastIndex = pathPts.length - 1;
+          if (lastIndex > 0) {
+            const [prevX, prevY] = pathPts[lastIndex - 1];
+            const [lastX, lastY] = pathPts[lastIndex];
+            
+            const controlX = prevX + (lastX - prevX) * 0.5;
+            const controlY = prevY + (lastY - prevY) * 0.5;
+            
+            areaD += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
+          }
+          
+          areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
+          area = `<path d="${areaD}" fill="${colors.line}" opacity="${opts.fillOpacity * 0.25}"/>`;
+        } else {
+          // For straight lines, use the original polyline approach
+          area = `<polyline fill="${colors.line}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`;
+        }
+      }
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-      ${bgRect(W, H, opts)}
-      ${axes(W, H, pad, opts.showAxes)}
-      ${tickEls.join("")}
-      ${area}
-      ${linePath}
-      ${dots}
-      ${xlabels}
-    </svg>`;
+          ${bgRect(W, H, opts)}
+          ${axes(W, H, pad, opts.showAxes)}
+          ${tickEls.join("")}
+          ${area}
+          ${linePath}
+          ${dots}
+          ${xlabels}
+        </svg>`;
     }
 
     function renderScatter(data, colors, W, H, pad, opts) {
@@ -2396,16 +3099,17 @@
         const r = opts.pointSize || p.r || 6;
         const cx = toX(p.x),
           cy = toY(p.y);
-        if (opts.pointShape === "square")
-          return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r
-            }" height="${2 * r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity
-            }" ${stroke}/>`;
-        if (opts.pointShape === "triangle")
-          return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r
-            },${cy + r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity
-            }" ${stroke}/>`;
-        return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
-      };
+        switch (opts.pointShape) {
+            case "square":
+              return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+            case "triangle":
+              return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+            case "diamond":
+              return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+            default: // circle
+              return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          }
+        };
 
       const dots = data.points.map(drawShape).join("");
 
@@ -2543,6 +3247,15 @@
         <p>Please configure your data to see the chart preview</p>
       </div>`;
         return;
+
+      // Disable grid and axes for pie chart
+        if (state.chartType === "pie") {
+          currentOpts.showGrid = false;
+          currentOpts.showAxes = false;
+        } else {
+          currentOpts.showGrid = state.globalSettings.showGrid;
+          currentOpts.showAxes = state.globalSettings.showAxes;
+        }
       }
 
       // Update chart options with global settings
@@ -2735,11 +3448,16 @@
       });
     }
 
+    // Store element-specific data
+    let currentElementData = {
+      type: null,
+      index: null,
+      originalStyles: null
+    };
+
     function selectChartElement(element) {
       // Remove previous selection
-      const previouslySelected = document.querySelector(
-        ".chart-element.selected"
-      );
+      const previouslySelected = document.querySelector(".chart-element.selected");
       if (previouslySelected) {
         previouslySelected.classList.remove("selected");
       }
@@ -2748,37 +3466,202 @@
       element.classList.add("selected");
       state.selectedElement = element;
 
+      // Determine element type and index
+      const elementId = element.getAttribute("data-element-id");
+      currentElementData.index = parseInt(elementId);
+      currentElementData.originalStyles = {
+        fill: element.getAttribute("fill"),
+        opacity: element.getAttribute("fill-opacity") || element.getAttribute("opacity") || "1"
+      };
+
+      // Set context toolbar mode based on chart type
+      contextToolbar.className = "context-toolbar";
+      if (state.chartType === "bar") {
+        contextToolbar.classList.add("bar-mode");
+        setupBarContextToolbar(element);
+      } else if (state.chartType === "pie") {
+        contextToolbar.classList.add("pie-mode");
+        setupPieContextToolbar(element);
+      }
+
       // Show context toolbar near the element
       const rect = element.getBoundingClientRect();
-      const previewRect = document
-        .getElementById("svg-host")
-        .getBoundingClientRect();
+      const previewRect = document.getElementById("svg-host").getBoundingClientRect();
 
-      contextToolbar.style.left =
-        rect.left - previewRect.left + rect.width / 2 + "px";
-      contextToolbar.style.top = rect.top - previewRect.top - 80 + "px";
+      contextToolbar.style.left = Math.max(10, rect.left - previewRect.left + rect.width / 2 - 140) + "px";
+      contextToolbar.style.top = Math.max(10, rect.top - previewRect.top - 200) + "px";
       contextToolbar.classList.add("visible");
 
-      // Set toolbar values based on element
-      const currentColor =
-        element.getAttribute("fill") ||
-        element.getAttribute("stroke") ||
-        "#6aa2ff";
+      // Set universal values
+      const currentColor = element.getAttribute("fill") || element.getAttribute("stroke") || "#6aa2ff";
       toolbarColor.value = currentColor;
 
       const currentOpacity = Math.round(
-        parseFloat(
-          element.getAttribute("fill-opacity") ||
-          element.getAttribute("opacity") ||
-          "1"
-        ) * 100
+        parseFloat(element.getAttribute("fill-opacity") || element.getAttribute("opacity") || "1") * 100
       );
       toolbarOpacity.value = currentOpacity;
+      opacityValue.textContent = currentOpacity + "%";
+    }
+
+    function setupBarContextToolbar(element) {
+      // Set bar-specific values
+      const borderColor = element.getAttribute("stroke") || "#2b3345";
+      toolbarBorderColor.value = borderColor;
+
+      const borderWidth = parseInt(element.getAttribute("stroke-width") || "1");
+      toolbarBorderWidth.value = borderWidth;
+      borderWidthValue.textContent = borderWidth + "px";
+
+      const barWidth = parseInt(element.getAttribute("data-bar-width") || "40");
+      toolbarBarWidth.value = barWidth;
+      barWidthValue.textContent = barWidth + "px";
+
+      const cornerRadius = parseInt(element.getAttribute("rx") || "6");
+      toolbarCornerRadius.value = cornerRadius;
+      cornerRadiusValue.textContent = cornerRadius + "px";
+
+      const showValue = element.getAttribute("data-show-value") !== "false";
+      toolbarValueDisplay.classList.toggle("active", showValue);
+    }
+
+    function setupPieContextToolbar(element) {
+      // Set pie-specific values
+      const slicePadding = parseInt(element.getAttribute("data-slice-padding") || "0");
+      toolbarSlicePadding.value = slicePadding;
+      slicePaddingValue.textContent = slicePadding + "%";
+
+      const borderColor = element.getAttribute("stroke") || "#2b3345";
+      toolbarSliceBorderColor.value = borderColor;
+
+      const borderRadius = parseInt(element.getAttribute("data-border-radius") || "0");
+      toolbarSliceBorderRadius.value = borderRadius;
+      sliceBorderRadiusValue.textContent = borderRadius + "px";
+
+      const showLabel = element.getAttribute("data-show-label") !== "false";
+      toolbarLabelDisplay.classList.toggle("active", showLabel);
+    }
+
+    // Event Listeners for Context Toolbar
+    function setupContextToolbarListeners() {
+      // Universal listeners
+      toolbarColor.addEventListener("input", (e) => {
+        if (state.selectedElement) {
+          state.selectedElement.setAttribute("fill", e.target.value);
+        }
+      });
+
+      toolbarOpacity.addEventListener("input", (e) => {
+        if (state.selectedElement) {
+          const opacity = e.target.value / 100;
+          state.selectedElement.setAttribute("fill-opacity", opacity.toString());
+          opacityValue.textContent = e.target.value + "%";
+        }
+      });
+
+      // Bar chart listeners
+      toolbarBorderColor.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "bar") {
+          state.selectedElement.setAttribute("stroke", e.target.value);
+        }
+      });
+
+      toolbarBorderWidth.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "bar") {
+          state.selectedElement.setAttribute("stroke-width", e.target.value);
+          borderWidthValue.textContent = e.target.value + "px";
+        }
+      });
+
+      toolbarBarWidth.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "bar") {
+          state.selectedElement.setAttribute("data-bar-width", e.target.value);
+          state.selectedElement.setAttribute("width", e.target.value);
+          barWidthValue.textContent = e.target.value + "px";
+          updatePreview(); // Redraw to apply width changes
+        }
+      });
+
+      toolbarCornerRadius.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "bar") {
+          state.selectedElement.setAttribute("rx", e.target.value);
+          state.selectedElement.setAttribute("ry", e.target.value);
+          cornerRadiusValue.textContent = e.target.value + "px";
+        }
+      });
+
+      toolbarValueDisplay.addEventListener("click", () => {
+        if (state.selectedElement && state.chartType === "bar") {
+          const isActive = toolbarValueDisplay.classList.toggle("active");
+          state.selectedElement.setAttribute("data-show-value", isActive.toString());
+          updatePreview(); // Redraw to show/hide values
+        }
+      });
+
+      // Pie chart listeners
+      toolbarSlicePadding.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "pie") {
+          state.selectedElement.setAttribute("data-slice-padding", e.target.value);
+          slicePaddingValue.textContent = e.target.value + "%";
+          updatePreview(); // Redraw to apply padding
+        }
+      });
+
+      toolbarSliceBorderColor.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "pie") {
+          state.selectedElement.setAttribute("stroke", e.target.value);
+        }
+      });
+
+      toolbarSliceBorderRadius.addEventListener("input", (e) => {
+        if (state.selectedElement && state.chartType === "pie") {
+          state.selectedElement.setAttribute("data-border-radius", e.target.value);
+          sliceBorderRadiusValue.textContent = e.target.value + "px";
+          updatePreview(); // Redraw to apply border radius
+        }
+      });
+
+      toolbarLabelDisplay.addEventListener("click", () => {
+        if (state.selectedElement && state.chartType === "pie") {
+          const isActive = toolbarLabelDisplay.classList.toggle("active");
+          state.selectedElement.setAttribute("data-show-label", isActive.toString());
+          updatePreview(); // Redraw to show/hide labels
+        }
+      });
+
+      // Action buttons
+      toolbarReset.addEventListener("click", () => {
+        if (state.selectedElement && currentElementData.originalStyles) {
+          state.selectedElement.setAttribute("fill", currentElementData.originalStyles.fill);
+          state.selectedElement.setAttribute("fill-opacity", currentElementData.originalStyles.opacity);
+          // Reset other attributes to defaults
+          if (state.chartType === "bar") {
+            state.selectedElement.setAttribute("stroke", "#2b3345");
+            state.selectedElement.setAttribute("stroke-width", "1");
+            state.selectedElement.setAttribute("rx", "6");
+            state.selectedElement.setAttribute("ry", "6");
+            state.selectedElement.setAttribute("data-show-value", "true");
+          } else if (state.chartType === "pie") {
+            state.selectedElement.setAttribute("stroke", "#2b3345");
+            state.selectedElement.setAttribute("data-slice-padding", "0");
+            state.selectedElement.setAttribute("data-border-radius", "0");
+            state.selectedElement.setAttribute("data-show-label", "true");
+          }
+          updatePreview();
+          hideContextToolbar();
+        }
+      });
+
+      toolbarApplyAll.addEventListener("click", () => {
+        if (state.selectedElement) {
+          // Implementation for applying styles to all similar elements
+          alert("Apply to all feature will be implemented in the next phase");
+        }
+      });
     }
 
     // ========== DATA TABLE CONFIGURATION ==========
 
-    // Data Table Configuration
+    // Update the data table configuration to remove color column for pie chart
     const dataTableConfig = {
       bar: {
         headers: ['Category', 'Value'],
@@ -2793,15 +3676,15 @@
         ]
       },
       pie: {
-        headers: ['Label', 'Value', 'Color'],
-        types: ['text', 'number', 'color'],
+        headers: ['Label', 'Value'], // REMOVED 'Color' from headers
+        types: ['text', 'number'],   // REMOVED 'color' from types
         maxRows: 8,
         maxSeries: 1,
         defaultData: [
-          ['Slice A', 25, '#6aa2ff'],
-          ['Slice B', 40, '#a78bfa'],
-          ['Slice C', 30, '#ff6b6b'],
-          ['Slice D', 35, '#4ecdc4']
+          ['Slice A', 25],           // REMOVED colors from default data
+          ['Slice B', 40],
+          ['Slice C', 30],
+          ['Slice D', 35]
         ]
       },
       line: {
@@ -2842,47 +3725,51 @@
     // Multi-series support
     let currentSeries = 1;
 
-    // Initialize Enhanced Data Table
-    function initEnhancedDataTable() {
-      const addRowBtn = document.getElementById('btn-add-row');
-      const addSeriesBtn = document.getElementById('btn-add-series');
+    // Initialize Modern Data Table
+    function initModernDataTable() {
+      const addRowBtn = document.getElementById('btn-add-row-modern');
+      const addSeriesBtn = document.getElementById('btn-add-series-modern');
       
       addRowBtn.addEventListener('click', addNewRow);
       addSeriesBtn.addEventListener('click', addNewSeries);
     }
 
-    // Update table structure based on chart type
-    function updateDataTableForChartType() {
+    // Update modern table structure based on chart type
+    function updateModernDataTableForChartType() {
       const config = dataTableConfig[state.chartType];
-      const headersContainer = document.getElementById('data-table-headers');
-      const bodyContainer = document.getElementById('data-table-body');
-      const addSeriesBtn = document.getElementById('btn-add-series');
+      const headersContainer = document.getElementById('modern-data-table-headers');
+      const bodyContainer = document.getElementById('modern-data-table-body');
+      const addSeriesBtn = document.getElementById('btn-add-series-modern');
+      const seriesCount = document.getElementById('modern-series-count');
       
-      // Show/hide add series button
+      // Show/hide add series button and series count
       if (config.maxSeries > 1) {
-        addSeriesBtn.style.display = 'block';
+        addSeriesBtn.style.display = 'flex';
+        seriesCount.style.display = 'block';
+        seriesCount.textContent = `${currentSeries} series`;
         currentSeries = Math.min(currentSeries, config.maxSeries);
       } else {
         addSeriesBtn.style.display = 'none';
+        seriesCount.style.display = 'none';
         currentSeries = 1;
       }
       
       // Update headers
-      headersContainer.innerHTML = generateTableHeaders(config);
+      headersContainer.innerHTML = generateModernTableHeaders(config);
       
       // Update body with current data or default data
       if (!state.currentData || !isValidDataForChart(state.currentData, state.chartType)) {
         state.currentData = convertTableDataToChartData(config.defaultData, state.chartType);
       }
       
-      bodyContainer.innerHTML = generateTableRows(getTableDataFromChartData(state.currentData, state.chartType), config);
+      bodyContainer.innerHTML = generateModernTableRows(getTableDataFromChartData(state.currentData, state.chartType), config);
       
-      updateRowCount();
-      updateDataLimits();
+      updateModernRowCount();
+      updateModernDataLimits();
     }
 
-    // Generate table headers
-    function generateTableHeaders(config) {
+    // FIXED: Generate modern table headers with proper series columns
+    function generateModernTableHeaders(config) {
       let headers = config.headers.slice();
       
       // Add series columns for multi-series charts
@@ -2900,13 +3787,23 @@
       return `
         <tr>
           ${headers.map((header, index) => {
-            if (index < headers.length - 1 && index > 0 && currentSeries > 1 && state.chartType !== 'pie') {
+            // Check if this is a series column that should have delete button
+            const isSeriesColumn = currentSeries > 1 && 
+                                  state.chartType !== 'pie' && 
+                                  index > 0 && 
+                                  index < headers.length - 1;
+            
+            if (isSeriesColumn) {
               // Series header with delete button
               return `
                 <th>
-                  <div class="series-header">
+                  <div class="series-header-modern">
                     <span>${header}</span>
-                    <button class="delete-series" data-series="${index}" title="Delete series">×</button>
+                    <button class="delete-series-btn" data-series="${index}" title="Delete series">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T10 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/>
+                      </svg>
+                    </button>
                   </div>
                 </th>
               `;
@@ -2918,38 +3815,116 @@
       `;
     }
 
-    // Generate table rows
-    function generateTableRows(data, config) {
-      return data.map((row, rowIndex) => `
-        <tr data-row="${rowIndex}">
-          ${row.map((cell, cellIndex) => {
-            const inputType = config.types[cellIndex] || 'text';
-            
-            if (inputType === 'color') {
-              return `
-                <td class="color-cell">
-                  <div class="color-preview" style="background: ${cell}"></div>
-                  <input type="color" value="${cell}" data-cell="${cellIndex}" 
-                         title="Choose color">
-                </td>
-              `;
-            } else {
-              return `
-                <td>
-                  <input type="${inputType}" value="${cell}" data-cell="${cellIndex}" 
-                         ${inputType === 'number' ? 'min="0" step="1"' : ''}>
-                </td>
-              `;
-            }
-          }).join('')}
-          <td class="row-actions">
-            <button class="delete-row" data-row="${rowIndex}" title="Delete row">×</button>
-          </td>
-        </tr>
-      `).join('');
+    // FIXED: Generate modern table rows with proper series inputs
+    function generateModernTableRows(data, config) {
+      return data.map((row, rowIndex) => {
+        // For multi-series charts, we need to handle the dynamic number of columns
+        let actualRowData = row;
+        
+        // If we have more series than data columns, pad with empty values
+        if (currentSeries > 1 && state.chartType !== 'pie' && row.length < currentSeries + 1) {
+          actualRowData = [row[0]]; // Keep the first column (category/x-axis)
+          for (let i = 1; i <= currentSeries; i++) {
+            actualRowData.push(row[i] || ''); // Use existing value or empty string
+          }
+        }
+        
+        return `
+          <tr data-row="${rowIndex}">
+            ${actualRowData.map((cell, cellIndex) => {
+              // Determine input type based on position and chart type
+              let inputType = 'text';
+              
+              if (state.chartType === 'pie') {
+                // Pie chart: first column text, second column number
+                inputType = cellIndex === 0 ? 'text' : 'number';
+              } else if (currentSeries > 1 && state.chartType !== 'pie') {
+                // Multi-series charts: first column text, other columns number
+                inputType = cellIndex === 0 ? 'text' : 'number';
+              } else {
+                // Single series: use config types
+                inputType = config.types[cellIndex] || 'text';
+              }
+              
+              if (inputType === 'color') {
+                return `
+                  <td class="color-cell-modern">
+                    <div class="color-preview-modern" style="background: ${cell}"></div>
+                    <input type="color" value="${cell}" data-cell="${cellIndex}" 
+                          title="Choose color">
+                  </td>
+                `;
+              } else {
+                return `
+                  <td>
+                    <input type="${inputType}" value="${cell}" data-cell="${cellIndex}" 
+                          ${inputType === 'number' ? 'min="0" step="1"' : ''}>
+                  </td>
+                `;
+              }
+            }).join('')}
+            <td class="row-actions-modern">
+              <button class="delete-row-btn" data-row="${rowIndex}" title="Delete row">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T10 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // Add new row
+    // Update modern row count display
+    function updateModernRowCount() {
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      document.getElementById('modern-row-count').textContent = `${currentData.length} row${currentData.length !== 1 ? 's' : ''}`;
+    }
+
+    // Update modern data limits display
+    function updateModernDataLimits() {
+      const config = dataTableConfig[state.chartType];
+      const seriesText = config.maxSeries > 1 ? `, ${currentSeries}/${config.maxSeries} series` : '';
+      document.getElementById('modern-data-limits').textContent = `Max: ${config.maxRows} rows${seriesText}`;
+      
+      // Update series count
+      const seriesCount = document.getElementById('modern-series-count');
+      if (config.maxSeries > 1) {
+        seriesCount.textContent = `${currentSeries} series`;
+      }
+    }
+
+    // Setup modern table event listeners
+    function setupModernTableEventListeners() {
+      const table = document.getElementById('modern-data-table');
+      
+      table.addEventListener('input', (e) => {
+        if (e.target.matches('input')) {
+          const row = e.target.closest('tr');
+          const rowIndex = parseInt(row.dataset.row);
+          const cellIndex = parseInt(e.target.dataset.cell);
+          const newValue = e.target.value;
+          
+          handleCellEdit(rowIndex, cellIndex, newValue);
+        }
+      });
+      
+      table.addEventListener('click', (e) => {
+        if (e.target.matches('.delete-row-btn') || e.target.closest('.delete-row-btn')) {
+          const btn = e.target.matches('.delete-row-btn') ? e.target : e.target.closest('.delete-row-btn');
+          const rowIndex = parseInt(btn.dataset.row);
+          deleteRow(rowIndex);
+        }
+        
+        if (e.target.matches('.delete-series-btn') || e.target.closest('.delete-series-btn')) {
+          const btn = e.target.matches('.delete-series-btn') ? e.target : e.target.closest('.delete-series-btn');
+          const seriesIndex = parseInt(btn.dataset.series);
+          deleteSeries(seriesIndex);
+        }
+      });
+    }
+
+    // FIXED: Add new row function to handle dynamic series
     function addNewRow() {
       const config = dataTableConfig[state.chartType];
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
@@ -2959,23 +3934,33 @@
         return;
       }
       
-      // Create empty row based on current series count
+      // Create empty row based on current series count and chart type
       const emptyRow = [];
-      for (let i = 0; i < config.headers.length; i++) {
-        if (i === 0) {
-          emptyRow.push(`New ${config.headers[i]}`);
-        } else if (config.types[i] === 'number') {
+      
+      if (currentSeries > 1 && state.chartType !== 'pie') {
+        // Multi-series chart: first column is label, rest are number values
+        emptyRow.push(`New ${config.headers[0]}`);
+        for (let i = 1; i <= currentSeries; i++) {
           emptyRow.push(Math.floor(Math.random() * 50) + 10);
-        } else if (config.types[i] === 'color') {
-          emptyRow.push(defaultColor(currentData.length));
-        } else {
-          emptyRow.push('');
+        }
+      } else {
+        // Single series or pie chart: use config
+        for (let i = 0; i < config.headers.length; i++) {
+          if (i === 0) {
+            emptyRow.push(`New ${config.headers[i]}`);
+          } else if (config.types[i] === 'number') {
+            emptyRow.push(Math.floor(Math.random() * 50) + 10);
+          } else if (config.types[i] === 'color') {
+            emptyRow.push(defaultColor(currentData.length));
+          } else {
+            emptyRow.push('');
+          }
         }
       }
       
       currentData.push(emptyRow);
       state.currentData = convertTableDataToChartData(currentData, state.chartType);
-      updateDataTableForChartType();
+      updateModernDataTableForChartType();
       updatePreview();
     }
 
@@ -3039,20 +4024,86 @@
       }
     }
 
-    // Update row count display
-    function updateRowCount() {
-      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
-      document.getElementById('row-count').textContent = `${currentData.length} rows`;
-    }
-
-    // Update data limits display
-    function updateDataLimits() {
+    // Add new row - FIXED VERSION
+    function addNewRow() {
       const config = dataTableConfig[state.chartType];
-      const seriesText = config.maxSeries > 1 ? `, ${currentSeries}/${config.maxSeries} series` : '';
-      document.getElementById('data-limits').textContent = `Max: ${config.maxRows} rows${seriesText}`;
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      if (currentData.length >= config.maxRows) {
+        alert(`Maximum ${config.maxRows} rows allowed for ${state.chartType} chart`);
+        return;
+      }
+      
+      // Create empty row based on current series count
+      const emptyRow = [];
+      for (let i = 0; i < config.headers.length; i++) {
+        if (i === 0) {
+          emptyRow.push(`New ${config.headers[i]}`);
+        } else if (config.types[i] === 'number') {
+          emptyRow.push(Math.floor(Math.random() * 50) + 10);
+        } else if (config.types[i] === 'color') {
+          emptyRow.push(defaultColor(currentData.length));
+        } else {
+          emptyRow.push('');
+        }
+      }
+      
+      currentData.push(emptyRow);
+      state.currentData = convertTableDataToChartData(currentData, state.chartType);
+      updateModernDataTableForChartType(); // CHANGED TO MODERN VERSION
+      updatePreview();
     }
 
-    // Data conversion functions
+    // Add new series - FIXED VERSION
+    function addNewSeries() {
+      const config = dataTableConfig[state.chartType];
+      
+      if (currentSeries >= config.maxSeries) {
+        alert(`Maximum ${config.maxSeries} series allowed for ${state.chartType} chart`);
+        return;
+      }
+      
+      currentSeries++;
+      updateModernDataTableForChartType(); // CHANGED TO MODERN VERSION
+      updatePreview();
+    }
+
+    // Delete row - FIXED VERSION
+    function deleteRow(rowIndex) {
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      if (currentData.length <= 1) {
+        alert('Cannot delete the last row');
+        return;
+      }
+      
+      currentData.splice(rowIndex, 1);
+      state.currentData = convertTableDataToChartData(currentData, state.chartType);
+      updateModernDataTableForChartType(); // CHANGED TO MODERN VERSION
+      updatePreview();
+    }
+
+    // Delete series - FIXED VERSION
+    function deleteSeries(seriesIndex) {
+      if (currentSeries <= 1) {
+        alert('Cannot delete the last series');
+        return;
+      }
+      
+      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      // Remove the series column from all rows
+      currentData.forEach(row => {
+        row.splice(seriesIndex, 1);
+      });
+      
+      currentSeries--;
+      state.currentData = convertTableDataToChartData(currentData, state.chartType);
+      updateModernDataTableForChartType(); // CHANGED TO MODERN VERSION
+      updatePreview();
+    }
+
+    // FIXED: Data conversion for pie chart (remove colors from data)
     function getTableDataFromChartData(chartData, chartType) {
       switch (chartType) {
         case 'bar':
@@ -3065,10 +4116,11 @@
           });
           
         case 'pie':
+          // Pie chart: only labels and values, no colors
           return chartData.labels.map((label, index) => [
             label,
-            chartData.values[index],
-            state.colors?.slices?.[index] || defaultColor(index)
+            chartData.values[index]
+            // REMOVED colors from pie chart data
           ]);
           
         case 'line':
@@ -3096,6 +4148,7 @@
       }
     }
 
+    // FIXED: Convert table data to chart data for pie chart
     function convertTableDataToChartData(tableData, chartType) {
       switch (chartType) {
         case 'bar':
@@ -3114,11 +4167,9 @@
         case 'pie':
           const labels = tableData.map(row => row[0]);
           const values = tableData.map(row => parseInt(row[1]) || 0);
-          const colors = tableData.map(row => row[2]);
           
-          // Update state colors
-          if (!state.colors) state.colors = {};
-          state.colors.slices = colors;
+          // REMOVED color handling for pie chart
+          // Colors will be generated automatically
           
           return { labels, values };
           
@@ -3152,34 +4203,6 @@
         default:
           return tableData;
       }
-    }
-
-    // Event delegation for table interactions
-    function setupTableEventListeners() {
-      const table = document.getElementById('enhanced-data-table');
-      
-      table.addEventListener('input', (e) => {
-        if (e.target.matches('input')) {
-          const row = e.target.closest('tr');
-          const rowIndex = parseInt(row.dataset.row);
-          const cellIndex = parseInt(e.target.dataset.cell);
-          const newValue = e.target.value;
-          
-          handleCellEdit(rowIndex, cellIndex, newValue);
-        }
-      });
-      
-      table.addEventListener('click', (e) => {
-        if (e.target.matches('.delete-row')) {
-          const rowIndex = parseInt(e.target.dataset.row);
-          deleteRow(rowIndex);
-        }
-        
-        if (e.target.matches('.delete-series')) {
-          const seriesIndex = parseInt(e.target.dataset.series);
-          deleteSeries(seriesIndex);
-        }
-      });
     }
 
     // Helper function to validate data
@@ -3262,12 +4285,13 @@
       setupEventListeners();
       initChartTypeSelector();
       initDataSourceSelector();
-      initEnhancedDataTable();
-      setupTableEventListeners();
-      updateDataTableForChartType();
+      initModernDataTable();
+      setupModernTableEventListeners()
+     updateModernDataTableForChartType();
       updateToolbarForChartType();
       updatePreview();
       updateGlobalToolbarValues();
+      setupContextToolbarListeners();
     }
 
     // Event Listeners Setup
@@ -3313,8 +4337,11 @@
         updatePreview();
       });
 
-      // Grid Toggle - fix the selector
+      // Grid Toggle
       document.getElementById("global-grid-toggle").addEventListener("click", function() {
+        // Don't allow toggling for pie charts
+        if (state.chartType === 'pie') return;
+        
         this.classList.toggle("active");
         state.globalSettings.showGrid = this.classList.contains("active");
         
@@ -3326,8 +4353,11 @@
         updatePreview();
       });
 
-      // Axes Toggle - fix the selector  
+      // Axes Toggle  
       document.getElementById("global-axes-toggle").addEventListener("click", function() {
+        // Don't allow toggling for pie charts
+        if (state.chartType === 'pie') return;
+        
         this.classList.toggle("active");
         state.globalSettings.showAxes = this.classList.contains("active");
         
@@ -3366,25 +4396,8 @@
         }
       });
 
-      // Context Toolbar
-      toolbarColor.addEventListener("input", (e) => {
-        if (state.selectedElement) {
-          state.selectedElement.setAttribute("fill", e.target.value);
-        }
-      });
-
-      toolbarOpacity.addEventListener("input", (e) => {
-        if (state.selectedElement) {
-          state.selectedElement.setAttribute(
-            "fill-opacity",
-            (e.target.value / 100).toString()
-          );
-        }
-      });
-
-      toolbarAdvanced.addEventListener("click", () => {
-        alert("Advanced options will be implemented in the next phase");
-      });
+      // Initialize context toolbar listeners
+      setupContextToolbarListeners();
 
       // Export Buttons
       btnExportSvg.addEventListener("click", exportSVG);
