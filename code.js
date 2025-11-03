@@ -1,7 +1,9 @@
 // code.js — Figma plugin main thread (beautified UI companion)
 // Opens the UI at a comfortable size; Figma will clamp if oversized.
-figma.showUI(__html__, { width: 980, height: 640 });
-
+// figma.showUI(__html__, { width: 980, height: 640 });
+figma.showUI(`
+<style>${__uiFiles__.styles}</style>
+${__uiFiles__.main}`, { width: 980, height: 640 })
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'EXPORT_SVG' && typeof msg.svg === 'string') {
     try {
