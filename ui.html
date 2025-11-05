@@ -11,25 +11,25 @@
 <body>
   <div class="app">
     <header class="header">
-      <div class="app-title">Graph Generator</div>
-      <div class="hamburger-menu" id="hamburger-menu">
-        <button class="hamburger-btn">☰</button>
-        <div class="dropdown-menu" id="dropdown-menu">
-          <button class="dropdown-item" id="theme-toggle">
-            <span>🌙</span>
-            <span>Dark Mode</span>
+      <div class="header-left">
+        <div class="hamburger-menu" id="hamburger-menu">
+          <button class="hamburger-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/>
+            </svg>
           </button>
-          <button class="dropdown-item" id="info-btn">
-            <span>ℹ️</span>
-            <span>Info & Roadmap</span>
-          </button>
+          <div class="dropdown-menu" id="dropdown-menu">
+            <button class="dropdown-item" id="theme-toggle">
+              <span>🌙</span>
+              <span>Dark Mode - coming soon</span>
+            </button>
+            <button class="dropdown-item" id="info-btn">
+              <span>ℹ️</span>
+              <span>Info & Roadmap</span>
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
 
-    <aside class="left-panel">
-      <div class="form-section">
-        <h3 class="section-title">Chart Type</h3>
         <div class="chart-type-select" id="chart-type-select">
           <div class="selected-option">
             <div class="chart-icon">
@@ -59,7 +59,7 @@
               <div class="chart-icon">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
-                    d="M17.9992 9.136C17.9892 9.634 17.5592 10 17.0622 10H11.0002C10.735 10 10.4806 9.89464 10.2931 9.70711C10.1056 9.51957 10.0002 9.26522 10.0002 9V2.938C10.0002 2.44 10.3662 2.011 10.8642 2.001L11.0002 2C11.9309 1.99996 12.8523 2.18552 13.7105 2.54584C14.5686 2.90615 15.3463 3.43399 15.998 4.09846C16.6497 4.76293 17.1624 5.55069 17.506 6.41566C17.8496 7.28064 18.0173 8.20545 17.9992 9.136ZM11.0002 3V9H17.0002C17.0002 7.4087 16.3681 5.88258 15.2429 4.75736C14.1176 3.63214 12.5915 3 11.0002 3ZM9.00021 4.519C9.00028 4.4501 8.9861 4.38193 8.95857 4.31877C8.93103 4.25561 8.89075 4.19882 8.84023 4.15196C8.78971 4.10511 8.73006 4.0692 8.66501 4.04649C8.59996 4.02378 8.53092 4.01476 8.46221 4.02C7.12761 4.12302 5.85053 4.60655 4.78236 5.41325C3.71418 6.21995 2.8997 7.31601 2.43545 8.5715C1.97121 9.82699 1.87668 11.1893 2.16306 12.4968C2.44943 13.8044 3.10472 15.0025 4.05123 15.949C4.99774 16.8955 6.1958 17.5508 7.50337 17.8372C8.81095 18.1235 10.1732 18.029 11.4287 17.5648C12.6842 17.1005 13.7803 16.286 14.587 15.2179C15.3937 14.1497 15.8772 12.8726 15.9802 11.538C15.9854 11.4693 15.9764 11.4003 15.9537 11.3352C15.931 11.2702 15.8951 11.2105 15.8483 11.16C15.8014 11.1095 15.7446 11.0692 15.6814 11.0416C15.6183 11.0141 15.5501 10.9999 15.4812 11H10.5002C10.1024 11 9.72086 10.842 9.43955 10.5607C9.15825 10.2794 9.00021 9.89782 9.00021 9.5V4.519ZM3.00021 11C3 9.58192 3.50206 8.20959 4.41734 7.12645C5.33263 6.0433 6.60197 5.31935 8.00021 5.083V9.5C8.00021 9.8283 8.06488 10.1534 8.19052 10.4567C8.31615 10.76 8.5003 11.0356 8.73245 11.2678C9.20129 11.7366 9.83717 12 10.5002 12H14.9172C14.6625 13.4801 13.8621 14.8109 12.6741 15.7297C11.4861 16.6485 9.99687 17.0885 8.5003 16.9629C7.00373 16.8373 5.60862 16.1552 4.59037 15.0513C3.57212 13.9474 3.00473 12.5018 3.00021 11Z"
+                    d="M17.9992 9.136C17.9892 9.634 17.5592 10 17.0622 10H11.0002C10.735 10 10.4806 9.89464 10.2931 9.70711C10.1056 9.51957 10.0002 9.26522 10.0002 9V2.938C10.0002 2.44 10.3662 2.011 10.8642 2.001L11.0002 2C11.9309 1.99996 12.8523 2.18552 13.7105 2.54584C14.5686 2.90615 15.3463 3.43399 15.998 4.09846C16.6497 4.76293 17.1624 5.55069 17.506 6.41566C17.8496 7.28064 18.0173 8.20545 17.9992 9.136ZM11.0002 3V9H17.0002C17.0002 7.4087 16.3681 5.88258 15.2429 4.75736C14.1176 3.63214 12.5915 3 11.0002 3ZM9.00021 4.519C9.00028 4.4501 8.9861 4.38193 8.95857 4.31877C8.93103 4.25561 8.89075 4.19882 8.84023 4.15196C8.78971 4.10511 8.73006 4.0692 8.66501 4.04649C8.59996 4.02378 8.53092 4.01476 8.46221 4.02C7.12761 4.12302 5.85053 4.60655 4.78236 5.41325C3.71418 6.21995 2.8997 7.31601 2.43545 8.5715C1.97121 9.82699 1.87668 11.1893 2.16306 12.4968C2.44943 13.8044 3.10472 15.0025 4.05123 15.949C4.99774 16.8955 6.1958 17.5508 7.50337 17.8372C8.81095 18.1235 10.1732 18.029 11.4287 17.5648C12.6842 17.1005 13.7803 16.286 14.587 15.2179C15.3937 14.1497 15.8772 12.8726 15.9802 11.538C15.9854 11.4693 15.9764 11.4003 15.9537 11.3352C15.931 11.2702 15.8951 11.2105 15.8483 11.16C15.8014 11.1095 15.7446 11.0692 15.6814 11.0416C15.6183 11.0141 15.5501 10.9999 15.4812 11H10.5002C10.1024 11 9.72086 10.842 9.43955 10.5607C9.15825 10.2794 9.00021 9.89782 9.00021 9.5V4.519ZM3.00021 11C3 9.58192 3.50206 8.20959 4.41734 7.12645C5.33263 6.0433 6.60197 5.31935 8.00021 5.083V9.5C8.00021 9.8283 8.06488 10.1534 8.19052 10.4567C8.31615 10.76 8.5003 11.0356 8.73245 11.2678C9.20129 11.7366 9.83717 11.9999 10.5002 12H14.9172C14.6625 13.4801 13.8621 14.8109 12.6741 15.7297C11.4861 16.6485 9.99687 17.0885 8.5003 16.9629C7.00373 16.8373 5.60862 16.1552 4.59037 15.0513C3.57212 13.9474 3.00473 12.5018 3.00021 11Z"
                     fill="currentColor" />
                 </svg>
               </div>
@@ -110,9 +110,32 @@
           </div>
         </div>
       </div>
+      <div class="header-right">
+        <div class="user-profile" id="user-profile">
+          <!-- Status indicator first -->
+          <div class="user-status" id="user-status"></div>
+          
+          <!-- User info in the middle -->
+          <div class="user-info">
+            <span class="user-greeting">Hi!</span>
+            <span class="user-name" id="user-name">User</span>
+          </div>
+          
+          <!-- Avatar last -->
+          <div class="user-avatar" id="user-avatar">
+            <!-- Default avatar fallback -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+
+    <aside class="left-panel">
 
       <div class="form-section">
-        <h3 class="section-title">Data Source</h3>
         <div class="data-source-select" id="data-source-select">
           <div class="selected-option">
             <span class="source-name">Default Random Data</span>
@@ -166,7 +189,7 @@
                     <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
                   </svg>
                 </span>
-                Add Row
+                Row
               </button>
               <button class="btn-modern" id="btn-add-series-modern" style="display: none">
                 <span class="btn-icon">
@@ -176,7 +199,7 @@
                     <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
                   </svg>
                 </span>
-                Add Series
+                Series
               </button>
             </div>
           </div>
@@ -503,112 +526,6 @@
         </button>
       </div>
 
-      <!-- Updated Horizontal Context Toolbar -->
-      <div id="context-toolbar" class="context-toolbar">
-        <!-- Universal Color Option -->
-        <div class="toolbar-group" id="universal-color">
-          <div class="toolbar-icon-btn" title="Color">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 0 0 20a10 10 0 0 0 0-20m0 18a8 8 0 0 1 0-16a8 8 0 0 1 0 16"/>
-            </svg>
-          </div>
-          <input type="color" class="color-picker" id="toolbar-color" style="display: none"/>
-          <span class="toolbar-label">Color</span>
-        </div>
-
-        <!-- Bar Chart Specific Options -->
-        <div class="toolbar-group bar-specific" id="bar-border-radius">
-          <div class="toolbar-icon-btn" title="Border Radius">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8"/>
-            </svg>
-          </div>
-          <span class="toolbar-label">Corners</span>
-        </div>
-
-        <div class="toolbar-group bar-specific" id="bar-border-color">
-          <div class="toolbar-icon-btn" title="Border Color">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 18a8 8 0 0 0 0-16a8 8 0 0 0 0 16"/>
-            </svg>
-          </div>
-          <input type="color" class="color-picker" id="toolbar-border-color" value="#2b3345" style="display: none"/>
-          <span class="toolbar-label">Border</span>
-        </div>
-
-        <div class="toolbar-group bar-specific" id="bar-padding">
-          <div class="toolbar-icon-btn" title="Padding">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M3 3h18v18H3V3m16 16V5H5v14h14m-4-8H7v2h8v-2"/>
-            </svg>
-          </div>
-          <span class="toolbar-label">Padding</span>
-        </div>
-
-        <div class="toolbar-group bar-specific" id="bar-value-display">
-          <div class="toolbar-icon-btn" title="Show Values">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8m-1 3h2v6h-2V7m0 8h2v2h-2v-2"/>
-            </svg>
-          </div>
-          <span class="toolbar-label">Values</span>
-        </div>
-
-        <!-- Pie Chart Specific Options -->
-        <div class="toolbar-group pie-specific" id="pie-slice-padding">
-          <div class="toolbar-icon-btn" title="Slice Padding">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 18a8 8 0 0 0 0-16a8 8 0 0 0 0 16M8 8h8v8H8V8"/>
-            </svg>
-          </div>
-          <span class="toolbar-label">Gap</span>
-        </div>
-
-        <div class="toolbar-group pie-specific" id="pie-border-radius">
-          <div class="toolbar-icon-btn" title="Border Radius">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8"/>
-            </svg>
-          </div>
-          <span class="toolbar-label">Corners</span>
-        </div>
-
-        <div class="toolbar-group pie-specific" id="pie-border-color">
-          <div class="toolbar-icon-btn" title="Border Color">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 18a8 8 0 0 0 0-16a8 8 0 0 0 0 16"/>
-            </svg>
-          </div>
-          <input type="color" class="color-picker" id="toolbar-slice-border-color" value="#2b3345" style="display: none"/>
-          <span class="toolbar-label">Border</span>
-        </div>
-
-        <div class="toolbar-group pie-specific" id="pie-label-display">
-          <div class="toolbar-icon-btn" title="Show Labels">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8m-1 3h2v6h-2V7m0 8h2v2h-2v-2"/>
-            </svg>
-          </div>
-          <span class="toolbar-label">Labels</span>
-        </div>
-
-        <!-- Slider Popups for Horizontal Toolbar -->
-        <div class="slider-popup" id="border-radius-popup-toolbar">
-          <input type="range" class="popup-slider" id="popup-border-radius-toolbar" min="0" max="20" value="6" />
-          <div class="slider-value" id="border-radius-value-toolbar">6px</div>
-        </div>
-
-        <div class="slider-popup" id="padding-popup-toolbar">
-          <input type="range" class="popup-slider" id="popup-padding-toolbar" min="0" max="20" value="0" />
-          <div class="slider-value" id="padding-value-toolbar">0%</div>
-        </div>
-
-        <div class="slider-popup" id="slice-padding-popup-toolbar">
-          <input type="range" class="popup-slider" id="popup-slice-padding-toolbar" min="0" max="20" value="0" />
-          <div class="slider-value" id="slice-padding-value-toolbar">0%</div>
-        </div>
-      </div>
-
       <!-- Preview Canvas -->
       <div class="preview-canvas" id="svg-host">
         <div style="color: var(--muted); text-align: center">
@@ -621,25 +538,57 @@
     </main>
 
     <footer class="footer">
-      <button id="btn-export-svg" class="btn">Export SVG</button>
-      <button id="btn-export-png" class="btn">Export PNG</button>
-      <button id="btn-export-figma" class="btn primary">Add to Figma</button>
+      <button id="btn-export-svg" class="footer-btn">
+        <div class="footer-btn-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.6153 4.20711C14.8028 4.39464 14.9082 4.649 14.9082 4.91421V14C14.9082 14.5304 14.6975 15.0391 14.3224 15.4142C14.0664 15.6703 13.748 15.8497 13.403 15.9378C13.1355 16.0062 12.9082 15.7761 12.9082 15.5C12.9082 15.2239 13.1453 15.01 13.3876 14.8776C13.4705 14.8323 13.5473 14.7751 13.6153 14.7071C13.8028 14.5196 13.9082 14.2652 13.9082 14V5.5C13.9082 4.94772 13.4605 4.5 12.9082 4.5H11.9082C11.5104 4.5 11.1288 4.34196 10.8475 4.06066C10.5662 3.77936 10.4082 3.39782 10.4082 3V2C10.4082 1.44772 9.96049 1 9.4082 1H4.9082C4.64299 1 4.38863 1.10536 4.2011 1.29289C4.01356 1.48043 3.9082 1.73478 3.9082 2V5V6.5C3.9082 6.77614 3.68435 7 3.4082 7C3.13206 7 2.9082 6.77614 2.9082 6.5V5V2C2.9082 1.46957 3.11892 0.960859 3.49399 0.585786C3.86906 0.210714 4.37777 0 4.9082 0L9.99399 0C10.2592 0 10.5136 0.105357 10.7011 0.292893L14.6153 4.20711Z" fill="currentColor"/>
+            <path d="M3.9082 8.5C3.9082 8.22386 3.68435 8 3.4082 8C3.13206 8 2.9082 8.22386 2.9082 8.5V9.5C2.9082 9.77614 3.13206 10 3.4082 10C3.68435 10 3.9082 9.77614 3.9082 9.5V8.5Z" fill="currentColor"/>
+            <path d="M2.11342 14.4426C2.04436 14.3008 2.00572 14.1462 2 13.9886H2.764C2.778 14.0667 2.80785 14.141 2.85171 14.2071C2.89557 14.2731 2.95251 14.3295 3.019 14.3726C3.09446 14.4249 3.17835 14.4638 3.267 14.4876C3.363 14.5143 3.46967 14.5276 3.587 14.5276C3.751 14.5276 3.88867 14.5043 4 14.4576C4.10232 14.4196 4.1913 14.3525 4.256 14.2646C4.31357 14.1791 4.34326 14.0778 4.341 13.9746C4.34358 13.912 4.33101 13.8497 4.30438 13.7929C4.27775 13.7362 4.23783 13.6867 4.188 13.6486C4.08667 13.5686 3.93267 13.5043 3.726 13.4556L3.108 13.3116C2.90067 13.265 2.72067 13.194 2.568 13.0986C2.416 13.002 2.299 12.8796 2.217 12.7316C2.135 12.5836 2.094 12.409 2.094 12.2076C2.094 11.9636 2.15733 11.7506 2.284 11.5686C2.41133 11.3873 2.58733 11.247 2.812 11.1476C3.036 11.0476 3.29467 10.9976 3.588 10.9976C3.85608 10.9896 4.12257 11.0415 4.368 11.1496C4.56904 11.238 4.74199 11.3798 4.868 11.5596C4.9855 11.7262 5.05439 11.9222 5.067 12.1256H4.317C4.29988 12.0307 4.25855 11.9419 4.197 11.8676C4.13226 11.7872 4.04788 11.7249 3.952 11.6866C3.848 11.6413 3.72467 11.6186 3.582 11.6186C3.36467 11.6186 3.19367 11.6693 3.069 11.7706C2.94633 11.8706 2.885 11.9986 2.885 12.1546C2.88395 12.2122 2.89632 12.2691 2.92115 12.321C2.94597 12.373 2.98256 12.4184 3.028 12.4536C3.1482 12.5418 3.28657 12.6019 3.433 12.6296L4.054 12.7736C4.25186 12.8147 4.44236 12.8855 4.619 12.9836C4.77317 13.0677 4.90251 13.1908 4.994 13.3406C5.084 13.49 5.129 13.6766 5.129 13.9006C5.13321 14.133 5.06811 14.3614 4.942 14.5566C4.81867 14.7446 4.63867 14.8913 4.402 14.9966C4.168 15.102 3.882 15.1546 3.544 15.1546C3.29067 15.1546 3.069 15.1243 2.879 15.0636C2.68967 15.0036 2.53033 14.9196 2.401 14.8116C2.28044 14.71 2.18248 14.5843 2.11342 14.4426Z" fill="currentColor"/>
+            <path d="M7.527 15.0786H6.575L5.236 11.0796H6.153L7.05 14.2176H7.088L7.975 11.0796H8.854L7.527 15.0786Z" fill="currentColor"/>
+            <path d="M12.198 12.2776C12.1807 12.1016 12.134 11.9376 12.058 11.7856C11.982 11.6316 11.8773 11.496 11.744 11.3786C11.612 11.262 11.452 11.1703 11.264 11.1036C11.0787 11.037 10.867 11.0036 10.629 11.0036C10.267 11.0036 9.95833 11.0796 9.703 11.2316C9.449 11.383 9.25467 11.594 9.12 11.8646C8.98733 12.1373 8.921 12.4536 8.921 12.8136V13.3206C8.91822 13.5729 8.95362 13.824 9.026 14.0656C9.09074 14.2791 9.1994 14.4767 9.345 14.6456C9.49198 14.8103 9.67463 14.9393 9.879 15.0226C10.1189 15.1145 10.3742 15.1593 10.631 15.1546C10.899 15.1546 11.1317 15.1176 11.329 15.0436C11.5143 14.9751 11.683 14.8681 11.824 14.7296C11.9527 14.5996 12.0526 14.4439 12.117 14.2726C12.181 14.0993 12.213 13.916 12.213 13.7226V12.9246H10.637V13.5146H11.46V13.7686C11.46 13.902 11.43 14.0233 11.37 14.1326C11.3062 14.2448 11.2114 14.3361 11.097 14.3956C10.9545 14.4636 10.7979 14.4968 10.64 14.4926C10.4562 14.4999 10.2749 14.4488 10.122 14.3466C9.98239 14.2415 9.87641 14.098 9.817 13.9336C9.75233 13.7576 9.72 13.5523 9.72 13.3176V12.8206C9.72 12.454 9.79833 12.1706 9.955 11.9706C10.113 11.7693 10.3343 11.6686 10.619 11.6686C10.7207 11.668 10.8218 11.6828 10.919 11.7126C11.0054 11.739 11.0859 11.7817 11.156 11.8386C11.2238 11.891 11.2814 11.9554 11.326 12.0286C11.3717 12.1057 11.4042 12.1899 11.422 12.2776H12.198Z" fill="currentColor"/>
+            <path d="M7.4082 9L5.9082 7.5M7.4082 9L8.9082 7.5M7.4082 9V6.375M7.4082 5V5.625" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        Export SVG
+      </button>
+      
+      <button id="btn-export-png" class="footer-btn">
+        <div class="footer-btn-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7071 4.20711C14.8946 4.39464 15 4.649 15 4.91421V14C15 14.5304 14.7893 15.0391 14.4142 15.4142C14.1582 15.6703 13.8398 15.8497 13.4948 15.9378C13.2273 16.0062 13 15.7761 13 15.5C13 15.2239 13.2371 15.01 13.4794 14.8776C13.5623 14.8323 13.6391 14.7751 13.7071 14.7071C13.8946 14.5196 14 14.2652 14 14V5.5C14 4.94772 13.5523 4.5 13 4.5H12C11.6022 4.5 11.2206 4.34196 10.9393 4.06066C10.658 3.77936 10.5 3.39782 10.5 3V2C10.5 1.44772 10.0523 1 9.5 1H5C4.73478 1 4.48043 1.10536 4.29289 1.29289C4.10536 1.48043 4 1.73478 4 2V5V6.5C4 6.77614 3.77614 7 3.5 7C3.22386 7 3 6.77614 3 6.5V5V2C3 1.46957 3.21071 0.960859 3.58579 0.585786C3.96086 0.210714 4.46957 0 5 0L10.0858 0C10.351 0 10.6054 0.105357 10.7929 0.292893L14.7071 4.20711Z" fill="currentColor"/>
+            <path d="M4 8.5C4 8.22386 3.77614 8 3.5 8C3.22386 8 3 8.22386 3 8.5V9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5V8.5Z" fill="currentColor"/>
+            <path d="M10.8105 11C11.0485 11 11.2613 11.0329 11.4473 11.0996C11.6345 11.1662 11.7941 11.2584 11.9268 11.375C12.0601 11.4923 12.1652 11.6282 12.2412 11.7822H12.2402C12.3162 11.9355 12.3626 12.0999 12.3799 12.2744H11.6035C11.5854 12.1866 11.5528 12.1023 11.5068 12.0254C11.4623 11.9522 11.4047 11.8874 11.3369 11.835C11.2668 11.7781 11.186 11.7353 11.0996 11.709C11.0029 11.6793 10.902 11.6645 10.8008 11.665C10.5162 11.6651 10.2944 11.7655 10.1357 11.9668C9.97974 12.1675 9.90234 12.4514 9.90234 12.8174V13.3154C9.90238 13.5491 9.93446 13.7539 9.99902 13.9297C10.0581 14.0938 10.1636 14.2375 10.3027 14.3428C10.4559 14.4452 10.6382 14.4968 10.8223 14.4893C10.9799 14.4937 11.1368 14.4602 11.2793 14.3926C11.3933 14.3326 11.4875 14.2411 11.5508 14.1289C11.6108 14.0196 11.6409 13.8983 11.6416 13.7656V13.5107H10.8203V12.9209H12.3965V13.7188C12.3965 13.912 12.3634 14.0953 12.2988 14.2686C12.2346 14.4401 12.1346 14.5963 12.0059 14.7266C11.8648 14.8646 11.696 14.9718 11.5107 15.04C11.3136 15.1139 11.0815 15.1513 10.8145 15.1514C10.5573 15.1562 10.3007 15.1106 10.0605 15.0186C9.85675 14.935 9.67489 14.806 9.52832 14.6416C9.38239 14.4727 9.27304 14.275 9.20801 14.0615C9.13575 13.8202 9.0998 13.5693 9.10254 13.3174V12.8105C9.10259 12.4489 9.16958 12.1325 9.30273 11.8613C9.43673 11.5907 9.63077 11.3789 9.88477 11.2275C10.1407 11.0756 10.4494 11.0001 10.8105 11ZM3.59961 11.0762C3.8876 11.0755 4.13204 11.1349 4.33203 11.2549C4.5271 11.3676 4.68647 11.5334 4.79199 11.7324C4.89721 11.9343 4.9502 12.16 4.9502 12.4092C4.95433 12.6447 4.8988 12.8775 4.78906 13.0859C4.68379 13.2845 4.52934 13.4426 4.32617 13.5605C4.12484 13.6752 3.88042 13.7334 3.59375 13.7334H2.79102V15.0762H2V11.0762H3.59961ZM7.77637 13.7363H7.80762V11.0762H8.55762V15.0752H7.90234L6.14062 12.4004H6.10938V15.0752L5.3623 15.0762V11.0762H6.02441L7.77637 13.7363ZM2.78809 13.1123H3.44727C3.577 13.1158 3.70583 13.0876 3.82227 13.0303C3.92402 12.9762 4.00731 12.8922 4.06055 12.79C4.11982 12.6721 4.14904 12.5411 4.14551 12.4092C4.14551 12.1825 4.08329 12.0084 3.95996 11.8877C3.83668 11.7666 3.66602 11.7061 3.44824 11.7061H2.78809V13.1123Z" fill="currentColor"/>
+            <path d="M7.5 9L6 7.5M7.5 9L9 7.5M7.5 9V6.375M7.5 5V5.625" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        Export PNG
+      </button>
+      
+      <button id="btn-export-figma" class="footer-btn primary">
+        <div class="footer-btn-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7071 4.20711C13.8946 4.39464 14 4.649 14 4.91421V14C14 14.5304 13.7893 15.0391 13.4142 15.4142C13.0391 15.7893 12.5304 16 12 16H10.5C10.2239 16 10 15.7761 10 15.5C10 15.2239 10.2239 15 10.5 15H12C12.2652 15 12.5196 14.8946 12.7071 14.7071C12.8946 14.5196 13 14.2652 13 14V5.5C13 4.94772 12.5523 4.5 12 4.5H11C10.6022 4.5 10.2206 4.34196 9.93934 4.06066C9.65804 3.77936 9.5 3.39782 9.5 3V2C9.5 1.44772 9.05228 1 8.5 1H4C3.73478 1 3.48043 1.10536 3.29289 1.29289C3.10536 1.48043 3 1.73478 3 2V4.5C3 4.77614 2.77614 5 2.5 5C2.22386 5 2 4.77614 2 4.5V2C2 1.46957 2.21071 0.960859 2.58579 0.585786C2.96086 0.210714 3.46957 0 4 0L9.08579 0C9.351 0 9.60536 0.105357 9.79289 0.292893L13.7071 4.20711Z" fill="currentColor"/>
+            <path d="M8 10.5C8 10.1022 7.84196 9.72064 7.56066 9.43934C7.27936 9.15804 6.89782 9 6.5 9C6.10218 9 5.72064 9.15804 5.43934 9.43934C5.15804 9.72064 5 10.1022 5 10.5C5 10.8978 5.15804 11.2794 5.43934 11.5607C5.72064 11.842 6.10218 12 6.5 12C6.89782 12 7.27936 11.842 7.56066 11.5607C7.84196 11.2794 8 10.8978 8 10.5Z" stroke="currentColor"/>
+            <path d="M5 6H3.5C3.10218 6 2.72064 6.15804 2.43934 6.43934C2.15804 6.72064 2 7.10218 2 7.5C2 7.89782 2.15804 8.27936 2.43934 8.56066C2.72064 8.84196 3.10218 9 3.5 9M5 6V9M5 6H6.5C6.89782 6 7.27936 6.15804 7.56066 6.43934C7.84196 6.72064 8 7.10218 8 7.5C8 7.89782 7.84196 8.27936 7.56066 8.56066C7.27936 8.84196 6.89782 9 6.5 9H5M5 9H3.5M5 9V12M3.5 9C3.10218 9 2.72064 9.15804 2.43934 9.43934C2.15804 9.72064 2 10.1022 2 10.5C2 10.8978 2.15804 11.2794 2.43934 11.5607C2.72064 11.842 3.10218 12 3.5 12M5 12H3.5M5 12V13.5C5 13.8978 4.84196 14.2794 4.56066 14.5607C4.27936 14.842 3.89782 15 3.5 15C3.10218 15 2.72064 14.842 2.43934 14.5607C2.15804 14.2794 2 13.8978 2 13.5C2 13.1022 2.15804 12.7206 2.43934 12.4393C2.72064 12.158 3.10218 12 3.5 12" stroke="currentColor"/>
+            <path d="M10.5 14L9 12.5M10.5 14L12 12.5M10.5 14V11.375M10.5 10V10.625" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        Add to Figma
+      </button>
     </footer>
   </div>
 
   <div class="modal" id="info-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Graph Generator - Info & Roadmap</h3>
+        <h3 class="modal-title">Welcome User to Info section where updates is provided</h3>
         <button class="modal-close" id="modal-close">×</button>
       </div>
       <div>
         <h4>Current Features:</h4>
         <ul>
           <li>5 chart types (Bar, Pie, Line, Scatter, Histogram)</li>
-          <li>Interactive element customization</li>
           <li>Default random data generation</li>
-          <li>Dark/Light theme support</li>
           <li>Global styling controls</li>
           <li>Export options (SVG, PNG, Figma)</li>
         </ul>
@@ -649,7 +598,6 @@
           <li>CSV, Excel, Google Sheets import</li>
           <li>JSON data support</li>
           <li>Advanced styling options</li>
-          <li>Chart templates and presets</li>
         </ul>
 
         <h4>How to use:</h4>
@@ -657,7 +605,6 @@
           <li>Select chart type from dropdown</li>
           <li>View default data or switch to manual input</li>
           <li>Use global toolbar for overall styling</li>
-          <li>Click on chart elements for individual customization</li>
           <li>Export your chart when ready</li>
         </ol>
       </div>
@@ -677,7 +624,6 @@
     const manualDataSection = document.getElementById("manual-data-section");
     const btnApplyData = document.getElementById("btn-apply-data");
     const dataInput = document.getElementById("data-input");
-    const contextToolbar = document.getElementById("context-toolbar");
 
     // Global toolbar elements
     const colorPresetBtn = document.getElementById("color-preset-btn");
@@ -753,12 +699,12 @@
       data: null,
       colors: {},
       globalSettings: {
-        backgroundColor: "#111318",
+        backgroundColor: "#ffffff",
         showGrid: true,
         showAxes: true,
         fontSize: 12,
         padding: 0,
-        borderRadius: 6,
+        borderRadius: 0,
       },
       selectedElement: null,
       currentData: getDefaultData("bar"),
@@ -1761,19 +1707,48 @@
       updatePreview();
     }
 
-    // Get default data for chart types
+    // Get default data for chart types with random values
     function getDefaultData(type) {
+      const getRandomValue = (min = 10, max = 100) => Math.floor(Math.random() * (max - min + 1)) + min;
+      
       switch (type) {
         case "bar":
-          return { categories: ["Category A", "Category B", "Category C", "Category D"], series: [{ label: "Series 1", y: [25, 40, 30, 35] }] };
+          const barCount = 8;
+          const categories = Array.from({ length: barCount }, (_, i) => `Category ${String.fromCharCode(65 + i)}`);
+          return { 
+            categories, 
+            series: [{ label: "Series 1", y: Array.from({ length: barCount }, () => getRandomValue()) }] 
+          };
         case "pie":
-          return { labels: ["Slice A", "Slice B", "Slice C", "Slice D"], values: [25, 40, 30, 35] };
+          const pieCount = 4;
+          const labels = Array.from({ length: pieCount }, (_, i) => `Slice ${String.fromCharCode(65 + i)}`);
+          return { 
+            labels, 
+            values: Array.from({ length: pieCount }, () => getRandomValue(15, 50)) 
+          };
         case "line":
-          return { x: ["Jan", "Feb", "Mar", "Apr"], series: [{ label: "Series 1", y: [25, 40, 30, 35] }] };
+          const lineCount = 8;
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+          const x = months.slice(0, lineCount);
+          return { 
+            x, 
+            series: [{ label: "Series 1", y: Array.from({ length: lineCount }, () => getRandomValue()) }] 
+          };
         case "scatter":
-          return { points: [{ x: 10, y: 20, r: 6 }, { x: 30, y: 40, r: 8 }, { x: 50, y: 30, r: 5 }, { x: 70, y: 60, r: 7 }] };
+          const scatterCount = 8;
+          return { 
+            points: Array.from({ length: scatterCount }, (_, i) => ({
+              x: getRandomValue(5, 95),
+              y: getRandomValue(5, 95),
+              r: getRandomValue(4, 10),
+              label: `Point ${String.fromCharCode(65 + i)}`
+            })) 
+          };
         case "histogram":
-          return { values: [12, 15, 18, 22, 25, 28, 30, 32, 35, 18, 22, 25, 28, 30, 32] };
+          const histCount = 20;
+          return { 
+            values: Array.from({ length: histCount }, () => getRandomValue(10, 40)) 
+          };
         default:
           return getDefaultData("bar");
       }
@@ -1791,13 +1766,51 @@
     }
 
     // ===== DATA TABLE CONFIGURATION =====
-    // Data table configuration for different chart types
+    // Data table configuration for different chart types with random data
     const dataTableConfig = {
-      bar: { headers: ['Category', 'Value'], types: ['text', 'number'], maxRows: 15, maxSeries: 5, defaultData: [['Category A', 25], ['Category B', 40], ['Category C', 30], ['Category D', 35]] },
-      pie: { headers: ['Label', 'Value'], types: ['text', 'number'], maxRows: 8, maxSeries: 1, defaultData: [['Slice A', 25], ['Slice B', 40], ['Slice C', 30], ['Slice D', 35]] },
-      line: { headers: ['X-Axis', 'Value'], types: ['text', 'number'], maxRows: 15, maxSeries: 5, defaultData: [['Jan', 25], ['Feb', 40], ['Mar', 30], ['Apr', 35]] },
-      scatter: { headers: ['X', 'Y', 'Size', 'Label'], types: ['number', 'number', 'number', 'text'], maxRows: 20, maxSeries: 1, defaultData: [[10, 20, 6, 'Point A'], [30, 40, 8, 'Point B'], [50, 30, 5, 'Point C'], [70, 60, 7, 'Point D']] },
-      histogram: { headers: ['Value'], types: ['number'], maxRows: 50, maxSeries: 1, defaultData: [[12], [15], [18], [22], [25], [28], [30], [32], [35], [18], [22], [25]] }
+      bar: { 
+        headers: ['Category', 'Value'], 
+        types: ['text', 'number'], 
+        maxRows: 15, 
+        maxSeries: 5, 
+        getDefaultRowData: (index) => [`Category ${String.fromCharCode(65 + index)}`, Math.floor(Math.random() * 91) + 10]
+      },
+      pie: { 
+        headers: ['Label', 'Value'], 
+        types: ['text', 'number'], 
+        maxRows: 8, 
+        maxSeries: 1, 
+        getDefaultRowData: (index) => [`Slice ${String.fromCharCode(65 + index)}`, Math.floor(Math.random() * 36) + 15]
+      },
+      line: { 
+        headers: ['X-Axis', 'Value'], 
+        types: ['text', 'number'], 
+        maxRows: 15, 
+        maxSeries: 5, 
+        getDefaultRowData: (index) => {
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          return [months[index] || `Point ${index + 1}`, Math.floor(Math.random() * 91) + 10];
+        }
+      },
+      scatter: { 
+        headers: ['X', 'Y', 'Size', 'Label'], 
+        types: ['number', 'number', 'number', 'text'], 
+        maxRows: 20, 
+        maxSeries: 1, 
+        getDefaultRowData: (index) => [
+          Math.floor(Math.random() * 91) + 5, 
+          Math.floor(Math.random() * 91) + 5, 
+          Math.floor(Math.random() * 7) + 4, 
+          `Point ${String.fromCharCode(65 + index)}`
+        ]
+      },
+      histogram: { 
+        headers: ['Value'], 
+        types: ['number'], 
+        maxRows: 50, 
+        maxSeries: 1, 
+        getDefaultRowData: () => [Math.floor(Math.random() * 31) + 10]
+      }
     };
 
     // Initialize modern data table
@@ -1830,7 +1843,11 @@
       headersContainer.innerHTML = generateModernTableHeaders(config);
       
       if (!state.currentData || !isValidDataForChart(state.currentData, state.chartType)) {
-        state.currentData = convertTableDataToChartData(config.defaultData, state.chartType);
+        const defaultRowCount = getDefaultRowCountForChartType(state.chartType);
+        const defaultTableData = Array.from({ length: defaultRowCount }, (_, index) => 
+          config.getDefaultRowData(index)
+        );
+        state.currentData = convertTableDataToChartData(defaultTableData, state.chartType);
       }
       
       bodyContainer.innerHTML = generateModernTableRows(getTableDataFromChartData(state.currentData, state.chartType), config);
@@ -1910,6 +1927,20 @@
     // Setup modern table event listeners
     function setupModernTableEventListeners() {
       const table = document.getElementById('modern-data-table');
+      table.addEventListener('focusin', (e) => {
+          if (e.target.matches('input')) {
+            const cell = e.target.closest('td');
+            cell.classList.add('editing');
+          }
+        });
+        
+        table.addEventListener('focusout', (e) => {
+          if (e.target.matches('input')) {
+            const cell = e.target.closest('td');
+            cell.classList.remove('editing');
+          }
+        });
+
       table.addEventListener('input', (e) => {
         if (e.target.matches('input')) {
           const row = e.target.closest('tr');
@@ -1938,25 +1969,16 @@
     function addNewRow() {
       const config = dataTableConfig[state.chartType];
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
+      
       if (currentData.length >= config.maxRows) {
         alert(`Maximum ${config.maxRows} rows allowed for ${state.chartType} chart`);
         return;
       }
       
-      const emptyRow = [];
-      for (let i = 0; i < config.headers.length; i++) {
-        if (i === 0) {
-          emptyRow.push(`New ${config.headers[i]}`);
-        } else if (config.types[i] === 'number') {
-          emptyRow.push(Math.floor(Math.random() * 50) + 10);
-        } else if (config.types[i] === 'color') {
-          emptyRow.push(defaultColor(currentData.length));
-        } else {
-          emptyRow.push('');
-        }
-      }
+      // Generate random default data for the new row
+      const newRow = config.getDefaultRowData(currentData.length);
       
-      currentData.push(emptyRow);
+      currentData.push(newRow);
       state.currentData = convertTableDataToChartData(currentData, state.chartType);
       updateModernDataTableForChartType();
       updatePreview();
@@ -1968,7 +1990,19 @@
         alert(`Maximum ${config.maxSeries} series allowed for ${state.chartType} chart`);
         return;
       }
+      
       currentSeries++;
+      
+      // Update existing data structure to include new series with random values
+      const currentTableData = getTableDataFromChartData(state.currentData, state.chartType);
+      
+      // Add new series column with random data to each row
+      currentTableData.forEach(row => {
+        const randomValue = Math.floor(Math.random() * 91) + 10;
+        row.push(randomValue);
+      });
+      
+      state.currentData = convertTableDataToChartData(currentTableData, state.chartType);
       updateModernDataTableForChartType();
       updatePreview();
     }
@@ -2081,42 +2115,16 @@
       }
     }
 
-    // ===== CHART ELEMENT INTERACTIVITY =====
-    // Add chart element interactivity
-    function addChartElementInteractivity() {
-      const svg = document.querySelector("#svg-host svg");
-      if (!svg) return;
-      
-      // First hide any existing context toolbar
-      hideContextToolbar();
-      
-      const interactiveElements = svg.querySelectorAll("rect, circle, path, polygon, polyline");
-      interactiveElements.forEach((element, index) => {
-        if (element.getAttribute('width') === '100%' && element.getAttribute('height') === '100%') {
-          return;
-        }
-        element.style.cursor = "pointer";
-        element.classList.add("chart-element"); // Add this class
-        element.setAttribute("data-element-id", index);
-        element.setAttribute("data-original-fill", element.getAttribute("fill") || "#6aa2ff");
-        element.addEventListener("click", (e) => {
-          e.stopPropagation();
-          selectChartElement(element);
-        });
-      });
-      
-      svg.addEventListener("click", (e) => {
-        if (e.target === svg) {
-          hideContextToolbar();
-        }
-      });
-      
-      // Close popups when clicking outside
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('.context-toolbar') && !e.target.closest('.slider-popup')) {
-          closeAllSliderPopups();
-        }
-      });
+    // Get default row count for each chart type
+    function getDefaultRowCountForChartType(chartType) {
+      switch (chartType) {
+        case 'bar': return 8;
+        case 'pie': return 4;
+        case 'line': return 8;
+        case 'scatter': return 8;
+        case 'histogram': return 20;
+        default: return 4;
+      }
     }
 
     // ===== CONTEXT TOOLBAR HELPER FUNCTIONS =====
@@ -2192,304 +2200,110 @@
     // Store element-specific data
     let currentElementData = { type: null, index: null, originalStyles: null };
 
-    // Select chart element (updated for horizontal toolbar)
-    function selectChartElement(element) {
-      // Only allow bar and pie charts to show context toolbar
-      if (state.chartType !== "bar" && state.chartType !== "pie") {
-        hideContextToolbar();
-        return;
+    // ===== ENHANCED USER PROFILE MANAGEMENT =====
+    function updateUserProfile(userData) {
+      const userNameElement = document.getElementById('user-name');
+      const userAvatarElement = document.getElementById('user-avatar');
+      const userProfileElement = document.getElementById('user-profile');
+      
+      // Remove loading state if present
+      userProfileElement.classList.remove('loading');
+      
+      if (userData.name) {
+        // Display first name only for cleaner UI
+        const firstName = userData.name.split(' ')[0];
+        userNameElement.textContent = firstName;
       }
-
-      const previouslySelected = document.querySelector(".chart-element.selected");
-      if (previouslySelected) {
-        previouslySelected.classList.remove("selected");
-      }
       
-      element.classList.add("selected");
-      state.selectedElement = element;
-      const elementId = element.getAttribute("data-element-id");
-      currentElementData.index = parseInt(elementId);
-      currentElementData.originalStyles = {
-        fill: element.getAttribute("fill"),
-        opacity: element.getAttribute("fill-opacity") || element.getAttribute("opacity") || "1"
-      };
-
-      // Set up the appropriate toolbar mode
-      contextToolbar.className = "context-toolbar";
-      if (state.chartType === "bar") {
-        contextToolbar.classList.add("bar-mode", "visible");
-        setupBarContextToolbar(element);
-      } else if (state.chartType === "pie") {
-        contextToolbar.classList.add("pie-mode", "visible");
-        setupPieContextToolbar(element);
-      }
-
-      // Position the horizontal toolbar
-      positionHorizontalToolbar(element);
-      
-      // Set initial values
-      const currentColor = element.getAttribute("fill") || element.getAttribute("stroke") || "#6aa2ff";
-      toolbarColor.value = currentColor;
-    }
-
-    // Position horizontal toolbar near the clicked element
-    function positionHorizontalToolbar(element) {
-      const rect = element.getBoundingClientRect();
-      const previewRect = document.getElementById("svg-host").getBoundingClientRect();
-      
-      // Position above the element with some offset
-      const toolbarWidth = contextToolbar.offsetWidth;
-      const left = Math.max(10, rect.left - previewRect.left + rect.width / 2 - toolbarWidth / 2);
-      const top = Math.max(10, rect.top - previewRect.top - 60); // Position above element
-      
-      contextToolbar.style.left = left + "px";
-      contextToolbar.style.top = top + "px";
-    }
-
-    // Setup bar context toolbar
-    function setupBarContextToolbar(element) {
-      const borderColor = element.getAttribute("stroke") || "#2b3345";
-      toolbarBorderColor.value = borderColor;
-      
-      const showValue = element.getAttribute("data-show-value") !== "false";
-      
-      // Set toggle state
-      const valueToggle = document.querySelector('#bar-value-display .toolbar-icon-btn');
-      if (valueToggle) {
-        valueToggle.classList.toggle("active", showValue);
-      }
-    }
-
-    // Setup pie context toolbar
-    function setupPieContextToolbar(element) {
-      const borderColor = element.getAttribute("stroke") || "#2b3345";
-      toolbarSliceBorderColor.value = borderColor;
-      
-      const showLabel = element.getAttribute("data-show-label") !== "false";
-      
-      // Set toggle state
-      const labelToggle = document.querySelector('#pie-label-display .toolbar-icon-btn');
-      if (labelToggle) {
-        labelToggle.classList.toggle("active", showLabel);
-      }
-    }
-
-    // Hide context toolbar
-    function hideContextToolbar() {
-      contextToolbar.classList.remove("visible", "bar-mode", "pie-mode");
-      closeAllSliderPopups();
-      state.selectedElement = null;
-      const selected = document.querySelector(".chart-element.selected");
-      if (selected) {
-        selected.classList.remove("selected");
-      }
-    }
-
-    // Position horizontal toolbar near the clicked element
-    function positionHorizontalToolbar(element) {
-      const rect = element.getBoundingClientRect();
-      const previewRect = document.getElementById("svg-host").getBoundingClientRect();
-      
-      // Position above the element with some offset
-      const toolbarWidth = contextToolbar.offsetWidth;
-      const left = Math.max(10, rect.left - previewRect.left + rect.width / 2 - toolbarWidth / 2);
-      const top = Math.max(10, rect.top - previewRect.top - 60); // Position above element
-      
-      contextToolbar.style.left = left + "px";
-      contextToolbar.style.top = top + "px";
-    }
-
-    // Setup bar context toolbar (updated for horizontal layout)
-    function setupBarContextToolbar(element) {
-      const borderColor = element.getAttribute("stroke") || "#2b3345";
-      toolbarBorderColor.value = borderColor;
-      
-      const borderWidth = parseInt(element.getAttribute("stroke-width") || "1");
-      const barWidth = parseInt(element.getAttribute("data-bar-width") || "40");
-      const cornerRadius = parseInt(element.getAttribute("rx") || "6");
-      const showValue = element.getAttribute("data-show-value") !== "false";
-      
-      // Set toggle state
-      const valueToggle = document.querySelector('#bar-value-display .toolbar-icon-btn');
-      valueToggle.classList.toggle("active", showValue);
-    }
-
-    // Setup pie context toolbar (updated for horizontal layout)
-    function setupPieContextToolbar(element) {
-      const borderColor = element.getAttribute("stroke") || "#2b3345";
-      toolbarSliceBorderColor.value = borderColor;
-      
-      const slicePadding = parseInt(element.getAttribute("data-slice-padding") || "0");
-      const borderRadius = parseInt(element.getAttribute("data-border-radius") || "0");
-      const showLabel = element.getAttribute("data-show-label") !== "false";
-      
-      // Set toggle state
-      const labelToggle = document.querySelector('#pie-label-display .toolbar-icon-btn');
-      labelToggle.classList.toggle("active", showLabel);
-    }
-
-    // Setup context toolbars
-    function setupBarContextToolbar(element) {
-      const borderColor = element.getAttribute("stroke") || "#2b3345";
-      toolbarBorderColor.value = borderColor;
-      const borderWidth = parseInt(element.getAttribute("stroke-width") || "1");
-      toolbarBorderWidth.value = borderWidth;
-      borderWidthValue.textContent = borderWidth + "px";
-      const barWidth = parseInt(element.getAttribute("data-bar-width") || "40");
-      toolbarBarWidth.value = barWidth;
-      barWidthValue.textContent = barWidth + "px";
-      const cornerRadius = parseInt(element.getAttribute("rx") || "6");
-      toolbarCornerRadius.value = cornerRadius;
-      cornerRadiusValue.textContent = cornerRadius + "px";
-      const showValue = element.getAttribute("data-show-value") !== "false";
-      toolbarValueDisplay.classList.toggle("active", showValue);
-    }
-
-    // Setup context toolbar listeners for horizontal layout
-    function setupContextToolbarListeners() {
-      console.log("Setting up context toolbar listeners...");
-      
-      // Color picker
-      toolbarColor.addEventListener("input", (e) => {
-        if (state.selectedElement) {
-          state.selectedElement.setAttribute("fill", e.target.value);
-        }
-      });
-
-      // Border color pickers
-      toolbarBorderColor.addEventListener("input", (e) => {
-        if (state.selectedElement && state.chartType === "bar") {
-          state.selectedElement.setAttribute("stroke", e.target.value);
-        }
-      });
-
-      toolbarSliceBorderColor.addEventListener("input", (e) => {
-        if (state.selectedElement && state.chartType === "pie") {
-          state.selectedElement.setAttribute("stroke", e.target.value);
-        }
-      });
-
-      // Icon button click handlers
-      document.querySelectorAll('.toolbar-icon-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const parentGroup = this.closest('.toolbar-group');
-          if (!parentGroup) return;
+      if (userData.photoUrl) {
+        // Create and set user photo
+        const img = document.createElement('img');
+        img.src = userData.photoUrl;
+        img.alt = userData.name || 'User';
+        img.onload = () => {
+          userAvatarElement.innerHTML = '';
+          userAvatarElement.appendChild(img);
+          userAvatarElement.classList.add('has-photo');
           
-          const groupId = parentGroup.id;
-          console.log("Toolbar button clicked:", groupId);
+          // Add loaded animation
+          userProfileElement.classList.add('data-loaded');
           
-          switch(groupId) {
-            case 'universal-color':
-              console.log("Opening color picker");
-              toolbarColor.click();
-              break;
-              
-            case 'bar-border-color':
-              console.log("Opening border color picker");
-              toolbarBorderColor.click();
-              break;
-              
-            case 'pie-border-color':
-              console.log("Opening slice border color picker");
-              toolbarSliceBorderColor.click();
-              break;
-              
-            case 'bar-border-radius':
-              console.log("Opening border radius slider");
-              showSliderPopup('border-radius', this, state.selectedElement?.getAttribute('rx') || '6');
-              break;
-              
-            case 'pie-border-radius':
-              console.log("Opening pie border radius slider");
-              showSliderPopup('border-radius', this, state.selectedElement?.getAttribute('data-border-radius') || '0');
-              break;
-              
-            case 'bar-padding':
-              console.log("Opening padding slider");
-              showSliderPopup('padding', this, state.globalSettings.padding || '0');
-              break;
-              
-            case 'pie-slice-padding':
-              console.log("Opening slice padding slider");
-              showSliderPopup('slice-padding', this, state.selectedElement?.getAttribute('data-slice-padding') || '0');
-              break;
-              
-            case 'bar-value-display':
-              console.log("Toggling value display");
-              toggleBarValueDisplay(this);
-              break;
-              
-            case 'pie-label-display':
-              console.log("Toggling label display");
-              togglePieLabelDisplay(this);
-              break;
-          }
-        });
-      });
-
-      // Slider popup handlers
-      const borderRadiusSlider = document.getElementById('popup-border-radius-toolbar');
-      const paddingSlider = document.getElementById('popup-padding-toolbar');
-      const slicePaddingSlider = document.getElementById('popup-slice-padding-toolbar');
-
-      if (borderRadiusSlider) {
-        borderRadiusSlider.addEventListener('input', function(e) {
-          if (state.selectedElement) {
-            const value = e.target.value;
-            const valueDisplay = document.getElementById('border-radius-value-toolbar');
-            if (valueDisplay) valueDisplay.textContent = value + 'px';
-            
-            if (state.chartType === 'bar') {
-              state.selectedElement.setAttribute('rx', value);
-              state.selectedElement.setAttribute('ry', value);
-            } else if (state.chartType === 'pie') {
-              state.selectedElement.setAttribute('data-border-radius', value);
-              updatePreview();
-            }
-          }
-        });
+          // Add status indicator for active user
+          addUserStatus();
+        };
+        img.onerror = () => {
+          // If image fails to load, fall back to initials
+          showUserInitials(userData.name, userAvatarElement);
+          userProfileElement.classList.add('data-loaded');
+          addUserStatus();
+        };
+      } else {
+        // No photo URL, show initials
+        showUserInitials(userData.name, userAvatarElement);
+        userProfileElement.classList.add('data-loaded');
+        addUserStatus();
       }
-
-      if (paddingSlider) {
-        paddingSlider.addEventListener('input', function(e) {
-          if (state.selectedElement && state.chartType === 'bar') {
-            const value = e.target.value;
-            const valueDisplay = document.getElementById('padding-value-toolbar');
-            if (valueDisplay) valueDisplay.textContent = value + '%';
-            state.globalSettings.padding = parseInt(value);
-            updatePreview();
-          }
-        });
-      }
-
-      if (slicePaddingSlider) {
-        slicePaddingSlider.addEventListener('input', function(e) {
-          if (state.selectedElement && state.chartType === 'pie') {
-            const value = e.target.value;
-            const valueDisplay = document.getElementById('slice-padding-value-toolbar');
-            if (valueDisplay) valueDisplay.textContent = value + '%';
-            state.selectedElement.setAttribute('data-slice-padding', value);
-            updatePreview();
-          }
-        });
-      }
-
-      // Close toolbar when clicking outside
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('.context-toolbar') && 
-            !e.target.closest('.chart-element') && 
-            !e.target.closest('.slider-popup')) {
-          hideContextToolbar();
-        }
-      });
-
-      console.log("Context toolbar listeners setup complete");
     }
+
+    function showUserInitials(userName, avatarElement) {
+      avatarElement.innerHTML = ''; // Clear existing content
+      if (userName) {
+        const initials = getUserInitials(userName);
+        const initialsSpan = document.createElement('span');
+        initialsSpan.textContent = initials;
+        avatarElement.appendChild(initialsSpan);
+      } else {
+        // Fallback to icon if no name
+        avatarElement.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+          </svg>
+        `;
+      }
+    }
+
+    function getUserInitials(name) {
+      return name
+        .split(' ')
+        .map(part => part.charAt(0).toUpperCase())
+        .slice(0, 2)
+        .join('');
+    }
+
+    function addUserStatus() {
+      const userAvatarElement = document.getElementById('user-avatar');
+      let statusElement = document.getElementById('user-status');
+      
+      if (!statusElement) {
+        statusElement = document.createElement('div');
+        statusElement.id = 'user-status';
+        statusElement.className = 'user-status';
+        userAvatarElement.appendChild(statusElement);
+      }
+      
+      // You can customize status based on user activity
+      statusElement.className = 'user-status'; // Default online status
+    }
+
+    // Add loading state initially
+    document.addEventListener('DOMContentLoaded', () => {
+      const userProfileElement = document.getElementById('user-profile');
+      userProfileElement.classList.add('loading');
+    });
+
+    // Listen for user data from Figma (your existing code)
+    window.addEventListener('message', (event) => {
+      if (event.data.pluginMessage && event.data.pluginMessage.type === 'USER_DATA') {
+        updateUserProfile(event.data.pluginMessage.user);
+      }
+    });
+
     // ===== THEME MANAGEMENT =====
     // Toggle theme
     function toggleTheme() {
-      const isDark = document.documentElement.style.getPropertyValue("--bg") === "#0b0c0f" || !document.documentElement.style.getPropertyValue("--bg");
+      alert("Dark mode is coming soon! Currently only light mode is available.");
+         return;
+      /*const isDark = document.documentElement.style.getPropertyValue("--bg") === "#0b0c0f" || !document.documentElement.style.getPropertyValue("--bg");
       if (isDark) {
         applyLightTheme();
         themeToggle.innerHTML = "<span>☀️</span><span>Light Mode</span>";
@@ -2497,7 +2311,7 @@
         applyDarkTheme();
         themeToggle.innerHTML = "<span>🌙</span><span>Dark Mode</span>";
       }
-      updatePreview();
+      updatePreview(); */
     }
 
     // Apply light theme
@@ -2601,7 +2415,12 @@
       });
 
       // Theme Toggle
-      themeToggle.addEventListener("click", toggleTheme);
+      // themeToggle.addEventListener("click", toggleTheme);
+      // Replace with:
+      themeToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert("Dark mode is coming soon! Currently only light mode is available.");
+      });
 
       // Info Modal
       infoBtn.addEventListener("click", () => {
@@ -2669,9 +2488,6 @@
           closeAllDropdowns();
         }
       });
-
-      // Initialize context toolbar listeners
-      setupContextToolbarListeners();
 
       // Export Buttons
       btnExportSvg.addEventListener("click", exportSVG);
@@ -2829,6 +2645,7 @@
     // ===== INITIALIZATION =====
     // Initialize the application
     function init() {
+      applyLightTheme();
       setupEventListeners();
       initChartTypeSelector();
       initDataSourceSelector();
@@ -2838,7 +2655,10 @@
       updateToolbarForChartType();
       updatePreview();
       updateGlobalToolbarValues();
-      setupContextToolbarListeners();
+      // Request user data from Figma
+      if (typeof parent !== "undefined" && parent.postMessage) {
+        parent.postMessage({ pluginMessage: { type: "GET_USER_DATA" } }, "*");
+      }
     }
 
     // Initialize the application when DOM is loaded
