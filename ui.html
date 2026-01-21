@@ -610,6 +610,26 @@
       </div>
     </div>
   </div>
+  <!-- Custom Alert System -->
+  <div class="custom-alert-overlay" id="custom-alert-overlay">
+    <div class="custom-alert" id="custom-alert">
+      <div class="custom-alert-header">
+        <div class="custom-alert-icon info" id="alert-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" 
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="custom-alert-title" id="alert-title">Alert</h3>
+      </div>
+      <div class="custom-alert-message" id="alert-message">
+        This is a custom alert message.
+      </div>
+      <div class="custom-alert-actions">
+        <button class="custom-alert-btn primary" id="alert-confirm">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ===== DOM ELEMENTS =====
@@ -1761,7 +1781,11 @@
         state.currentData = parsedData;
         updatePreview();
       } catch (e) {
-        alert("Invalid JSON data. Please check your input format.");
+        showCustomAlert(
+          "Invalid JSON data format. Please check your input and ensure it follows the required structure for the selected chart type.",
+          'error',
+          'Invalid Data Format'
+        );
       }
     }
 
@@ -1971,7 +1995,11 @@
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
       
       if (currentData.length >= config.maxRows) {
-        alert(`Maximum ${config.maxRows} rows allowed for ${state.chartType} chart`);
+        showCustomAlert(
+          `Maximum ${config.maxRows} rows allowed for ${state.chartType} charts. Consider simplifying your data or using a different chart type.`,
+          'warning',
+          'Data Limit Reached'
+        );
         return;
       }
       
@@ -1987,7 +2015,11 @@
     function addNewSeries() {
       const config = dataTableConfig[state.chartType];
       if (currentSeries >= config.maxSeries) {
-        alert(`Maximum ${config.maxSeries} series allowed for ${state.chartType} chart`);
+        showCustomAlert(
+          `Maximum ${config.maxSeries} data series allowed for ${state.chartType} charts. You can create multiple charts for additional series.`,
+          'warning',
+          'Series Limit Reached'
+        );
         return;
       }
       
@@ -2010,7 +2042,11 @@
     function deleteRow(rowIndex) {
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
       if (currentData.length <= 1) {
-        alert('Cannot delete the last row');
+        showCustomAlert(
+          'Cannot delete the last row. Charts require at least one data point to display properly.',
+          'warning',
+          'Data Required'
+        );
         return;
       }
       currentData.splice(rowIndex, 1);
@@ -2021,7 +2057,11 @@
 
     function deleteSeries(seriesIndex) {
       if (currentSeries <= 1) {
-        alert('Cannot delete the last series');
+        showCustomAlert(
+          'Cannot delete the last series. Charts require at least one data series to display properly.',
+          'warning',
+          'Series Required'
+        );
         return;
       }
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
@@ -2298,11 +2338,68 @@
       }
     });
 
+    // ===== CUSTOM ALERT SYSTEM =====
+    function showCustomAlert(message, type = 'info', title = null) {
+      const overlay = document.getElementById('custom-alert-overlay');
+      const alertElement = document.getElementById('custom-alert');
+      const alertIcon = document.getElementById('alert-icon');
+      const alertTitle = document.getElementById('alert-title');
+      const alertMessage = document.getElementById('alert-message');
+      const alertConfirm = document.getElementById('alert-confirm');
+
+      // Set alert type and styling
+      alertElement.className = 'custom-alert';
+      alertIcon.className = 'custom-alert-icon';
+      
+      // Configure based on type
+      switch(type) {
+        case 'warning':
+          alertIcon.classList.add('warning');
+          alertTitle.textContent = title || 'Warning';
+          alertElement.classList.add('limit-warning');
+          break;
+        case 'error':
+          alertIcon.classList.add('error');
+          alertTitle.textContent = title || 'Error';
+          alertElement.classList.add('error-alert');
+          break;
+        case 'success':
+          alertIcon.classList.add('success');
+          alertTitle.textContent = title || 'Success';
+          alertElement.classList.add('success-alert');
+          break;
+        default:
+          alertIcon.classList.add('info');
+          alertTitle.textContent = title || 'Information';
+          alertElement.classList.add('feature-coming');
+      }
+
+      alertMessage.textContent = message;
+      
+      // Show the alert
+      overlay.classList.add('visible');
+      
+      // Handle confirmation
+      return new Promise((resolve) => {
+        const handleConfirm = () => {
+          overlay.classList.remove('visible');
+          alertConfirm.removeEventListener('click', handleConfirm);
+          resolve(true);
+        };
+        
+        alertConfirm.addEventListener('click', handleConfirm);
+        
+        // Also close when clicking outside the alert
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            handleConfirm();
+          }
+        });
+      });
+    }
+
     // ===== THEME MANAGEMENT =====
     // Toggle theme
-    function toggleTheme() {
-      alert("Dark mode is coming soon! Currently only light mode is available.");
-         return;
       /*const isDark = document.documentElement.style.getPropertyValue("--bg") === "#0b0c0f" || !document.documentElement.style.getPropertyValue("--bg");
       if (isDark) {
         applyLightTheme();
@@ -2312,7 +2409,7 @@
         themeToggle.innerHTML = "<span>🌙</span><span>Dark Mode</span>";
       }
       updatePreview(); */
-    }
+    
 
     // Apply light theme
     function applyLightTheme() {
@@ -2396,7 +2493,11 @@
       }
       if (typeof parent !== "undefined" && parent.postMessage) {
         parent.postMessage({ pluginMessage: { type: "EXPORT_SVG", svg: svg.outerHTML } }, "*");
-        alert("Chart sent to Figma canvas!");
+        showCustomAlert(
+          "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
+          'success',
+          'Export Complete'
+        );
       } else {
         alert("Figma export is only available when running as a Figma plugin");
       }
@@ -2419,7 +2520,11 @@
       // Replace with:
       themeToggle.addEventListener("click", (e) => {
         e.preventDefault();
-        alert("Dark mode is coming soon! Currently only light mode is available.");
+        showCustomAlert(
+          "Dark mode is coming soon! Currently only light mode is available.", 
+          'info', 
+          'Feature Coming Soon'
+        );
       });
 
       // Info Modal
