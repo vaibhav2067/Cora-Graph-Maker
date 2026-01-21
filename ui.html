@@ -1123,105 +1123,133 @@
     }
 
     // Line chart rendering
-    function renderLine(data, colors, W, H, pad, opts) {
-      const X = data.x.map((_, i) => i);
-      const Y = data.series[0].y;
-      const maxY = Math.max(...Y), minY = Math.min(0, ...Y);
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const toX = scaleLinear([0, X.length - 1], [x0, x1]);
-      const toY = scaleLinear([minY, maxY], [y0, y1]);
-      const points = data.series[0].y.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
-      const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
-      const borderColor = colors.border || getBorderColor(colors.line);
-      const baseStroke = `stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity}"`;
-      let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+function renderLine(data, colors, W, H, pad, opts) {
+  const X = data.x;
+  const maxY = Math.max(...data.series.flatMap(s => s.y));
+  const minY = Math.min(0, ...data.series.flatMap(s => s.y));
+  const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
+  const toX = scaleLinear([0, X.length - 1], [x0, x1]);
+  const toY = scaleLinear([minY, maxY], [y0, y1]);
+  
+  let svgElements = [];
+  
+  // Render each series
+  data.series.forEach((series, seriesIndex) => {
+    const points = series.y.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
+    const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
+    const lineColor = colors.series && colors.series[seriesIndex] 
+      ? colors.series[seriesIndex] 
+      : defaultColor(seriesIndex);
+    const borderColor = colors.borders && colors.borders[seriesIndex] 
+      ? colors.borders[seriesIndex] 
+      : getBorderColor(lineColor);
+    
+    const baseStroke = `stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity}"`;
+    let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+    
+    // Smooth line rendering
+    if (opts.smooth && series.y.length > 1) {
+      const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
+      let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
       
-      if (opts.smooth) {
-        const pathPts = data.series[0].y.map((v, i) => [toX(i), toY(v)]);
-        if (pathPts.length < 2) {
-          linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
-        } else {
-          let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-          for (let i = 1; i < pathPts.length - 1; i++) {
-            const [x0, y0] = pathPts[i - 1];
-            const [x1, y1] = pathPts[i];
-            const [x2, y2] = pathPts[i + 1];
-            const control1X = x0 + (x1 - x0) * 0.5;
-            const control1Y = y0 + (y1 - y0) * 0.5;
-            const control2X = x1 - (x2 - x0) * 0.1;
-            const control2Y = y1 - (y2 - y0) * 0.1;
-            d += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
-          }
-          const lastIndex = pathPts.length - 1;
-          if (lastIndex > 0) {
-            const [prevX, prevY] = pathPts[lastIndex - 1];
-            const [lastX, lastY] = pathPts[lastIndex];
-            const controlX = prevX + (lastX - prevX) * 0.5;
-            const controlY = prevY + (lastY - prevY) * 0.5;
-            d += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
-          }
-          linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
-        }
+      for (let i = 1; i < pathPts.length - 1; i++) {
+        const [x0, y0] = pathPts[i - 1];
+        const [x1, y1] = pathPts[i];
+        const [x2, y2] = pathPts[i + 1];
+        const control1X = x0 + (x1 - x0) * 0.5;
+        const control1Y = y0 + (y1 - y0) * 0.5;
+        const control2X = x1 - (x2 - x0) * 0.1;
+        const control2Y = y1 - (y2 - y0) * 0.1;
+        d += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
       }
-
-      const dots = opts.showPoints ? X.map((i) => {
+      
+      const lastIndex = pathPts.length - 1;
+      if (lastIndex > 0) {
+        const [prevX, prevY] = pathPts[lastIndex - 1];
+        const [lastX, lastY] = pathPts[lastIndex];
+        const controlX = prevX + (lastX - prevX) * 0.5;
+        const controlY = prevY + (lastY - prevY) * 0.5;
+        d += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
+      }
+      
+      linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
+    }
+    
+    svgElements.push(linePath);
+    
+    // Add points if enabled
+    if (opts.showPoints) {
+      const dots = series.y.map((v, i) => {
         const cx = toX(i);
-        const cy = toY(Y[i]);
+        const cy = toY(v);
         const r = 3;
         switch (opts.pointShape) {
           case 'square':
-            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
           case 'triangle':
-            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
           case 'none':
             return '';
           default:
-            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
         }
-      }).filter(Boolean).join("") : '';
-
-      const xlabels = data.x.map((lbl, i) => `<text x="${toX(i)}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${lbl}</text>`).join("");
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
-        const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = (minY + t * (maxY - minY)).toFixed(0);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
-      }
-
-      let area = "";
-      if (opts.areaFill) {
-        if (opts.smooth && pathPts && pathPts.length > 1) {
-          let areaD = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-          for (let i = 1; i < pathPts.length - 1; i++) {
-            const [x0, y0] = pathPts[i - 1];
-            const [x1, y1] = pathPts[i];
-            const [x2, y2] = pathPts[i + 1];
-            const control1X = x0 + (x1 - x0) * 0.5;
-            const control1Y = y0 + (y1 - y0) * 0.5;
-            const control2X = x1 - (x2 - x0) * 0.1;
-            const control2Y = y1 - (y2 - y0) * 0.1;
-            areaD += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
-          }
-          const lastIndex = pathPts.length - 1;
-          if (lastIndex > 0) {
-            const [prevX, prevY] = pathPts[lastIndex - 1];
-            const [lastX, lastY] = pathPts[lastIndex];
-            const controlX = prevX + (lastX - prevX) * 0.5;
-            const controlY = prevY + (lastY - prevY) * 0.5;
-            areaD += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
-          }
-          areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
-          area = `<path d="${areaD}" fill="${colors.line}" opacity="${opts.fillOpacity * 0.25}"/>`;
-        } else {
-          area = `<polyline fill="${colors.line}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`;
-        }
-      }
+      }).filter(Boolean).join("");
       
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${area}${linePath}${dots}${xlabels}</svg>`;
+      if (dots) svgElements.push(dots);
     }
+    
+    // Add area fill if enabled
+    if (opts.areaFill) {
+      if (opts.smooth && series.y.length > 1) {
+        const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
+        let areaD = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
+        
+        for (let i = 1; i < pathPts.length - 1; i++) {
+          const [x0, y0] = pathPts[i - 1];
+          const [x1, y1] = pathPts[i];
+          const [x2, y2] = pathPts[i + 1];
+          const control1X = x0 + (x1 - x0) * 0.5;
+          const control1Y = y0 + (y1 - y0) * 0.5;
+          const control2X = x1 - (x2 - x0) * 0.1;
+          const control2Y = y1 - (y2 - y0) * 0.1;
+          areaD += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
+        }
+        
+        const lastIndex = pathPts.length - 1;
+        if (lastIndex > 0) {
+          const [prevX, prevY] = pathPts[lastIndex - 1];
+          const [lastX, lastY] = pathPts[lastIndex];
+          const controlX = prevX + (lastX - prevX) * 0.5;
+          const controlY = prevY + (lastY - prevY) * 0.5;
+          areaD += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
+        }
+        
+        areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
+        const area = `<path d="${areaD}" fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}"/>`;
+        svgElements.push(area);
+      } else {
+        const area = `<polyline fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`;
+        svgElements.push(area);
+      }
+    }
+  });
+  
+  // Add X-axis labels
+  const xlabels = X.map((lbl, i) => `<text x="${toX(i)}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${lbl}</text>`).join("");
+  
+  // Add grid and ticks
+  const ticks = 4;
+  const tickEls = [];
+  for (let i = 0; i <= ticks; i++) {
+    const t = i / ticks;
+    const y = y0 - t * (y0 - y1);
+    const val = (minY + t * (maxY - minY)).toFixed(0);
+    if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+    tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
+  }
+  
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${svgElements.join("")}${xlabels}</svg>`;
+}
 
     // Scatter chart rendering
     function renderScatter(data, colors, W, H, pad, opts) {
@@ -1438,6 +1466,10 @@
         case "line":
           colors.line = colorArray[0] || defaultColor(0);
           colors.border = getBorderColor(colors.line);
+          colors.series = data.series.map(
+            (_, i) => colorArray[i % colorArray.length] || defaultColor(i)
+          );
+          colors.borders = colors.series.map(fillColor => getBorderColor(fillColor));
           break;
         case "scatter":
           colors.points = colorArray[0] || defaultColor(0);
@@ -1463,7 +1495,7 @@
           colorCount = data.series.length > 1 ? data.series.length : data.categories.length;
           break;
         case "line":
-          colorCount = 1;
+          colorCount = data.series ? data.series.length : 1;
           break;
         case "scatter":
           colorCount = 1;
@@ -1796,7 +1828,7 @@
         headers: ['Category', 'Value'], 
         types: ['text', 'number'], 
         maxRows: 15, 
-        maxSeries: 5, 
+        maxSeries: 4, 
         getDefaultRowData: (index) => [`Category ${String.fromCharCode(65 + index)}`, Math.floor(Math.random() * 91) + 10]
       },
       pie: { 
