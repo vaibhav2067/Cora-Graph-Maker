@@ -1060,8 +1060,8 @@
       const band = (x1 - x0) / cats.length;
       const gap = 6;
       const barW = multi ? (band - 10) / data.series.length : band - 10;
-      const rx = Math.min(opts.borderRadius, 20);
-      const padding = state.globalSettings.padding || 0;
+      const rx = Math.min(opts.borderRadius, 20 - data.series.length * 2, barW / 2 - gap);
+      const padding = state.globalSettings.padding  || 0 ;
       const hasPadding = padding > 0;
       let bars = "";
 
@@ -1318,7 +1318,7 @@ function renderLine(data, colors, W, H, pad, opts) {
       const toY = scaleLinear([0, maxC], [y0, y1]);
       const stroke = shapeStrokeAttrs(opts);
       const rx = Math.min(opts.borderRadius, 20);
-      const padding = state.globalSettings.padding || 0;
+      const padding = state.globalSettings.padding  || 0;
       const hasPadding = padding > 0;
       const borderColor = colors.border || getBorderColor(colors.bins);
       const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
