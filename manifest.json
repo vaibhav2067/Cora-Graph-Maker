@@ -5,7 +5,13 @@
   "main": "code.js",
   "ui": {
     "main": "ui.html",
-    "styles": "ui.css"
+    "styles": "ui.css",
+    "utils": "ui.utils.js",
+    "data": "ui.data.js",
+    "exports": "ui.export.js",
+    "uihelpers": "ui.ui.js",
+    "renderers": "ui.renderers.js",
+    "script": "ui.js"
   },
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
