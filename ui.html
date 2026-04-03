@@ -610,6 +610,26 @@
       </div>
     </div>
   </div>
+  <!-- Custom Alert System -->
+  <div class="custom-alert-overlay" id="custom-alert-overlay">
+    <div class="custom-alert" id="custom-alert">
+      <div class="custom-alert-header">
+        <div class="custom-alert-icon info" id="alert-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" 
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="custom-alert-title" id="alert-title">Alert</h3>
+      </div>
+      <div class="custom-alert-message" id="alert-message">
+        This is a custom alert message.
+      </div>
+      <div class="custom-alert-actions">
+        <button class="custom-alert-btn primary" id="alert-confirm">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ===== DOM ELEMENTS =====
@@ -1040,8 +1060,8 @@
       const band = (x1 - x0) / cats.length;
       const gap = 6;
       const barW = multi ? (band - 10) / data.series.length : band - 10;
-      const rx = Math.min(opts.borderRadius, 20);
-      const padding = state.globalSettings.padding || 0;
+      const rx = Math.min(opts.borderRadius, 20 - data.series.length * 2, barW / 2 - gap);
+      const padding = state.globalSettings.padding  || 0 ;
       const hasPadding = padding > 0;
       let bars = "";
 
@@ -1103,105 +1123,133 @@
     }
 
     // Line chart rendering
-    function renderLine(data, colors, W, H, pad, opts) {
-      const X = data.x.map((_, i) => i);
-      const Y = data.series[0].y;
-      const maxY = Math.max(...Y), minY = Math.min(0, ...Y);
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const toX = scaleLinear([0, X.length - 1], [x0, x1]);
-      const toY = scaleLinear([minY, maxY], [y0, y1]);
-      const points = data.series[0].y.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
-      const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
-      const borderColor = colors.border || getBorderColor(colors.line);
-      const baseStroke = `stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity}"`;
-      let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+function renderLine(data, colors, W, H, pad, opts) {
+  const X = data.x;
+  const maxY = Math.max(...data.series.flatMap(s => s.y));
+  const minY = Math.min(0, ...data.series.flatMap(s => s.y));
+  const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
+  const toX = scaleLinear([0, X.length - 1], [x0, x1]);
+  const toY = scaleLinear([minY, maxY], [y0, y1]);
+  
+  let svgElements = [];
+  
+  // Render each series
+  data.series.forEach((series, seriesIndex) => {
+    const points = series.y.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
+    const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
+    const lineColor = colors.series && colors.series[seriesIndex] 
+      ? colors.series[seriesIndex] 
+      : defaultColor(seriesIndex);
+    const borderColor = colors.borders && colors.borders[seriesIndex] 
+      ? colors.borders[seriesIndex] 
+      : getBorderColor(lineColor);
+    
+    const baseStroke = `stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity}"`;
+    let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+    
+    // Smooth line rendering
+    if (opts.smooth && series.y.length > 1) {
+      const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
+      let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
       
-      if (opts.smooth) {
-        const pathPts = data.series[0].y.map((v, i) => [toX(i), toY(v)]);
-        if (pathPts.length < 2) {
-          linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
-        } else {
-          let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-          for (let i = 1; i < pathPts.length - 1; i++) {
-            const [x0, y0] = pathPts[i - 1];
-            const [x1, y1] = pathPts[i];
-            const [x2, y2] = pathPts[i + 1];
-            const control1X = x0 + (x1 - x0) * 0.5;
-            const control1Y = y0 + (y1 - y0) * 0.5;
-            const control2X = x1 - (x2 - x0) * 0.1;
-            const control2Y = y1 - (y2 - y0) * 0.1;
-            d += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
-          }
-          const lastIndex = pathPts.length - 1;
-          if (lastIndex > 0) {
-            const [prevX, prevY] = pathPts[lastIndex - 1];
-            const [lastX, lastY] = pathPts[lastIndex];
-            const controlX = prevX + (lastX - prevX) * 0.5;
-            const controlY = prevY + (lastY - prevY) * 0.5;
-            d += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
-          }
-          linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
-        }
+      for (let i = 1; i < pathPts.length - 1; i++) {
+        const [x0, y0] = pathPts[i - 1];
+        const [x1, y1] = pathPts[i];
+        const [x2, y2] = pathPts[i + 1];
+        const control1X = x0 + (x1 - x0) * 0.5;
+        const control1Y = y0 + (y1 - y0) * 0.5;
+        const control2X = x1 - (x2 - x0) * 0.1;
+        const control2Y = y1 - (y2 - y0) * 0.1;
+        d += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
       }
-
-      const dots = opts.showPoints ? X.map((i) => {
+      
+      const lastIndex = pathPts.length - 1;
+      if (lastIndex > 0) {
+        const [prevX, prevY] = pathPts[lastIndex - 1];
+        const [lastX, lastY] = pathPts[lastIndex];
+        const controlX = prevX + (lastX - prevX) * 0.5;
+        const controlY = prevY + (lastY - prevY) * 0.5;
+        d += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
+      }
+      
+      linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
+    }
+    
+    svgElements.push(linePath);
+    
+    // Add points if enabled
+    if (opts.showPoints) {
+      const dots = series.y.map((v, i) => {
         const cx = toX(i);
-        const cy = toY(Y[i]);
+        const cy = toY(v);
         const r = 3;
         switch (opts.pointShape) {
           case 'square':
-            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
           case 'triangle':
-            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
           case 'none':
             return '';
           default:
-            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.line}" fill-opacity="${opts.fillOpacity}" ${shapeStrokeAttrs(opts)}/>`;
+            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
         }
-      }).filter(Boolean).join("") : '';
-
-      const xlabels = data.x.map((lbl, i) => `<text x="${toX(i)}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${lbl}</text>`).join("");
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
-        const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = (minY + t * (maxY - minY)).toFixed(0);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
-      }
-
-      let area = "";
-      if (opts.areaFill) {
-        if (opts.smooth && pathPts && pathPts.length > 1) {
-          let areaD = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-          for (let i = 1; i < pathPts.length - 1; i++) {
-            const [x0, y0] = pathPts[i - 1];
-            const [x1, y1] = pathPts[i];
-            const [x2, y2] = pathPts[i + 1];
-            const control1X = x0 + (x1 - x0) * 0.5;
-            const control1Y = y0 + (y1 - y0) * 0.5;
-            const control2X = x1 - (x2 - x0) * 0.1;
-            const control2Y = y1 - (y2 - y0) * 0.1;
-            areaD += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
-          }
-          const lastIndex = pathPts.length - 1;
-          if (lastIndex > 0) {
-            const [prevX, prevY] = pathPts[lastIndex - 1];
-            const [lastX, lastY] = pathPts[lastIndex];
-            const controlX = prevX + (lastX - prevX) * 0.5;
-            const controlY = prevY + (lastY - prevY) * 0.5;
-            areaD += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
-          }
-          areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
-          area = `<path d="${areaD}" fill="${colors.line}" opacity="${opts.fillOpacity * 0.25}"/>`;
-        } else {
-          area = `<polyline fill="${colors.line}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`;
-        }
-      }
+      }).filter(Boolean).join("");
       
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${area}${linePath}${dots}${xlabels}</svg>`;
+      if (dots) svgElements.push(dots);
     }
+    
+    // Add area fill if enabled
+    if (opts.areaFill) {
+      if (opts.smooth && series.y.length > 1) {
+        const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
+        let areaD = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
+        
+        for (let i = 1; i < pathPts.length - 1; i++) {
+          const [x0, y0] = pathPts[i - 1];
+          const [x1, y1] = pathPts[i];
+          const [x2, y2] = pathPts[i + 1];
+          const control1X = x0 + (x1 - x0) * 0.5;
+          const control1Y = y0 + (y1 - y0) * 0.5;
+          const control2X = x1 - (x2 - x0) * 0.1;
+          const control2Y = y1 - (y2 - y0) * 0.1;
+          areaD += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
+        }
+        
+        const lastIndex = pathPts.length - 1;
+        if (lastIndex > 0) {
+          const [prevX, prevY] = pathPts[lastIndex - 1];
+          const [lastX, lastY] = pathPts[lastIndex];
+          const controlX = prevX + (lastX - prevX) * 0.5;
+          const controlY = prevY + (lastY - prevY) * 0.5;
+          areaD += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
+        }
+        
+        areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
+        const area = `<path d="${areaD}" fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}"/>`;
+        svgElements.push(area);
+      } else {
+        const area = `<polyline fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`;
+        svgElements.push(area);
+      }
+    }
+  });
+  
+  // Add X-axis labels
+  const xlabels = X.map((lbl, i) => `<text x="${toX(i)}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${lbl}</text>`).join("");
+  
+  // Add grid and ticks
+  const ticks = 4;
+  const tickEls = [];
+  for (let i = 0; i <= ticks; i++) {
+    const t = i / ticks;
+    const y = y0 - t * (y0 - y1);
+    const val = (minY + t * (maxY - minY)).toFixed(0);
+    if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+    tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
+  }
+  
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${svgElements.join("")}${xlabels}</svg>`;
+}
 
     // Scatter chart rendering
     function renderScatter(data, colors, W, H, pad, opts) {
@@ -1270,7 +1318,7 @@
       const toY = scaleLinear([0, maxC], [y0, y1]);
       const stroke = shapeStrokeAttrs(opts);
       const rx = Math.min(opts.borderRadius, 20);
-      const padding = state.globalSettings.padding || 0;
+      const padding = state.globalSettings.padding  || 0;
       const hasPadding = padding > 0;
       const borderColor = colors.border || getBorderColor(colors.bins);
       const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
@@ -1418,6 +1466,10 @@
         case "line":
           colors.line = colorArray[0] || defaultColor(0);
           colors.border = getBorderColor(colors.line);
+          colors.series = data.series.map(
+            (_, i) => colorArray[i % colorArray.length] || defaultColor(i)
+          );
+          colors.borders = colors.series.map(fillColor => getBorderColor(fillColor));
           break;
         case "scatter":
           colors.points = colorArray[0] || defaultColor(0);
@@ -1443,7 +1495,7 @@
           colorCount = data.series.length > 1 ? data.series.length : data.categories.length;
           break;
         case "line":
-          colorCount = 1;
+          colorCount = data.series ? data.series.length : 1;
           break;
         case "scatter":
           colorCount = 1;
@@ -1761,7 +1813,11 @@
         state.currentData = parsedData;
         updatePreview();
       } catch (e) {
-        alert("Invalid JSON data. Please check your input format.");
+        showCustomAlert(
+          "Invalid JSON data format. Please check your input and ensure it follows the required structure for the selected chart type.",
+          'error',
+          'Invalid Data Format'
+        );
       }
     }
 
@@ -1772,7 +1828,7 @@
         headers: ['Category', 'Value'], 
         types: ['text', 'number'], 
         maxRows: 15, 
-        maxSeries: 5, 
+        maxSeries: 4, 
         getDefaultRowData: (index) => [`Category ${String.fromCharCode(65 + index)}`, Math.floor(Math.random() * 91) + 10]
       },
       pie: { 
@@ -1971,7 +2027,11 @@
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
       
       if (currentData.length >= config.maxRows) {
-        alert(`Maximum ${config.maxRows} rows allowed for ${state.chartType} chart`);
+        showCustomAlert(
+          `Maximum ${config.maxRows} rows allowed for ${state.chartType} charts. Consider simplifying your data or using a different chart type.`,
+          'warning',
+          'Data Limit Reached'
+        );
         return;
       }
       
@@ -1987,7 +2047,11 @@
     function addNewSeries() {
       const config = dataTableConfig[state.chartType];
       if (currentSeries >= config.maxSeries) {
-        alert(`Maximum ${config.maxSeries} series allowed for ${state.chartType} chart`);
+        showCustomAlert(
+          `Maximum ${config.maxSeries} data series allowed for ${state.chartType} charts. You can create multiple charts for additional series.`,
+          'warning',
+          'Series Limit Reached'
+        );
         return;
       }
       
@@ -2010,7 +2074,11 @@
     function deleteRow(rowIndex) {
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
       if (currentData.length <= 1) {
-        alert('Cannot delete the last row');
+        showCustomAlert(
+          'Cannot delete the last row. Charts require at least one data point to display properly.',
+          'warning',
+          'Data Required'
+        );
         return;
       }
       currentData.splice(rowIndex, 1);
@@ -2021,7 +2089,11 @@
 
     function deleteSeries(seriesIndex) {
       if (currentSeries <= 1) {
-        alert('Cannot delete the last series');
+        showCustomAlert(
+          'Cannot delete the last series. Charts require at least one data series to display properly.',
+          'warning',
+          'Series Required'
+        );
         return;
       }
       const currentData = getTableDataFromChartData(state.currentData, state.chartType);
@@ -2298,11 +2370,68 @@
       }
     });
 
+    // ===== CUSTOM ALERT SYSTEM =====
+    function showCustomAlert(message, type = 'info', title = null) {
+      const overlay = document.getElementById('custom-alert-overlay');
+      const alertElement = document.getElementById('custom-alert');
+      const alertIcon = document.getElementById('alert-icon');
+      const alertTitle = document.getElementById('alert-title');
+      const alertMessage = document.getElementById('alert-message');
+      const alertConfirm = document.getElementById('alert-confirm');
+
+      // Set alert type and styling
+      alertElement.className = 'custom-alert';
+      alertIcon.className = 'custom-alert-icon';
+      
+      // Configure based on type
+      switch(type) {
+        case 'warning':
+          alertIcon.classList.add('warning');
+          alertTitle.textContent = title || 'Warning';
+          alertElement.classList.add('limit-warning');
+          break;
+        case 'error':
+          alertIcon.classList.add('error');
+          alertTitle.textContent = title || 'Error';
+          alertElement.classList.add('error-alert');
+          break;
+        case 'success':
+          alertIcon.classList.add('success');
+          alertTitle.textContent = title || 'Success';
+          alertElement.classList.add('success-alert');
+          break;
+        default:
+          alertIcon.classList.add('info');
+          alertTitle.textContent = title || 'Information';
+          alertElement.classList.add('feature-coming');
+      }
+
+      alertMessage.textContent = message;
+      
+      // Show the alert
+      overlay.classList.add('visible');
+      
+      // Handle confirmation
+      return new Promise((resolve) => {
+        const handleConfirm = () => {
+          overlay.classList.remove('visible');
+          alertConfirm.removeEventListener('click', handleConfirm);
+          resolve(true);
+        };
+        
+        alertConfirm.addEventListener('click', handleConfirm);
+        
+        // Also close when clicking outside the alert
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            handleConfirm();
+          }
+        });
+      });
+    }
+
     // ===== THEME MANAGEMENT =====
     // Toggle theme
-    function toggleTheme() {
-      alert("Dark mode is coming soon! Currently only light mode is available.");
-         return;
       /*const isDark = document.documentElement.style.getPropertyValue("--bg") === "#0b0c0f" || !document.documentElement.style.getPropertyValue("--bg");
       if (isDark) {
         applyLightTheme();
@@ -2312,7 +2441,7 @@
         themeToggle.innerHTML = "<span>🌙</span><span>Dark Mode</span>";
       }
       updatePreview(); */
-    }
+    
 
     // Apply light theme
     function applyLightTheme() {
@@ -2396,7 +2525,11 @@
       }
       if (typeof parent !== "undefined" && parent.postMessage) {
         parent.postMessage({ pluginMessage: { type: "EXPORT_SVG", svg: svg.outerHTML } }, "*");
-        alert("Chart sent to Figma canvas!");
+        showCustomAlert(
+          "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
+          'success',
+          'Export Complete'
+        );
       } else {
         alert("Figma export is only available when running as a Figma plugin");
       }
@@ -2419,7 +2552,11 @@
       // Replace with:
       themeToggle.addEventListener("click", (e) => {
         e.preventDefault();
-        alert("Dark mode is coming soon! Currently only light mode is available.");
+        showCustomAlert(
+          "Dark mode is coming soon! Currently only light mode is available.", 
+          'info', 
+          'Feature Coming Soon'
+        );
       });
 
       // Info Modal
