@@ -6,6 +6,10 @@
     const settingsApp = document.getElementById("settings-app");
     const hamburgerMenu = document.getElementById("hamburger-menu");
     const dropdownMenu = document.getElementById("dropdown-menu");
+    const headerLayoutBtn = document.getElementById("header-layout-btn");
+    const headerLayoutBtnIcon = document.getElementById("header-layout-btn-icon");
+    const headerLayoutMenu = document.getElementById("header-layout-menu");
+    const headerLayoutOptions = Array.from(document.querySelectorAll(".header-layout-option"));
     const aiHamburgerMenu = document.getElementById("ai-hamburger-menu");
     const aiDropdownMenu = document.getElementById("ai-dropdown-menu");
     const aiHomeBtn = document.getElementById("ai-home-btn");
@@ -27,6 +31,9 @@
     const settingsDetailPanels = Array.from(document.querySelectorAll(".settings-detail-panel"));
     const settingsThemeToggle = document.getElementById("settings-theme-toggle");
     const settingsThemeToggleLabel = document.getElementById("settings-theme-toggle-label");
+    const settingsPreviewFillToggle = document.getElementById("settings-preview-fill-toggle");
+    const settingsPreviewFillToggleLabel = document.getElementById("settings-preview-fill-toggle-label");
+    const settingsLayoutOptions = Array.from(document.querySelectorAll(".settings-layout-option"));
     const settingsChartTypeValue = document.getElementById("settings-chart-type-value");
     const settingsDataSourceValue = document.getElementById("settings-data-source-value");
     const settingsGridValue = document.getElementById("settings-grid-value");
@@ -84,6 +91,13 @@
     const jsonEditor = document.getElementById("json-editor");
     const btnApplyJson = document.getElementById("btn-apply-json");
     const sourceRefreshBtn = document.getElementById("source-refresh-btn");
+    const customColorsPanel = document.getElementById("custom-colors-panel");
+    const customColorsTitle = document.getElementById("custom-colors-title");
+    const customColorsCopy = document.getElementById("custom-colors-copy");
+    const customColorsList = document.getElementById("custom-colors-list");
+    const customColorsClose = document.getElementById("custom-colors-close");
+    const customColorsCancel = document.getElementById("custom-colors-cancel");
+    const customColorsApply = document.getElementById("custom-colors-apply");
     const aiChatShell = document.getElementById("ai-chat-shell");
     const aiSuggestionGrid = document.getElementById("ai-suggestion-grid");
     const aiChatMessages = document.getElementById("ai-chat-messages");
@@ -202,6 +216,14 @@
     // Scatter chart controls
     const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
     const scatterPointShapesPopup = document.getElementById('scatter-point-shapes-popup');
+    const scatterPointSizeBtn = document.getElementById('scatter-point-size-btn');
+    const scatterPointSizePopup = document.getElementById('scatter-point-size-popup');
+    const popupScatterPointSize = document.getElementById('popup-scatter-point-size');
+    const scatterPointSizeValue = document.getElementById('scatter-point-size-value');
+    const scatterPointPaddingBtn = document.getElementById('scatter-point-padding-btn');
+    const scatterPointPaddingPopup = document.getElementById('scatter-point-padding-popup');
+    const popupScatterPointPadding = document.getElementById('popup-scatter-point-padding');
+    const scatterPointPaddingValue = document.getElementById('scatter-point-padding-value');
 
     const {
       getDefaultData,
@@ -252,6 +274,8 @@
         fontColor: "#9aa4b2",
         padding: 0,
         borderRadius: 0,
+        previewPanelFill: true,
+        defaultLayoutMode: "layout-option-1",
       },
       selectedElement: null,
       currentData: null,
@@ -283,6 +307,7 @@
 
     // Multi-series support
     let currentSeries = 1;
+    let customColorDraft = [];
 
     const {
       sum,
@@ -309,18 +334,6 @@
         strokeDash: "4 2",
         fillOpacity: 0.95,
         borderRadius: 6,
-        dropShadowEnabled: false,
-        dropShadowX: 2,
-        dropShadowY: 2,
-        dropShadowBlur: 4,
-        dropShadowColor: "#000000",
-        dropShadowOpacity: 0.35,
-        innerShadowEnabled: false,
-        innerShadowX: 0,
-        innerShadowY: 1,
-        innerShadowBlur: 3,
-        innerShadowColor: "#000000",
-        innerShadowOpacity: 0.3,
         donut: false,
         separated: false,
         areaFill: false,
@@ -341,10 +354,9 @@
         backgroundOpacity: 1,
         startAngle: 0,
         horizontal: false,
-        stacked: false,
-        barVariant: "standard",
         lineStyle: "solid",
         pointSize: 6,
+        pointPadding: 0,
         bins: 10,
         normalize: false,
       };
@@ -382,7 +394,7 @@
       currentOpts.fontWeight = state.globalSettings.fontWeight;
       currentOpts.fontColor = state.globalSettings.fontColor;
       currentOpts.borderRadius = state.globalSettings.borderRadius;
-      currentOpts.backgroundTransparent = false;
+      currentOpts.backgroundTransparent = state.globalSettings.backgroundOpacity <= 0;
 
       if (state.chartType === "pie") {
         currentOpts.showGrid = false;
@@ -393,7 +405,8 @@
       }
 
       applyChartSpecificPadding(state.chartType, state.globalSettings.padding, currentOpts);
-      const colors = state.colors || generateColors(state.chartType, state.currentData);
+      const colors = normalizeChartColors(state.chartType, state.currentData, state.colors);
+      state.colors = colors;
       const previewCanvas = svgHost;
       const W = previewCanvas.clientWidth;
       const H = previewCanvas.clientHeight;
@@ -437,7 +450,6 @@
         case "pie":
           break;
         case "scatter":
-          opts.pointSpacing = padding;
           break;
         case "histogram":
           opts.barSpacing = padding;
@@ -457,6 +469,258 @@
       });
     }
 
+    function isHexColor(value) {
+      return /^#([0-9a-fA-F]{6})$/.test(String(value || "").trim());
+    }
+
+    function normalizeColorValue(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return null;
+      if (isHexColor(raw)) return raw.toLowerCase();
+      return parseColorFromInput(raw, "hex")
+        || parseColorFromInput(raw, "rgb")
+        || parseColorFromInput(raw, "hsl");
+    }
+
+    function normalizeChartColors(chartType, data, storedColors = null) {
+      const base = generateColors(chartType, data);
+      if (!storedColors || typeof storedColors !== "object") return base;
+
+      switch (chartType) {
+        case "pie":
+          base.slices = data.labels.map((_, index) => (
+            normalizeColorValue(storedColors.slices && storedColors.slices[index]) || base.slices[index]
+          ));
+          base.borders = base.slices.map((fillColor) => getBorderColor(fillColor));
+          break;
+        case "bar":
+          if (data.series.length > 1) {
+            base.series = data.series.map((_, index) => (
+              normalizeColorValue(storedColors.series && storedColors.series[index]) || base.series[index]
+            ));
+            base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
+          } else {
+            base.bars = data.categories.map((_, index) => (
+              normalizeColorValue(storedColors.bars && storedColors.bars[index]) || base.bars[index]
+            ));
+            base.borders = base.bars.map((fillColor) => getBorderColor(fillColor));
+          }
+          break;
+        case "line":
+          base.series = data.series.map((_, index) => (
+            normalizeColorValue(storedColors.series && storedColors.series[index]) || base.series[index]
+          ));
+          base.line = base.series[0] || base.line;
+          base.border = getBorderColor(base.line);
+          base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
+          break;
+        case "scatter":
+          base.series = (data.series || [{ label: "Series 1" }]).map((_, index) => (
+            normalizeColorValue(storedColors.series && storedColors.series[index])
+            || (index === 0 && normalizeColorValue(storedColors.points))
+            || base.series[index]
+          ));
+          base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
+          break;
+        case "histogram":
+          base.bins = normalizeColorValue(storedColors.bins) || base.bins;
+          base.border = getBorderColor(base.bins);
+          break;
+        default:
+          break;
+      }
+
+      return base;
+    }
+
+    function saveChartColorState(chartType, colors, preset = state.selectedColorPreset) {
+      if (!state.dataRegistry) state.dataRegistry = loadDataRegistry();
+      state.dataRegistry.chartColors[chartType] = deepClone(colors);
+      state.dataRegistry.colorPresets[chartType] = preset;
+      saveDataRegistry();
+    }
+
+    function loadChartColorState(chartType, data) {
+      if (!state.dataRegistry) state.dataRegistry = loadDataRegistry();
+      state.selectedColorPreset = state.dataRegistry.colorPresets[chartType] || "default";
+      state.colors = normalizeChartColors(chartType, data, state.dataRegistry.chartColors[chartType]);
+    }
+
+    function getColorCountForCurrentChart() {
+      const data = state.currentData;
+      if (!data) return 0;
+
+      switch (state.chartType) {
+        case "pie":
+          return data.labels.length;
+        case "bar":
+          return data.series.length > 1 ? data.series.length : data.categories.length;
+        case "line":
+          return data.series ? data.series.length : 1;
+        case "scatter":
+          return data.series ? data.series.length : 1;
+        case "histogram":
+          return 1;
+        default:
+          return 0;
+      }
+    }
+
+    function getColorArrayForPreset(preset, colorCount) {
+      switch (preset) {
+        case "monochrome":
+          return generateMonochromeColors(colorCount);
+        case "pastel":
+          return generatePastelColors(colorCount);
+        case "vibrant":
+          return generateVibrantColors(colorCount);
+        default:
+          return generateDefaultColors(colorCount);
+      }
+    }
+
+    function getCustomColorEntries(chartType, data, colors) {
+      switch (chartType) {
+        case "pie":
+          return data.labels.map((label, index) => ({
+            key: "slices",
+            index,
+            label: String(label || `Slice ${index + 1}`),
+            hint: `Slice ${index + 1}`,
+            value: colors.slices[index],
+          }));
+        case "bar":
+          if (data.series.length > 1) {
+            return data.series.map((series, index) => ({
+              key: "series",
+              index,
+              label: String((series && series.label) || `Series ${index + 1}`),
+              hint: `Series ${index + 1}`,
+              value: colors.series[index],
+            }));
+          }
+          return data.categories.map((category, index) => ({
+            key: "bars",
+            index,
+            label: String(category || `Category ${index + 1}`),
+            hint: `Bar ${index + 1}`,
+            value: colors.bars[index],
+          }));
+        case "line":
+          return data.series.map((series, index) => ({
+            key: "series",
+            index,
+            label: String((series && series.label) || `Series ${index + 1}`),
+            hint: `Line ${index + 1}`,
+            value: colors.series[index],
+          }));
+        case "scatter":
+          return (data.series || [{ label: "Series 1" }]).map((series, index) => ({
+            key: "series",
+            index,
+            label: String((series && series.label) || `Series ${index + 1}`),
+            hint: `Series ${index + 1}`,
+            value: colors.series[index],
+          }));
+        case "histogram":
+          return [{
+            key: "bins",
+            index: 0,
+            label: "Bins",
+            hint: "Histogram bars",
+            value: colors.bins,
+          }];
+        default:
+          return [];
+      }
+    }
+
+    function buildColorsFromCustomEntries(chartType, entries) {
+      if (!state.currentData) return generateColors(chartType, state.currentData);
+      const next = generateColors(chartType, state.currentData);
+
+      entries.forEach((entry) => {
+        const value = isHexColor(entry.value) ? entry.value.toLowerCase() : defaultColor(entry.index || 0);
+        if (entry.key === "points" || entry.key === "bins") {
+          next[entry.key] = value;
+          next.border = getBorderColor(value);
+          return;
+        }
+        if (!Array.isArray(next[entry.key])) return;
+        next[entry.key][entry.index] = value;
+      });
+
+      if (Array.isArray(next.slices)) next.borders = next.slices.map((fillColor) => getBorderColor(fillColor));
+      if (Array.isArray(next.bars)) next.borders = next.bars.map((fillColor) => getBorderColor(fillColor));
+      if (Array.isArray(next.series)) {
+        next.borders = next.series.map((fillColor) => getBorderColor(fillColor));
+        if (chartType === "line") {
+          next.line = next.series[0] || next.line;
+          next.border = getBorderColor(next.line);
+        }
+      }
+
+      return next;
+    }
+
+    function renderCustomColorsPanel() {
+      if (!customColorsList || !customColorsTitle || !customColorsCopy) return;
+      const chartLabel = getChartTypeLabel(state.chartType);
+      customColorsTitle.textContent = `${chartLabel} Colors`;
+      customColorsCopy.textContent = "Adjust the current chart palette. Applying saves the palette for this chart type.";
+      customColorsList.innerHTML = customColorDraft.map((entry, index) => `
+        <div class="custom-colors-row">
+          <div class="custom-colors-label">
+            <strong>${entry.label}</strong>
+            <span>${entry.hint}</span>
+          </div>
+          <div class="custom-colors-inputs">
+            <label class="custom-colors-swatch" aria-label="${entry.label} color">
+              <input type="color" value="${entry.value}" data-custom-color-index="${index}" data-input-type="picker">
+            </label>
+            <input class="custom-colors-hex" type="text" value="${entry.value.toUpperCase()}" data-custom-color-index="${index}" data-input-type="hex" spellcheck="false">
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function closeCustomColorsPanel() {
+      customColorDraft = [];
+      if (customColorsPanel) customColorsPanel.hidden = true;
+    }
+
+    function openCustomColorsPanel() {
+      if (!state.currentData) return;
+      state.colors = normalizeChartColors(state.chartType, state.currentData, state.colors);
+      customColorDraft = getCustomColorEntries(state.chartType, state.currentData, state.colors)
+        .map((entry) => ({ ...entry, value: String(entry.value || defaultColor(entry.index || 0)).toLowerCase() }));
+      renderCustomColorsPanel();
+      if (customColorsPanel) customColorsPanel.hidden = false;
+    }
+
+    function seedCustomColorsDraftFromPreset(preset) {
+      const colorCount = getColorCountForCurrentChart();
+      if (!colorCount) return;
+      const colorArray = getColorArrayForPreset(preset, colorCount);
+      const seededColors = generateColors(state.chartType, state.currentData, colorArray);
+      customColorDraft = getCustomColorEntries(state.chartType, state.currentData, seededColors)
+        .map((entry) => ({ ...entry, value: String(entry.value || defaultColor(entry.index || 0)).toLowerCase() }));
+      renderCustomColorsPanel();
+    }
+
+    function applyCustomColors() {
+      if (!customColorDraft.length) {
+        closeCustomColorsPanel();
+        return;
+      }
+      state.colors = buildColorsFromCustomEntries(state.chartType, customColorDraft);
+      state.selectedColorPreset = "custom";
+      saveChartColorState(state.chartType, state.colors, "custom");
+      updateColorPresetSelection("custom");
+      updatePreview();
+      closeCustomColorsPanel();
+    }
+
     // Apply color preset
     function applyColorPreset(preset) {
       const data = state.currentData;
@@ -464,50 +728,17 @@
 
       if (preset === "custom") {
         if (!hasGeneratedColors(state.colors)) {
-          state.colors = generateColors(state.chartType, state.currentData);
+          state.colors = normalizeChartColors(state.chartType, state.currentData, null);
         }
-        state.selectedColorPreset = "custom";
-        updateColorPresetSelection("custom");
-        updatePreview();
+        openCustomColorsPanel();
         return;
       }
 
-      let colorCount = 0;
-      switch (state.chartType) {
-        case "pie":
-          colorCount = data.labels.length;
-          break;
-        case "bar":
-          colorCount = data.series.length > 1 ? data.series.length : data.categories.length;
-          break;
-        case "line":
-          colorCount = data.series ? data.series.length : 1;
-          break;
-        case "scatter":
-          colorCount = 1;
-          break;
-        case "histogram":
-          colorCount = 1;
-          break;
-      }
-
-      let newColors = [];
-      switch (preset) {
-        case "monochrome":
-          newColors = generateMonochromeColors(colorCount);
-          break;
-        case "pastel":
-          newColors = generatePastelColors(colorCount);
-          break;
-        case "vibrant":
-          newColors = generateVibrantColors(colorCount);
-          break;
-        default:
-          newColors = generateDefaultColors(colorCount);
-      }
-
+      const newColors = getColorArrayForPreset(preset, getColorCountForCurrentChart());
       state.colors = generateColors(state.chartType, state.currentData, newColors);
       state.selectedColorPreset = preset;
+      saveChartColorState(state.chartType, state.colors, preset);
+      closeCustomColorsPanel();
       updateColorPresetSelection(preset);
       updatePreview();
     }
@@ -573,6 +804,8 @@
       lineWidthPopup.classList.remove("visible"); 
       pointShapesPopup.classList.remove("visible");
       scatterPointShapesPopup.classList.remove("visible");
+      if (scatterPointSizePopup) scatterPointSizePopup.classList.remove("visible");
+      if (scatterPointPaddingPopup) scatterPointPaddingPopup.classList.remove("visible");
       if (fontColorPanel) fontColorPanel.classList.remove("visible");
       document.querySelectorAll(".custom-select-panel.visible").forEach((panel) => panel.classList.remove("visible"));
       document.querySelectorAll(".custom-select-trigger.active").forEach((trigger) => trigger.classList.remove("active"));
@@ -1135,6 +1368,8 @@
         default: Object.fromEntries(CHART_TYPES.map((type) => [type, getDefaultData(type)])),
         manual: {},
         json: {},
+        chartColors: {},
+        colorPresets: {},
         jsonDrafts: {},
         jsonInputMode: "editor",
       };
@@ -1160,6 +1395,8 @@
           default: {},
           manual: {},
           json: {},
+          chartColors: parsed.chartColors && typeof parsed.chartColors === "object" ? parsed.chartColors : {},
+          colorPresets: parsed.colorPresets && typeof parsed.colorPresets === "object" ? parsed.colorPresets : {},
           jsonDrafts: parsed.jsonDrafts && typeof parsed.jsonDrafts === "object" ? parsed.jsonDrafts : {},
           jsonInputMode: parsed.jsonInputMode === "upload" ? "upload" : "editor",
         };
@@ -1183,7 +1420,7 @@
     }
 
     function syncCurrentSeriesFromData(data, chartType = state.chartType) {
-      if (chartType === "bar" || chartType === "line") {
+      if (chartType === "bar" || chartType === "line" || chartType === "scatter") {
         const tableData = getTableDataFromChartData(data, chartType);
         currentSeries = Math.max(1, tableData[0] ? tableData[0].length - 1 : 1);
         return;
@@ -1313,6 +1550,7 @@
 
     function loadCurrentSourceData({ updatePreview = true } = {}) {
       state.currentData = getSourceData(state.dataSource, state.chartType, state.currentData);
+      loadChartColorState(state.chartType, state.currentData);
       syncCurrentSeriesFromData(state.currentData);
       updateModernDataTableForChartType();
       if (state.dataSource === "manual") {
@@ -1329,6 +1567,7 @@
       state.dataSource = nextSource;
       state.dataRegistry.activeSource = nextSource;
       saveDataRegistry();
+      closeCustomColorsPanel();
       syncDataSourceSelectorUi(nextSource);
       syncChartDataSourceTabs();
       showDataSection(nextSource);
@@ -1341,11 +1580,13 @@
     // ===== CHART TYPE AND DATA SOURCE MANAGEMENT =====
     // Handle chart type change
     function handleChartTypeChange(chartType) {
+      closeCustomColorsPanel();
       state.chartType = chartType;
       ensureSourceDataset(state.dataSource, chartType);
       loadCurrentSourceData({ updatePreview: false });
       updateChartDataModalMeta();
       updateToolbarForChartType();
+      updateColorPresetSelection(state.selectedColorPreset);
       updatePreview();
     }
 
@@ -1548,7 +1789,7 @@
     function getManualHeadersForChart(chartType, sampleRow) {
       const config = dataTableConfig[chartType];
       if (!config) return [];
-      if ((chartType === "bar" || chartType === "line") && sampleRow && sampleRow.length > 2) {
+      if ((chartType === "bar" || chartType === "line" || chartType === "scatter") && sampleRow && sampleRow.length > 2) {
         const headers = [config.headers[0]];
         for (let i = 1; i < sampleRow.length; i++) {
           headers.push(`Series ${i}`);
@@ -1561,8 +1802,9 @@
     function getManualTypesForChart(chartType, sampleRow) {
       const config = dataTableConfig[chartType];
       if (!config) return [];
-      if ((chartType === "bar" || chartType === "line") && sampleRow && sampleRow.length > 2) {
-        const types = ["text"];
+      if ((chartType === "bar" || chartType === "line" || chartType === "scatter") && sampleRow && sampleRow.length > 2) {
+        const firstType = chartType === "scatter" ? "number" : "text";
+        const types = [firstType];
         for (let i = 1; i < sampleRow.length; i++) {
           types.push("number");
         }
@@ -1580,7 +1822,7 @@
         case "line":
           return "Line chart form: first column is x-axis label, remaining columns are series values.";
         case "scatter":
-          return "Scatter form: define X, Y, point size, and optional label.";
+          return "Scatter form: first column is X, remaining columns are series Y values.";
         case "histogram":
           return "Histogram form: enter raw numeric values, one per row.";
         default:
@@ -1589,7 +1831,7 @@
     }
 
     function isManualSeriesSupported(chartType) {
-      return chartType === "bar" || chartType === "line";
+      return chartType === "bar" || chartType === "line" || chartType === "scatter";
     }
 
     function getManualGridTemplate(columnCount) {
@@ -1824,7 +2066,9 @@
           if (state.chartType === 'pie') {
             inputType = cellIndex === 0 ? 'text' : 'number';
           } else if (currentSeries > 1 && state.chartType !== 'pie') {
-            inputType = cellIndex === 0 ? 'text' : 'number';
+            inputType = cellIndex === 0
+              ? (state.chartType === 'scatter' ? 'number' : 'text')
+              : 'number';
           } else {
             inputType = config.types[cellIndex] || 'text';
           }
@@ -2104,8 +2348,49 @@
       }
     }
 
+    function normalizeDefaultLayoutMode(value) {
+      return /^layout-option-[1-4]$/.test(String(value || "")) ? value : "layout-option-1";
+    }
+
+    function applyDefaultLayoutMode(layoutMode) {
+      if (!defaultApp) return;
+      const normalized = normalizeDefaultLayoutMode(layoutMode);
+      defaultApp.classList.remove("layout-option-1", "layout-option-2", "layout-option-3", "layout-option-4");
+      defaultApp.classList.add(normalized);
+      syncHeaderLayoutSelection();
+    }
+
+    function syncHeaderLayoutSelection() {
+      const activeLayoutMode = normalizeDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
+      let activeIconMarkup = "";
+      headerLayoutOptions.forEach((option) => {
+        const isActive = option.dataset.layoutOption === activeLayoutMode;
+        option.classList.toggle("active", isActive);
+        option.setAttribute("aria-pressed", isActive ? "true" : "false");
+        if (isActive) {
+          const icon = option.querySelector(".layout-option-icon");
+          activeIconMarkup = icon ? icon.innerHTML : "";
+        }
+      });
+    }
+
+    function syncSettingsLayoutSelection() {
+      const draft = getSettingsDraft();
+      const activeLayoutMode = normalizeDefaultLayoutMode(draft.defaultLayoutMode);
+      settingsLayoutOptions.forEach((option) => {
+        const isActive = option.dataset.layoutOption === activeLayoutMode;
+        option.classList.toggle("active", isActive);
+        option.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    }
+
     function getSettingsDraft() {
       return pendingGlobalSettings || state.globalSettings;
+    }
+
+    function applyPreviewPanelFill(enabled) {
+      if (!defaultApp) return;
+      defaultApp.classList.toggle("preview-panel-fill-disabled", enabled === false);
     }
 
     function syncGeneralSettingsSummary() {
@@ -2131,12 +2416,15 @@
       if (settingsTextToggleLabel) settingsTextToggleLabel.textContent = draft.showText ? "On" : "Off";
       if (settingsBgOpacity) settingsBgOpacity.value = String(Math.round(draft.backgroundOpacity * 100));
       if (settingsBgOpacityValue) settingsBgOpacityValue.textContent = `${Math.round(draft.backgroundOpacity * 100)}%`;
+      if (settingsPreviewFillToggle) settingsPreviewFillToggle.checked = !!draft.previewPanelFill;
+      if (settingsPreviewFillToggleLabel) settingsPreviewFillToggleLabel.textContent = draft.previewPanelFill ? "On" : "Off";
       if (settingsFontSize) settingsFontSize.value = String(draft.fontSize);
       if (settingsFontSizeValue) settingsFontSizeValue.textContent = `${draft.fontSize}px`;
       if (settingsPaddingRange) settingsPaddingRange.value = String(draft.padding);
       if (settingsPaddingRangeValue) settingsPaddingRangeValue.textContent = `${draft.padding}%`;
       if (settingsRadiusRange) settingsRadiusRange.value = String(draft.borderRadius);
       if (settingsRadiusRangeValue) settingsRadiusRangeValue.textContent = `${draft.borderRadius}px`;
+      syncSettingsLayoutSelection();
     }
 
     function getChartTypeLabel(chartType) {
@@ -2475,6 +2763,13 @@
           syncSettingsThemeSelection();
         });
       }
+      if (settingsPreviewFillToggle) {
+        settingsPreviewFillToggle.addEventListener("change", () => {
+          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
+          pendingGlobalSettings.previewPanelFill = settingsPreviewFillToggle.checked;
+          syncSettingsControlValues();
+        });
+      }
       if (settingsGridToggle) {
         settingsGridToggle.addEventListener("change", () => {
           if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
@@ -2529,6 +2824,24 @@
           syncSettingsControlValues();
         });
       }
+      settingsLayoutOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
+          pendingGlobalSettings.defaultLayoutMode = normalizeDefaultLayoutMode(option.dataset.layoutOption);
+          syncSettingsControlValues();
+        });
+      });
+      headerLayoutOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          const layoutMode = normalizeDefaultLayoutMode(option.dataset.layoutOption);
+          state.globalSettings.defaultLayoutMode = layoutMode;
+          if (pendingGlobalSettings) {
+            pendingGlobalSettings.defaultLayoutMode = layoutMode;
+          }
+          applyDefaultLayoutMode(layoutMode);
+          syncSettingsControlValues();
+        });
+      });
       if (settingsHomeBtn) {
         settingsHomeBtn.addEventListener("click", () => {
           exitSettingsMode();
@@ -2541,6 +2854,8 @@
             state.globalSettings = { ...pendingGlobalSettings };
           }
           setTheme(pendingTheme);
+          applyPreviewPanelFill(state.globalSettings.previewPanelFill);
+          applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
           updateGlobalToolbarValues();
           syncGeneralSettingsSummary();
           exitSettingsMode();
@@ -2872,7 +3187,6 @@
         toolbarBarVerticalOption.addEventListener("click", function() {
           if (state.chartType !== "bar") return;
           state.opts.bar.horizontal = false;
-          state.opts.bar.barVariant = "standard";
           toolbarBarVerticalOption.classList.add("active");
           if (toolbarBarHorizontalOption) toolbarBarHorizontalOption.classList.remove("active");
           updatePreview();
@@ -2882,7 +3196,6 @@
         toolbarBarHorizontalOption.addEventListener("click", function() {
           if (state.chartType !== "bar") return;
           state.opts.bar.horizontal = true;
-          state.opts.bar.barVariant = "standard";
           toolbarBarHorizontalOption.classList.add("active");
           if (toolbarBarVerticalOption) toolbarBarVerticalOption.classList.remove("active");
           updatePreview();
@@ -2902,7 +3215,10 @@
           fontColor: "#9aa4b2",
           padding: 0,
           borderRadius: 6,
+          previewPanelFill: true,
+          defaultLayoutMode: state.globalSettings.defaultLayoutMode,
         };
+        applyPreviewPanelFill(state.globalSettings.previewPanelFill);
         updateGlobalToolbarValues();
         updatePreview();
       });
@@ -3139,6 +3455,67 @@
         });
       });
 
+      if (customColorsClose) {
+        customColorsClose.addEventListener("click", () => {
+          closeCustomColorsPanel();
+        });
+      }
+
+      if (customColorsCancel) {
+        customColorsCancel.addEventListener("click", () => {
+          closeCustomColorsPanel();
+        });
+      }
+
+      if (customColorsApply) {
+        customColorsApply.addEventListener("click", () => {
+          applyCustomColors();
+        });
+      }
+
+      document.querySelectorAll("[data-custom-preset]").forEach((button) => {
+        button.addEventListener("click", (e) => {
+          seedCustomColorsDraftFromPreset(e.currentTarget.dataset.customPreset);
+        });
+      });
+
+      if (customColorsList) {
+        customColorsList.addEventListener("input", (e) => {
+          const target = e.target;
+          const index = Number(target.dataset.customColorIndex);
+          if (Number.isNaN(index) || !customColorDraft[index]) return;
+
+          if (target.dataset.inputType === "picker") {
+            customColorDraft[index].value = String(target.value || "").toLowerCase();
+            const hexInput = customColorsList.querySelector(`input[data-custom-color-index="${index}"][data-input-type="hex"]`);
+            if (hexInput) hexInput.value = customColorDraft[index].value.toUpperCase();
+            return;
+          }
+
+          if (target.dataset.inputType === "hex") {
+            const normalized = String(target.value || "").trim();
+            if (isHexColor(normalized)) {
+              customColorDraft[index].value = normalized.toLowerCase();
+              const pickerInput = customColorsList.querySelector(`input[data-custom-color-index="${index}"][data-input-type="picker"]`);
+              if (pickerInput) pickerInput.value = customColorDraft[index].value;
+            }
+          }
+        });
+
+        customColorsList.addEventListener("change", (e) => {
+          const target = e.target;
+          if (target.dataset.inputType !== "hex") return;
+          const index = Number(target.dataset.customColorIndex);
+          if (Number.isNaN(index) || !customColorDraft[index]) return;
+          const normalized = String(target.value || "").trim();
+          const nextValue = isHexColor(normalized) ? normalized.toLowerCase() : customColorDraft[index].value;
+          customColorDraft[index].value = nextValue;
+          target.value = nextValue.toUpperCase();
+          const pickerInput = customColorsList.querySelector(`input[data-custom-color-index="${index}"][data-input-type="picker"]`);
+          if (pickerInput) pickerInput.value = nextValue;
+        });
+      }
+
       // Scatter point shapes popup
       scatterPointShapesBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -3159,6 +3536,56 @@
           scatterPointShapesPopup.classList.remove('visible');
         });
       });
+
+      if (scatterPointSizeBtn && scatterPointSizePopup) {
+        scatterPointSizeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          if (popupScatterPointSize) popupScatterPointSize.value = state.opts.scatter.pointSize;
+          if (scatterPointSizeValue) scatterPointSizeValue.textContent = `${state.opts.scatter.pointSize}px`;
+          positionDropdown(scatterPointSizeBtn, scatterPointSizePopup);
+          scatterPointSizePopup.classList.toggle('visible');
+        });
+      }
+
+      if (popupScatterPointSize) {
+        popupScatterPointSize.addEventListener('input', (e) => {
+          state.opts.scatter.pointSize = parseInt(e.target.value, 10) || 6;
+          if (scatterPointSizeValue) scatterPointSizeValue.textContent = `${state.opts.scatter.pointSize}px`;
+          if (state.opts.scatter.pointPadding > state.opts.scatter.pointSize - 1) {
+            state.opts.scatter.pointPadding = Math.max(0, state.opts.scatter.pointSize - 1);
+            if (popupScatterPointPadding) popupScatterPointPadding.value = state.opts.scatter.pointPadding;
+            if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts.scatter.pointPadding}px`;
+          }
+          updatePreview();
+        });
+      }
+
+      if (scatterPointPaddingBtn && scatterPointPaddingPopup) {
+        scatterPointPaddingBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          if (popupScatterPointPadding) {
+            popupScatterPointPadding.max = String(Math.max(0, state.opts.scatter.pointSize - 1));
+            popupScatterPointPadding.value = state.opts.scatter.pointPadding;
+          }
+          if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts.scatter.pointPadding}px`;
+          positionDropdown(scatterPointPaddingBtn, scatterPointPaddingPopup);
+          scatterPointPaddingPopup.classList.toggle('visible');
+        });
+      }
+
+      if (popupScatterPointPadding) {
+        popupScatterPointPadding.addEventListener('input', (e) => {
+          state.opts.scatter.pointPadding = Math.min(
+            parseInt(e.target.value, 10) || 0,
+            Math.max(0, state.opts.scatter.pointSize - 1)
+          );
+          e.target.value = state.opts.scatter.pointPadding;
+          if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts.scatter.pointPadding}px`;
+          updatePreview();
+        });
+      }
     }
 
     // ===== INITIALIZATION =====
@@ -3176,14 +3603,19 @@
       state.dataSource = state.dataRegistry.activeSource || "default";
       jsonInputMode = state.dataRegistry.jsonInputMode === "upload" ? "upload" : "editor";
       state.currentData = getSourceData(state.dataSource, state.chartType);
-      if (!hasGeneratedColors(state.colors)) {
-        state.colors = generateColors(state.chartType, state.currentData);
-      }
+      loadChartColorState(state.chartType, state.currentData);
       syncCurrentSeriesFromData(state.currentData);
       const savedTheme = getStoredTheme();
       const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
       setTheme(savedTheme || (prefersDark ? "dark" : "light"));
       pendingTheme = currentTheme;
+      state.globalSettings.defaultLayoutMode = normalizeDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
+      if (typeof state.globalSettings.previewPanelFill !== "boolean") {
+        state.globalSettings.previewPanelFill = true;
+      }
+      applyPreviewPanelFill(state.globalSettings.previewPanelFill);
+      applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
+      syncHeaderLayoutSelection();
       syncSettingsThemeSelection();
       setActiveSettingsPanel(activeSettingsPanel);
       initCustomStyledSelect(bgColorFormat, bgColorFormat && bgColorFormat.parentElement);

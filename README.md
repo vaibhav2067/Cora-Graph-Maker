@@ -5,7 +5,7 @@ A powerful Figma plugin for creating beautiful, customizable charts and graphs d
 ## Features
 
 ### 📊 Multiple Chart Types
-- **Bar Charts** - Vertical/horizontal, stacked or grouped
+- **Bar Charts** - Vertical/horizontal with single-series or grouped multi-series data
 - **Pie/Donut Charts** - With slice separation and adjustable hole size
 - **Line Charts** - Smooth curves, area fills, and customizable line styles
 - **Scatter Plots** - Various point shapes and sizes
@@ -14,7 +14,6 @@ A powerful Figma plugin for creating beautiful, customizable charts and graphs d
 ### 🎨 Extensive Customization
 - **Color Control** - Individual color selection for each data element
 - **Stroke Options** - Width, color, opacity, and dash patterns
-- **Shadow Effects** - Drop shadows and inner shadows with full control
 - **Typography** - Font family, size, weight, and color customization
 - **Background & Grid** - Transparent/solid backgrounds, grid visibility and opacity
 - **Border Radius** - Rounded corners for bars and elements

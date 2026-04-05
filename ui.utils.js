@@ -11,6 +11,35 @@
     return `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
   };
 
+  function hslToHex(h, s, l) {
+    const sat = Math.max(0, Math.min(100, s)) / 100;
+    const light = Math.max(0, Math.min(100, l)) / 100;
+    const hue = ((h % 360) + 360) % 360;
+    const c = (1 - Math.abs(2 * light - 1)) * sat;
+    const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+    const m = light - c / 2;
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    if (hue < 60) {
+      r = c; g = x; b = 0;
+    } else if (hue < 120) {
+      r = x; g = c; b = 0;
+    } else if (hue < 180) {
+      r = 0; g = c; b = x;
+    } else if (hue < 240) {
+      r = 0; g = x; b = c;
+    } else if (hue < 300) {
+      r = x; g = 0; b = c;
+    } else {
+      r = c; g = 0; b = x;
+    }
+
+    const toHex = (value) => Math.round((value + m) * 255).toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
   function getBorderColor(fillColor) {
     if (!fillColor || !fillColor.startsWith("#")) return "#2b3345";
     try {
@@ -48,21 +77,21 @@
     const baseHue = Math.floor(Math.random() * 360);
     return Array.from({ length: count }, (_, i) => {
       const lightness = 30 + i * (40 / count);
-      return `hsl(${baseHue}, 50%, ${lightness}%)`;
+      return hslToHex(baseHue, 50, lightness);
     });
   }
 
   function generatePastelColors(count) {
     return Array.from({ length: count }, () => {
       const hue = Math.floor(Math.random() * 360);
-      return `hsl(${hue}, 60%, 85%)`;
+      return hslToHex(hue, 60, 85);
     });
   }
 
   function generateVibrantColors(count) {
     return Array.from({ length: count }, () => {
       const hue = Math.floor(Math.random() * 360);
-      return `hsl(${hue}, 80%, 50%)`;
+      return hslToHex(hue, 80, 50);
     });
   }
 

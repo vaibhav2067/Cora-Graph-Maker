@@ -1,0 +1,7 @@
+normalisation in histogram 
+
+font label (value) position
+
+remove the stroke in line graph 
+
+stroke color 

@@ -156,13 +156,9 @@
   function renderBar(data, colors, W, H, pad, opts, globalPadding = 0) {
     const showText = opts.showText !== false;
     const cats = data.categories;
-    const multi = data.series.length > 1 && !opts.stacked;
-    const stacked = data.series.length > 1 && opts.stacked;
+    const multi = data.series.length > 1;
     const isHorizontal = !!opts.horizontal;
-    const variant = opts.barVariant || "standard";
-    const maxY = stacked
-      ? max(cats.map((_, ci) => sum(data.series.map((s) => s.y[ci]))))
-      : max(data.series.flatMap((s) => s.y));
+    const maxY = max(data.series.flatMap((s) => s.y));
     const fontSize = Math.max(11, opts.fontSize || 12);
     const longestCategory = cats.reduce((maxLabel, label) => Math.max(maxLabel, String(label || "").length), 0);
     const horizontalLabelSpace = Math.min(W * 0.34, Math.max(pad + 40, longestCategory * fontSize * 0.62 + 24));
@@ -183,55 +179,23 @@
     const hasPadding = padding > 0;
     let bars = "";
 
-    const getVariantConfig = (w, h) => {
-      const safeW = Math.max(1, w);
-      const safeH = Math.max(1, h);
-      let barRadius = isHorizontal ? hrx : rx;
-      let fillOpacity = opts.fillOpacity;
-      let strokeWidth = opts.strokeWidth;
-      let floating = false;
-
-      if (variant === "rounded") {
-        barRadius = Math.min(Math.max(barRadius + 5, 10), safeW / 2, safeH / 2);
-      } else if (variant === "capsule") {
-        barRadius = Math.min(safeW, safeH) / 2;
-      } else if (variant === "outline") {
-        fillOpacity = Math.min(0.24, opts.fillOpacity);
-        strokeWidth = Math.max(2, opts.strokeWidth);
-      } else if (variant === "floating") {
-        floating = true;
-        barRadius = Math.min(Math.max(barRadius + 2, 8), safeW / 2, safeH / 2);
-      }
-
-      return {
-        barRadius: Math.max(0, barRadius),
-        fillOpacity,
-        strokeWidth,
-        floating,
-      };
-    };
-
     const drawBar = (x, y, w, h, fill, index) => {
       const borderColor = colors.borders && colors.borders[index] ? colors.borders[index] : getBorderColor(fill);
-      const { barRadius, fillOpacity, strokeWidth, floating } = getVariantConfig(w, h);
-      const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${strokeWidth}"`;
-
-      const shadow = floating
-        ? `<rect x="${x + 1.5}" y="${y + 2}" width="${Math.max(0, w)}" height="${Math.max(0, h)}" rx="${barRadius}" fill="#000" fill-opacity="0.15"/>`
-        : "";
+      const barRadius = Math.max(0, isHorizontal ? hrx : rx);
+      const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
 
       if (hasPadding) {
-        const outerBar = `${shadow}<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="transparent" ${strokeAttrs}/>`;
+        const outerBar = `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="transparent" ${strokeAttrs}/>`;
         const innerX = x + padding;
         const innerY = y + padding;
         const innerW = Math.max(0, w - padding * 2);
         const innerH = Math.max(0, h - padding * 2);
         const innerRx = Math.max(0, barRadius - padding);
-        const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${fillOpacity}"/>`;
+        const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
         return outerBar + innerBar;
       }
 
-      return `${shadow}<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="${fill}" fill-opacity="${fillOpacity}" ${strokeAttrs}/>`;
+      return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
     };
 
     if (isHorizontal) {
@@ -245,18 +209,6 @@
             const h = barH - gap;
             const fill = colors.series && colors.series[si];
             bars += drawBar(x, y, w, h, fill, si);
-          });
-        } else if (stacked) {
-          let acc = 0;
-          data.series.forEach((s, si) => {
-            const v = s.y[ci];
-            const x = toX(acc);
-            const w = toX(acc + v) - x;
-            const y = y1 + ci * hBand + 5;
-            const h = barH - gap;
-            const fill = colors.series && colors.series[si];
-            bars += drawBar(x, y, w, h, fill, si);
-            acc += v;
           });
         } else {
           const v = data.series[0].y[ci];
@@ -278,17 +230,6 @@
             const h = y0 - y;
             const fill = colors.series && colors.series[si];
             bars += drawBar(x, y, barW - gap, h, fill, si);
-          });
-        } else if (stacked) {
-          let acc = 0;
-          data.series.forEach((s, si) => {
-            const v = s.y[ci];
-            const y = toY(acc + v);
-            const h = toY(acc) - y;
-            const x = x0 + ci * band + 5;
-            const fill = colors.series && colors.series[si];
-            bars += drawBar(x, y, barW - gap, h, fill, si);
-            acc += v;
           });
         } else {
           const v = data.series[0].y[ci];
@@ -452,10 +393,38 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${svgElements.join("")}${xlabels}</svg>`;
   }
 
+  function getScatterSeriesData(data) {
+    if (data && Array.isArray(data.series) && Array.isArray(data.x)) {
+      return data.series.map((series) => ({
+        label: series.label,
+        points: data.x.map((xValue, index) => ({
+          x: xValue,
+          y: series.y[index],
+        })),
+      }));
+    }
+
+    if (data && Array.isArray(data.points)) {
+      return [{
+        label: "Series 1",
+        points: data.points.map((point) => ({
+          x: point.x,
+          y: point.y,
+          r: point.r,
+          label: point.label,
+        })),
+      }];
+    }
+
+    return [];
+  }
+
   function renderScatter(data, colors, W, H, pad, opts) {
     const showText = opts.showText !== false;
-    const xs = data.points.map((p) => p.x);
-    const ys = data.points.map((p) => p.y);
+    const seriesData = getScatterSeriesData(data);
+    const allPoints = seriesData.flatMap((series) => series.points);
+    const xs = allPoints.map((p) => p.x);
+    const ys = allPoints.map((p) => p.y);
     const xmin = Math.min(...xs);
     const xmax = Math.max(...xs);
     const ymin = Math.min(...ys);
@@ -466,25 +435,49 @@
     const y1 = pad;
     const toX = scaleLinear([xmin, xmax], [x0, x1]);
     const toY = scaleLinear([ymin, ymax], [y0, y1]);
-    const stroke = shapeStrokeAttrs(opts);
+    const pointInset = Math.max(0, Math.min(opts.pointPadding || 0, Math.max(0, (opts.pointSize || 6) - 1)));
 
-    const drawShape = (p) => {
-      const r = opts.pointSize || p.r || 6;
+    const drawShape = (p, fillColor, borderColor) => {
+      const r = Math.max(2, opts.pointSize || p.r || 6);
       const cx = toX(p.x);
       const cy = toY(p.y);
+      const stroke = shapeStrokeAttrs({ ...opts, strokeColor: borderColor }, fillColor);
+      const innerR = Math.max(0, r - pointInset);
+      const innerStroke = opts.strokeWidth > 0
+        ? `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="0"`
+        : "";
+
       switch (opts.pointShape) {
         case "square":
-          return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          if (pointInset > 0) {
+            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="transparent" ${stroke}/><rect x="${cx - innerR}" y="${cy - innerR}" width="${2 * innerR}" height="${2 * innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         case "triangle":
-          return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          if (pointInset > 0) {
+            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx - innerR},${cy + innerR} ${cx + innerR},${cy + innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         case "diamond":
-          return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          if (pointInset > 0) {
+            return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx + innerR},${cy} ${cx},${cy + innerR} ${cx - innerR},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         default:
-          return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          if (pointInset > 0) {
+            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="transparent" ${stroke}/><circle cx="${cx}" cy="${cy}" r="${innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
       }
     };
 
-    const dots = data.points.map(drawShape).join("");
+    const dots = seriesData
+      .map((series, seriesIndex) => {
+        const fillColor = colors.series && colors.series[seriesIndex] ? colors.series[seriesIndex] : defaultColor(seriesIndex);
+        const borderColor = colors.borders && colors.borders[seriesIndex] ? colors.borders[seriesIndex] : getBorderColor(fillColor);
+        return series.points.map((point) => drawShape(point, fillColor, borderColor)).join("");
+      })
+      .join("");
     const ticks = 4;
     const tickEls = [];
     for (let i = 0; i <= ticks; i++) {
@@ -606,8 +599,8 @@
         colors.borders = colors.series.map((fillColor) => getBorderColor(fillColor));
         break;
       case "scatter":
-        colors.points = colorArray[0] || defaultColor(0);
-        colors.border = getBorderColor(colors.points);
+        colors.series = (data.series || [{ label: "Series 1" }]).map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
+        colors.borders = colors.series.map((fillColor) => getBorderColor(fillColor));
         break;
       case "histogram":
         colors.bins = colorArray[0] || defaultColor(0);

@@ -8,14 +8,18 @@ ${__uiFiles__.main}
 <script>${__uiFiles__.renderers}</script>
 <script>${__uiFiles__.script}</script>`, { width: 980, height: 640 })
 
+function postCurrentUserData() {
+  figma.ui.postMessage({
+    type: 'USER_DATA',
+    user: {
+      name: (figma.currentUser && figma.currentUser.name) || 'User',
+      photoUrl: (figma.currentUser && figma.currentUser.photoUrl) || null
+    }
+  });
+}
+
 // Send user data to UI immediately when plugin starts
-figma.ui.postMessage({
-  type: 'USER_DATA',
-  user: {
-    name: (figma.currentUser && figma.currentUser.name) || 'User',
-    photoUrl: (figma.currentUser && figma.currentUser.photoUrl) || null
-  }
-})
+postCurrentUserData();
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'EXPORT_SVG' && typeof msg.svg === 'string') {
@@ -66,5 +70,9 @@ figma.ui.onmessage = async (msg) => {
 
   if (msg.type === 'CLOSE') {
     figma.closePlugin();
+  }
+
+  if (msg.type === 'GET_USER_DATA') {
+    postCurrentUserData();
   }
 };

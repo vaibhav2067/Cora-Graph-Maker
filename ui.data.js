@@ -30,13 +30,13 @@
       }
       case "scatter": {
         const scatterCount = 8;
+        const x = Array.from({ length: scatterCount }, () => getRandomValue(5, 95));
         return {
-          points: Array.from({ length: scatterCount }, (_, i) => ({
-            x: getRandomValue(5, 95),
-            y: getRandomValue(5, 95),
-            r: getRandomValue(4, 10),
-            label: `Point ${String.fromCharCode(65 + i)}`,
-          })),
+          x,
+          series: [{
+            label: "Series 1",
+            y: Array.from({ length: scatterCount }, () => getRandomValue(5, 95)),
+          }],
         };
       }
       case "histogram": {
@@ -76,15 +76,13 @@
       },
     },
     scatter: {
-      headers: ["X", "Y", "Size", "Label"],
-      types: ["number", "number", "number", "text"],
+      headers: ["X", "Y"],
+      types: ["number", "number"],
       maxRows: 20,
-      maxSeries: 1,
+      maxSeries: 5,
       getDefaultRowData: (index) => [
         Math.floor(Math.random() * 91) + 5,
         Math.floor(Math.random() * 91) + 5,
-        Math.floor(Math.random() * 7) + 4,
-        `Point ${String.fromCharCode(65 + index)}`,
       ],
     },
     histogram: {
@@ -117,7 +115,19 @@
           return row;
         });
       case "scatter":
-        return chartData.points.map((point) => [point.x, point.y, point.r || 6, point.label || ""]);
+        if (chartData.x && Array.isArray(chartData.series)) {
+          return chartData.x.map((xValue, index) => {
+            const row = [xValue];
+            chartData.series.forEach((series) => {
+              row.push(series.y[index]);
+            });
+            return row;
+          });
+        }
+        if (Array.isArray(chartData.points)) {
+          return chartData.points.map((point) => [point.x, point.y]);
+        }
+        return [];
       case "histogram":
         return chartData.values.map((value) => [value]);
       default:
@@ -149,13 +159,12 @@
         return { x, series: lineSeries };
       }
       case "scatter": {
-        const points = tableData.map((row) => ({
-          x: parseInt(row[0], 10) || 0,
-          y: parseInt(row[1], 10) || 0,
-          r: parseInt(row[2], 10) || 6,
-          label: row[3] || "",
-        }));
-        return { points };
+        const x = tableData.map((row) => parseFloat(row[0]) || 0);
+        const series = [];
+        for (let i = 1; i < tableData[0].length; i++) {
+          series.push({ label: `Series ${i}`, y: tableData.map((row) => parseFloat(row[i]) || 0) });
+        }
+        return { x, series };
       }
       case "histogram": {
         const histogramValues = tableData.map((row) => parseInt(row[0], 10) || 0);
@@ -176,7 +185,10 @@
       case "line":
         return data.x && data.series && data.series.length > 0;
       case "scatter":
-        return data.points && Array.isArray(data.points);
+        return (
+          (data.x && Array.isArray(data.x) && data.series && Array.isArray(data.series) && data.series.length > 0)
+          || (data.points && Array.isArray(data.points))
+        );
       case "histogram":
         return data.values && Array.isArray(data.values);
       default:
