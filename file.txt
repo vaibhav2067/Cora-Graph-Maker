@@ -5,3 +5,5 @@ font label (value) position
 remove the stroke in line graph 
 
 stroke color 
+
+look i made this section thinking that we are going to provide the animation that will be supported in figma like example if the user is designing the bar graph and want to animate it in figma he has to make it a component first then decide or work with the prototyping tool to animate it so my idea was also same as our plugin will make the chart or graph as a component and 

@@ -166,7 +166,7 @@
               </span>
               <span class="menu-item-label">AI Playground</span>
             </button>
-            <button class="dropdown-item" id="animation-studio-btn" type="button" disabled aria-disabled="true" title="Temporarily disabled">
+            <button class="dropdown-item" id="animation-studio-btn" type="button" aria-disabled="false">
               <span class="menu-item-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
@@ -771,7 +771,7 @@
               </span>
               <span class="menu-item-label">Settings</span>
             </button>
-            <button class="dropdown-item" id="ai-animation-studio-btn" type="button" disabled aria-disabled="true" title="Temporarily disabled">
+            <button class="dropdown-item" id="ai-animation-studio-btn" type="button" aria-disabled="false">
               <span class="menu-item-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
@@ -866,10 +866,10 @@
       <div class="form-section">
         <h3 class="section-title">Animation Tools</h3>
         <ol class="animation-flow-list">
-          <li>Choose an animation type and transition style.</li>
-          <li>Set duration and easing for graph motion.</li>
-          <li>Configure entry and exit states for nodes and edges.</li>
-          <li>Save animation settings to include them in Figma export.</li>
+          <li>Choose a graph interaction preset.</li>
+          <li>Set trigger, timing, and easing for Smart Animate.</li>
+          <li>Export a Figma component set with prototype links.</li>
+          <li>Drop the result into your design and refine if needed.</li>
         </ol>
       </div>
 
@@ -881,6 +881,78 @@
           <span class="animation-chip">Smart Animate Map</span>
         </div>
         <p class="animation-note">This studio is isolated from chart editing controls. It works on the current graph view and stores animation metadata for export.</p>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">V1 Preset</h3>
+        <div class="animation-control-grid">
+          <label class="animation-control" for="animation-preset-select">
+            <span class="font-field-label">Interaction</span>
+            <span class="font-select-wrap">
+              <select id="animation-preset-select">
+                <option value="load-in">Load-in animation</option>
+                <option value="hover-value">Hover state for value</option>
+                <option value="drill-down">Drill-down transition</option>
+                <option value="compare">Compare before / after</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+
+          <label class="animation-control" for="animation-trigger-select">
+            <span class="font-field-label">Trigger</span>
+            <span class="font-select-wrap">
+              <select id="animation-trigger-select">
+                <option value="after-delay">After delay</option>
+                <option value="on-click">On click</option>
+                <option value="on-hover">While hovering</option>
+                <option value="on-press">While pressing</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+
+          <label class="animation-control" for="animation-easing-select">
+            <span class="font-field-label">Easing</span>
+            <span class="font-select-wrap">
+              <select id="animation-easing-select">
+                <option value="ease-out">Ease Out</option>
+                <option value="ease-in">Ease In</option>
+                <option value="ease-in-out">Ease In &amp; Out</option>
+                <option value="linear">Linear</option>
+                <option value="gentle">Gentle</option>
+                <option value="quick">Quick</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+
+          <label class="animation-control" for="animation-direction-select">
+            <span class="font-field-label">Direction</span>
+            <span class="font-select-wrap">
+              <select id="animation-direction-select">
+                <option value="smart">Auto / Smart</option>
+                <option value="up">Up</option>
+                <option value="right">Right</option>
+                <option value="down">Down</option>
+                <option value="left">Left</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+        </div>
+
+        <label class="settings-range-row" for="animation-duration-range">
+          <span class="settings-range-copy">
+            <strong>Duration</strong>
+            <small>Smart Animate timing used in the exported prototype.</small>
+          </span>
+          <span class="settings-range-value" id="animation-duration-value">450 ms</span>
+        </label>
+        <input class="settings-range-input" id="animation-duration-range" type="range" min="100" max="1400" step="50" value="450" />
+
+        <p class="animation-note" id="animation-preset-copy">Creates a two-state load-in flow with Smart Animate.</p>
+        <p class="animation-note">Export states: <span id="animation-state-summary">Start -> Loaded</span></p>
       </div>
     </aside>
 
@@ -1160,10 +1232,10 @@
         <section class="settings-detail-panel" data-settings-panel-content="animation" hidden>
           <span class="settings-eyebrow">Feature Status</span>
           <h3 class="settings-detail-title">Animation Studio</h3>
-          <p class="settings-detail-copy">Animation Studio is listed in the menu but still inactive while the export workflow is being finalized.</p>
+          <p class="settings-detail-copy">Animation Studio is active and can be used to save animation metadata alongside the current graph export.</p>
           <div class="settings-status-card">
             <span class="settings-status-label">Status</span>
-            <strong>Temporarily disabled</strong>
+            <strong>Enabled</strong>
           </div>
         </section>
       </div>

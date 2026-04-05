@@ -795,6 +795,17 @@ body {
   font-size: 12px;
 }
 
+.animation-control-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.animation-control {
+  display: grid;
+  gap: 6px;
+}
+
 .animation-preview-area {
   padding: 16px;
   gap: 0;

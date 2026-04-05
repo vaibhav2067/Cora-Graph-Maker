@@ -25,6 +25,14 @@
     const aiAnimationStudioBtn = document.getElementById("ai-animation-studio-btn");
     const animationHomeBtn = document.getElementById("animation-home-btn");
     const animationSaveBtn = document.getElementById("animation-save-btn");
+    const animationPresetSelect = document.getElementById("animation-preset-select");
+    const animationTriggerSelect = document.getElementById("animation-trigger-select");
+    const animationEasingSelect = document.getElementById("animation-easing-select");
+    const animationDirectionSelect = document.getElementById("animation-direction-select");
+    const animationDurationRange = document.getElementById("animation-duration-range");
+    const animationDurationValue = document.getElementById("animation-duration-value");
+    const animationPresetCopy = document.getElementById("animation-preset-copy");
+    const animationStateSummary = document.getElementById("animation-state-summary");
     const settingsHomeBtn = document.getElementById("settings-home-btn");
     const settingsSaveBtn = document.getElementById("settings-save-btn");
     const settingsNavItems = Array.from(document.querySelectorAll(".settings-nav-item"));
@@ -247,6 +255,13 @@
       applyDarkTheme,
     } = window.UiUi;
     const {
+      bindAnimationControls,
+      createDefaultAnimationSettings,
+      enterAnimationStudioMode: openAnimationStudio,
+      exitAnimationStudioMode: closeAnimationStudio,
+      saveAnimationSettings,
+    } = window.UiAnimation;
+    const {
       renderPie,
       renderBar,
       renderLine,
@@ -279,11 +294,7 @@
       },
       selectedElement: null,
       currentData: null,
-      animationSettings: {
-        enabled: false,
-        source: "animation-studio",
-        version: 1,
-      },
+      animationSettings: createDefaultAnimationSettings(),
       aiPreviewReady: false,
       opts: {
         pie: defaultOpts(),
@@ -2617,32 +2628,17 @@
     }
 
     function enterAnimationStudioMode() {
-      if (!animationApp || !defaultApp || !aiApp) return;
-      defaultApp.hidden = true;
-      defaultApp.style.display = "none";
-      aiApp.hidden = true;
-      aiApp.style.display = "none";
-      animationApp.hidden = false;
-      animationApp.style.display = "grid";
-      if (dropdownMenu) dropdownMenu.classList.remove("visible");
-      if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-      closeAllDropdowns();
-      updatePreview();
+      openAnimationStudio(
+        { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
+        { closeAllDropdowns, updatePreview }
+      );
     }
 
     function exitAnimationStudioMode() {
-      if (!animationApp || !defaultApp || !aiApp) return;
-      animationApp.hidden = true;
-      animationApp.style.display = "none";
-      aiApp.hidden = true;
-      aiApp.style.display = "none";
-      defaultApp.hidden = false;
-      defaultApp.style.display = "grid";
-      updateToolbarForChartType();
-      if (dropdownMenu) dropdownMenu.classList.remove("visible");
-      if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-      closeAllDropdowns();
-      updatePreview();
+      closeAnimationStudio(
+        { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
+        { closeAllDropdowns, updateToolbarForChartType, updatePreview }
+      );
     }
 
     function enterSettingsMode(sourceView = "default", panelKey = "general") {
@@ -2893,13 +2889,21 @@
       }
       if (animationSaveBtn) {
         animationSaveBtn.addEventListener("click", () => {
-          state.animationSettings.enabled = true;
-          state.animationSettings.chartType = state.chartType;
-          state.animationSettings.savedAt = new Date().toISOString();
+          saveAnimationSettings(state, state.chartType);
           exitAnimationStudioMode();
           showCustomAlert("Animation settings saved. Figma export will include animation metadata.", "success", "Animation Saved");
         });
       }
+      bindAnimationControls(state, {
+        animationPresetSelect,
+        animationTriggerSelect,
+        animationEasingSelect,
+        animationDirectionSelect,
+        animationDurationRange,
+        animationDurationValue,
+        animationPresetCopy,
+        animationStateSummary,
+      });
       if (aiHomeBtn) {
         aiHomeBtn.addEventListener("click", () => {
           exitAiPlaygroundMode();
