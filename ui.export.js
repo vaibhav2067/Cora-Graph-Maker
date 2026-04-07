@@ -82,6 +82,46 @@
     }
   }
 
+  function getPluginGlobalSettings() {
+    return new Promise((resolve) => {
+      if (!(typeof parent !== "undefined" && parent.postMessage)) {
+        resolve(null);
+        return;
+      }
+
+      const requestId = `global-settings-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const handler = (event) => {
+        const message = event.data && event.data.pluginMessage;
+        if (!message || message.type !== "GLOBAL_SETTINGS_RESULT" || message.requestId !== requestId) return;
+        window.removeEventListener("message", handler);
+        resolve(message.settings || null);
+      };
+
+      window.addEventListener("message", handler);
+      parent.postMessage({ pluginMessage: { type: "GET_GLOBAL_SETTINGS", requestId } }, "*");
+    });
+  }
+
+  function savePluginGlobalSettings(settings) {
+    return new Promise((resolve) => {
+      if (!(typeof parent !== "undefined" && parent.postMessage)) {
+        resolve(false);
+        return;
+      }
+
+      const requestId = `save-global-settings-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const handler = (event) => {
+        const message = event.data && event.data.pluginMessage;
+        if (!message || message.type !== "GLOBAL_SETTINGS_SAVED" || message.requestId !== requestId) return;
+        window.removeEventListener("message", handler);
+        resolve(message.ok !== false);
+      };
+
+      window.addEventListener("message", handler);
+      parent.postMessage({ pluginMessage: { type: "SAVE_GLOBAL_SETTINGS", requestId, settings } }, "*");
+    });
+  }
+
   function bindUserDataListener(onUserData) {
     const handler = (event) => {
       const message = event.data && event.data.pluginMessage;
@@ -100,6 +140,8 @@
     exportPNG,
     exportToFigma,
     requestUserData,
+    getPluginGlobalSettings,
+    savePluginGlobalSettings,
     bindUserDataListener,
   };
 })();

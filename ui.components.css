@@ -171,6 +171,13 @@
   z-index: 1000;
   max-height: 250px;
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.chart-options::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .header .chart-options {
@@ -339,15 +346,23 @@
   min-height: 52px;
   max-height: 52px;
   position: relative;
+  white-space: nowrap;
 }
 
 .global-toolbar::-webkit-scrollbar {
-  height: 4px;
+  height: 0;
+  width: 0;
 }
 
 .global-toolbar::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
-  border-radius: 2px;
+  background: transparent;
+  border-radius: 0;
+}
+
+.global-toolbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
 }
 
 .toolbar-item {

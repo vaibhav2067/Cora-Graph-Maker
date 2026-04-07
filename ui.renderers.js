@@ -393,6 +393,110 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${svgElements.join("")}${xlabels}</svg>`;
   }
 
+  function renderRadar(data, colors, W, H, pad, opts) {
+    const showText = opts.showText !== false;
+    const categories = Array.isArray(data.categories) ? data.categories : [];
+    const series = Array.isArray(data.series) ? data.series : [];
+    const seriesValues = series.flatMap((entry) => Array.isArray(entry.y) ? entry.y : []);
+    const maxValue = Math.max(1, ...seriesValues, 0);
+    const cx = W / 2;
+    const cy = H / 2;
+    const fontSize = Math.max(11, opts.fontSize || 12);
+    const labelPad = showText ? Math.max(24, fontSize * 2.2) : 12;
+    const radius = Math.max(40, Math.min(W, H) / 2 - pad - labelPad);
+    const steps = 4;
+    const startAngle = ((opts.startAngle ?? -90) * Math.PI) / 180;
+    const angleStep = categories.length ? (Math.PI * 2) / categories.length : 0;
+    const gridOpacity = opts.gridOpacity == null ? 0.4 : opts.gridOpacity;
+
+    const pointAt = (ratio, index) => {
+      const angle = startAngle + index * angleStep;
+      return {
+        x: cx + radius * ratio * Math.cos(angle),
+        y: cy + radius * ratio * Math.sin(angle),
+      };
+    };
+
+    const polygonPoints = (ratio) => categories.map((_, index) => {
+      const point = pointAt(ratio, index);
+      return `${point.x},${point.y}`;
+    }).join(" ");
+
+    const polygonPath = (values) => values.map((value, index) => {
+      const point = pointAt(Math.max(0, value) / maxValue, index);
+      return `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`;
+    }).join(" ") + " Z";
+
+    const drawMarker = (x, y, fillColor, borderColor) => {
+      const size = Math.max(3, Math.min(8, (opts.pointSize || 6) * 0.65));
+      const strokeWidth = Math.max(1, opts.strokeWidth || 1);
+      switch (opts.pointShape) {
+        case "square":
+          return `<rect x="${x - size}" y="${y - size}" width="${size * 2}" height="${size * 2}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
+        case "triangle":
+          return `<polygon points="${x},${y - size} ${x - size},${y + size} ${x + size},${y + size}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
+        case "none":
+          return "";
+        default:
+          return `<circle cx="${x}" cy="${y}" r="${size}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
+      }
+    };
+
+    const gridElements = [];
+    if (opts.showGrid) {
+      for (let step = 1; step <= steps; step++) {
+        const ratio = step / steps;
+        if (opts.gridShape === "circle") {
+          gridElements.push(`<circle cx="${cx}" cy="${cy}" r="${radius * ratio}" fill="none" stroke="#202635" stroke-opacity="${gridOpacity}" stroke-width="1"/>`);
+        } else {
+          gridElements.push(`<polygon points="${polygonPoints(ratio)}" fill="none" stroke="#202635" stroke-opacity="${gridOpacity}" stroke-width="1" stroke-linejoin="round"/>`);
+        }
+      }
+    }
+
+    if (opts.showAxes) {
+      categories.forEach((_, index) => {
+        const point = pointAt(1, index);
+        gridElements.push(`<line x1="${cx}" y1="${cy}" x2="${point.x}" y2="${point.y}" stroke="#2b3345" stroke-opacity="0.8"/>`);
+      });
+    }
+
+    if (showText) {
+      for (let step = 1; step <= steps; step++) {
+        const ratio = step / steps;
+        const point = pointAt(ratio, 0);
+        gridElements.push(`<text x="${point.x + 8}" y="${point.y - 4}" text-anchor="start" style="font-family:${opts.fontFamily};font-size:${Math.max(10, opts.fontSize - 1)}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${Math.round(maxValue * ratio)}</text>`);
+      }
+      categories.forEach((label, index) => {
+        const point = pointAt(1.12, index);
+        const cos = Math.cos(startAngle + index * angleStep);
+        const anchor = cos > 0.2 ? "start" : cos < -0.2 ? "end" : "middle";
+        gridElements.push(`<text x="${point.x}" y="${point.y}" text-anchor="${anchor}" dominant-baseline="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${label}</text>`);
+      });
+    }
+
+    const seriesElements = series.map((entry, index) => {
+      const fillColor = colors.series && colors.series[index] ? colors.series[index] : defaultColor(index);
+      const borderColor = colors.borders && colors.borders[index] ? colors.borders[index] : getBorderColor(fillColor);
+      const values = categories.map((_, valueIndex) => Number(entry.y[valueIndex]) || 0);
+      const path = polygonPath(values);
+      const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
+      const fillMarkup = opts.areaFill
+        ? `<path d="${path}" fill="${fillColor}" opacity="${Math.max(0.12, opts.fillOpacity * 0.28)}"/>`
+        : "";
+      const lineMarkup = `<path d="${path}" fill="none" stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" stroke-opacity="${opts.strokeOpacity}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-linejoin="round"/>`;
+      const markerMarkup = opts.pointShape !== "none"
+        ? values.map((value, valueIndex) => {
+            const point = pointAt(Math.max(0, value) / maxValue, valueIndex);
+            return drawMarker(point.x, point.y, fillColor, borderColor);
+          }).join("")
+        : "";
+      return `${fillMarkup}${lineMarkup}${markerMarkup}`;
+    }).join("");
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${gridElements.join("")}${seriesElements}</svg>`;
+  }
+
   function getScatterSeriesData(data) {
     if (data && Array.isArray(data.series) && Array.isArray(data.x)) {
       return data.series.map((series) => ({
@@ -494,6 +598,165 @@
     }
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${dots}</svg>`;
+  }
+
+  function renderDot(data, colors, W, H, pad, opts) {
+    const showText = opts.showText !== false;
+    const categories = Array.isArray(data.categories) ? data.categories : [];
+    const series = Array.isArray(data.series) ? data.series : [];
+    const allValues = series.flatMap((entry) => Array.isArray(entry.y) ? entry.y : []);
+    const minValue = allValues.length ? Math.min(...allValues) : 0;
+    const maxValue = allValues.length ? Math.max(...allValues) : 1;
+    const domainSpan = Math.max(1, maxValue - minValue);
+    const domainPadding = domainSpan * 0.12;
+    const domainMin = minValue - domainPadding;
+    const domainMax = maxValue + domainPadding;
+    const isHorizontal = opts.horizontal !== false;
+    const pointSize = Math.max(2, opts.pointSize || 6);
+    const lineWidth = Math.max(1, Math.min(opts.lineWidth || 2, pointSize));
+    const pointInset = Math.max(0, Math.min(opts.pointPadding || 0, Math.max(0, pointSize - 1)));
+    const useGradient = opts.dotLineUseGradient !== false;
+    const fontSize = Math.max(11, opts.fontSize || 12);
+    const longestCategory = categories.reduce((labelMax, label) => Math.max(labelMax, String(label || "").length), 0);
+    const leftPad = isHorizontal
+      ? Math.min(W * 0.32, Math.max(pad + 34, longestCategory * fontSize * 0.62 + 26))
+      : pad;
+    const bottomPad = isHorizontal
+      ? pad
+      : Math.min(H * 0.28, Math.max(pad + 28, fontSize * 2.2));
+
+    const x0 = leftPad;
+    const x1 = W - pad;
+    const y0 = H - bottomPad;
+    const y1 = pad;
+    const band = isHorizontal
+      ? (categories.length ? (y0 - y1) / categories.length : (y0 - y1))
+      : (categories.length ? (x1 - x0) / categories.length : (x1 - x0));
+    const toValueX = scaleLinear([domainMin, domainMax], [x0, x1]);
+    const toValueY = scaleLinear([domainMin, domainMax], [y0, y1]);
+    const defs = [];
+
+    const drawShape = (cx, cy, radius, fillColor, borderColor) => {
+      const stroke = shapeStrokeAttrs({ ...opts, strokeColor: borderColor }, fillColor);
+      const innerR = Math.max(0, radius - pointInset);
+      const innerStroke = opts.strokeWidth > 0
+        ? `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="0"`
+        : "";
+
+      switch (opts.pointShape) {
+        case "square":
+          if (pointInset > 0) {
+            return `<rect x="${cx - radius}" y="${cy - radius}" width="${2 * radius}" height="${2 * radius}" fill="transparent" ${stroke}/><rect x="${cx - innerR}" y="${cy - innerR}" width="${2 * innerR}" height="${2 * innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<rect x="${cx - radius}" y="${cy - radius}" width="${2 * radius}" height="${2 * radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+        case "triangle":
+          if (pointInset > 0) {
+            return `<polygon points="${cx},${cy - radius} ${cx - radius},${cy + radius} ${cx + radius},${cy + radius}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx - innerR},${cy + innerR} ${cx + innerR},${cy + innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<polygon points="${cx},${cy - radius} ${cx - radius},${cy + radius} ${cx + radius},${cy + radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+        case "diamond":
+          if (pointInset > 0) {
+            return `<polygon points="${cx},${cy - radius} ${cx + radius},${cy} ${cx},${cy + radius} ${cx - radius},${cy}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx + innerR},${cy} ${cx},${cy + innerR} ${cx - innerR},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<polygon points="${cx},${cy - radius} ${cx + radius},${cy} ${cx},${cy + radius} ${cx - radius},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+        default:
+          if (pointInset > 0) {
+            return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="transparent" ${stroke}/><circle cx="${cx}" cy="${cy}" r="${innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+          }
+          return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+      }
+    };
+
+    const buildGradientStroke = (gradientId, axisStart, axisEnd, points, fixedValue) => {
+      if (!useGradient || points.length <= 1 || axisEnd <= axisStart) {
+        return opts.strokeColor || "#b8b8b8";
+      }
+      const sorted = points.slice().sort((a, b) => a.position - b.position);
+      const stops = sorted.map((point) => {
+        const offset = ((point.position - axisStart) / (axisEnd - axisStart)) * 100;
+        return `<stop offset="${Math.max(0, Math.min(100, offset))}%" stop-color="${point.color}"/>`;
+      }).join("");
+      const gradientMarkup = isHorizontal
+        ? `<linearGradient id="${gradientId}" gradientUnits="userSpaceOnUse" x1="${axisStart}" y1="${fixedValue}" x2="${axisEnd}" y2="${fixedValue}">${stops}</linearGradient>`
+        : `<linearGradient id="${gradientId}" gradientUnits="userSpaceOnUse" x1="${fixedValue}" y1="${axisStart}" x2="${fixedValue}" y2="${axisEnd}">${stops}</linearGradient>`;
+      defs.push(gradientMarkup);
+      return `url(#${gradientId})`;
+    };
+
+    const rangeLines = [];
+    const dots = [];
+
+    categories.forEach((category, categoryIndex) => {
+      const centerPrimary = isHorizontal
+        ? y1 + categoryIndex * band + band / 2
+        : x0 + categoryIndex * band + band / 2;
+      const linePoints = [];
+
+      series.forEach((entry, seriesIndex) => {
+        const value = entry && Array.isArray(entry.y) ? entry.y[categoryIndex] : 0;
+        const fillColor = colors.series && colors.series[seriesIndex] ? colors.series[seriesIndex] : defaultColor(seriesIndex);
+        const borderColor = colors.borders && colors.borders[seriesIndex] ? colors.borders[seriesIndex] : getBorderColor(fillColor);
+        if (isHorizontal) {
+          const cx = toValueX(value);
+          const cy = centerPrimary;
+          linePoints.push({ position: cx, color: fillColor });
+          dots.push(drawShape(cx, cy, pointSize, fillColor, borderColor));
+        } else {
+          const cx = centerPrimary;
+          const cy = toValueY(value);
+          linePoints.push({ position: cy, color: fillColor });
+          dots.push(drawShape(cx, cy, pointSize, fillColor, borderColor));
+        }
+      });
+
+      if (linePoints.length > 1) {
+        const minPos = Math.min(...linePoints.map((point) => point.position));
+        const maxPos = Math.max(...linePoints.map((point) => point.position));
+        const gradientId = `dot-range-${categoryIndex}`;
+        const strokeValue = buildGradientStroke(gradientId, minPos, maxPos, linePoints, centerPrimary);
+        if (isHorizontal) {
+          rangeLines.push(`<line x1="${minPos}" y1="${centerPrimary}" x2="${maxPos}" y2="${centerPrimary}" stroke="${strokeValue}" stroke-width="${lineWidth}" stroke-linecap="round" stroke-opacity="${opts.strokeOpacity}"/>`);
+        } else {
+          rangeLines.push(`<line x1="${centerPrimary}" y1="${minPos}" x2="${centerPrimary}" y2="${maxPos}" stroke="${strokeValue}" stroke-width="${lineWidth}" stroke-linecap="round" stroke-opacity="${opts.strokeOpacity}"/>`);
+        }
+      }
+    });
+
+    const categoryLabels = showText
+      ? categories.map((category, index) => {
+          if (isHorizontal) {
+            const y = y1 + index * band + band / 2;
+            return `<text x="${x0 - 12}" y="${y}" text-anchor="end" dominant-baseline="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${category}</text>`;
+          }
+          const x = x0 + index * band + band / 2;
+          return `<text x="${x}" y="${y0 + 18}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${category}</text>`;
+        }).join("")
+      : "";
+
+    const ticks = 4;
+    const tickEls = [];
+    for (let i = 0; i <= ticks; i++) {
+      const t = i / ticks;
+      const tickValue = domainMin + t * (domainMax - domainMin);
+      if (isHorizontal) {
+        const x = x0 + t * (x1 - x0);
+        if (opts.showGrid) tickEls.push(`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        if (showText) tickEls.push(`<text x="${x}" y="${y0 + 18}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${Math.round(tickValue)}</text>`);
+      } else {
+        const y = y0 - t * (y0 - y1);
+        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
+        if (showText) tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${Math.round(tickValue)}</text>`);
+      }
+    }
+
+    const axisMarkup = opts.showAxes
+      ? isHorizontal
+        ? `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="#2b3345"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#2b3345"/>`
+        : `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="#2b3345"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#2b3345"/>`
+      : "";
+    const defsMarkup = defs.length ? `<defs>${defs.join("")}</defs>` : "";
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${defsMarkup}${bgRect(W, H, opts)}${axisMarkup}${tickEls.join("")}${rangeLines.join("")}${dots.join("")}${categoryLabels}</svg>`;
   }
 
   function renderHistogram(data, colors, W, H, pad, opts, globalPadding = 0) {
@@ -598,7 +861,15 @@
         colors.series = data.series.map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
         colors.borders = colors.series.map((fillColor) => getBorderColor(fillColor));
         break;
+      case "radar":
+        colors.series = data.series.map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
+        colors.borders = colors.series.map((fillColor) => getBorderColor(fillColor));
+        break;
       case "scatter":
+        colors.series = (data.series || [{ label: "Series 1" }]).map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
+        colors.borders = colors.series.map((fillColor) => getBorderColor(fillColor));
+        break;
+      case "dot":
         colors.series = (data.series || [{ label: "Series 1" }]).map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
         colors.borders = colors.series.map((fillColor) => getBorderColor(fillColor));
         break;
@@ -614,7 +885,9 @@
     renderPie,
     renderBar,
     renderLine,
+    renderRadar,
     renderScatter,
+    renderDot,
     renderHistogram,
     generateColors,
   };

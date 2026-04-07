@@ -57,6 +57,8 @@
     const settingsAxesToggleLabel = document.getElementById("settings-axes-toggle-label");
     const settingsTextToggle = document.getElementById("settings-text-toggle");
     const settingsTextToggleLabel = document.getElementById("settings-text-toggle-label");
+    const settingsDotGradientToggle = document.getElementById("settings-dot-gradient-toggle");
+    const settingsDotGradientToggleLabel = document.getElementById("settings-dot-gradient-toggle-label");
     const settingsBgOpacity = document.getElementById("settings-bg-opacity");
     const settingsBgOpacityValue = document.getElementById("settings-bg-opacity-value");
     const settingsFontSize = document.getElementById("settings-font-size");
@@ -101,11 +103,17 @@
     const sourceRefreshBtn = document.getElementById("source-refresh-btn");
     const customColorsPanel = document.getElementById("custom-colors-panel");
     const customColorsTitle = document.getElementById("custom-colors-title");
-    const customColorsCopy = document.getElementById("custom-colors-copy");
     const customColorsList = document.getElementById("custom-colors-list");
     const customColorsClose = document.getElementById("custom-colors-close");
     const customColorsCancel = document.getElementById("custom-colors-cancel");
     const customColorsApply = document.getElementById("custom-colors-apply");
+    const customColorPickerPanel = document.getElementById("custom-color-picker-panel");
+    const customColorPickerTitle = document.getElementById("custom-color-picker-title");
+    const customColorCanvas = document.getElementById("custom-color-canvas");
+    const customColorCanvasCursor = document.getElementById("custom-color-canvas-cursor");
+    const customColorHue = document.getElementById("custom-color-hue");
+    const customColorFormat = document.getElementById("custom-color-format");
+    const customColorValue = document.getElementById("custom-color-value");
     const aiChatShell = document.getElementById("ai-chat-shell");
     const aiSuggestionGrid = document.getElementById("ai-suggestion-grid");
     const aiChatMessages = document.getElementById("ai-chat-messages");
@@ -116,6 +124,7 @@
     // Global toolbar elements
     const colorPresetBtn = document.getElementById("color-preset-btn");
     const colorPresetDropdown = document.getElementById("color-preset-dropdown");
+    const globalToolbar = document.querySelector(".global-toolbar");
     const fontSizeBtn = document.getElementById("font-size-btn");
     const fontSizePopup = document.getElementById("font-size-popup");
     const popupFontSize = document.getElementById("popup-font-size");
@@ -220,6 +229,18 @@
     const lineWidthValue = document.getElementById('line-width-value');
     const pointShapesBtn = document.getElementById('point-shapes-btn');
     const pointShapesPopup = document.getElementById('point-shapes-popup');
+    const radarAreaToggle = document.getElementById('radar-area-toggle');
+    const radarLineWidthBtn = document.getElementById('radar-line-width-btn');
+    const radarLineWidthPopup = document.getElementById('radar-line-width-popup');
+    const popupRadarLineWidth = document.getElementById('popup-radar-line-width');
+    const radarLineWidthValue = document.getElementById('radar-line-width-value');
+    const radarPointShapesBtn = document.getElementById('radar-point-shapes-btn');
+    const radarGridShapeBtn = document.getElementById('radar-grid-shape-btn');
+    const radarGridShapePopup = document.getElementById('radar-grid-shape-popup');
+    const radarStartAngleBtn = document.getElementById('radar-start-angle-btn');
+    const radarStartAnglePopup = document.getElementById('radar-start-angle-popup');
+    const popupRadarStartAngle = document.getElementById('popup-radar-start-angle');
+    const radarStartAngleValue = document.getElementById('radar-start-angle-value');
 
     // Scatter chart controls
     const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
@@ -232,6 +253,11 @@
     const scatterPointPaddingPopup = document.getElementById('scatter-point-padding-popup');
     const popupScatterPointPadding = document.getElementById('popup-scatter-point-padding');
     const scatterPointPaddingValue = document.getElementById('scatter-point-padding-value');
+    const dotLineWidthControl = document.getElementById('dot-line-width-control');
+    const dotLineWidthBtn = document.getElementById('dot-line-width-btn');
+    const dotLineWidthPopup = document.getElementById('dot-line-width-popup');
+    const popupDotLineWidth = document.getElementById('popup-dot-line-width');
+    const dotLineWidthValue = document.getElementById('dot-line-width-value');
 
     const {
       getDefaultData,
@@ -246,6 +272,8 @@
       exportPNG,
       exportToFigma,
       requestUserData,
+      getPluginGlobalSettings,
+      savePluginGlobalSettings,
       bindUserDataListener,
     } = window.UiExport;
     const {
@@ -265,7 +293,9 @@
       renderPie,
       renderBar,
       renderLine,
+      renderRadar,
       renderScatter,
+      renderDot,
       renderHistogram,
       generateColors,
     } = window.UiRenderers;
@@ -290,6 +320,7 @@
         padding: 0,
         borderRadius: 0,
         previewPanelFill: true,
+        dotLineUseGradient: true,
         defaultLayoutMode: "layout-option-1",
       },
       selectedElement: null,
@@ -307,9 +338,22 @@
           pointShape: 'circle',
           showPoints: true
         },
+        radar: {
+          ...defaultOpts(),
+          areaFill: false,
+          lineWidth: 2,
+          pointShape: 'circle',
+          gridShape: 'polygon',
+          startAngle: -90,
+        },
         scatter: {
           ...defaultOpts(),
           pointShape: 'circle'
+        },
+        dot: {
+          ...defaultOpts(),
+          pointShape: 'circle',
+          horizontal: true,
         },
         histogram: defaultOpts(),
       },
@@ -319,6 +363,7 @@
     // Multi-series support
     let currentSeries = 1;
     let customColorDraft = [];
+    let activeCustomColorIndex = null;
 
     const {
       sum,
@@ -332,7 +377,7 @@
       generateDefaultColors,
     } = window.UiUtils;
 
-    const CHART_TYPES = ["bar", "pie", "line", "scatter", "histogram"];
+    const CHART_TYPES = ["bar", "pie", "line", "radar", "scatter", "dot", "histogram"];
     const DATA_STORAGE_KEY = "graph_generator_data_registry_v1";
 
     // Default options
@@ -370,6 +415,7 @@
         pointPadding: 0,
         bins: 10,
         normalize: false,
+        gridShape: "polygon",
       };
     }
 
@@ -406,6 +452,7 @@
       currentOpts.fontColor = state.globalSettings.fontColor;
       currentOpts.borderRadius = state.globalSettings.borderRadius;
       currentOpts.backgroundTransparent = state.globalSettings.backgroundOpacity <= 0;
+      currentOpts.dotLineUseGradient = state.globalSettings.dotLineUseGradient;
 
       if (state.chartType === "pie") {
         currentOpts.showGrid = false;
@@ -435,8 +482,14 @@
           case "line":
             svg = renderLine(state.currentData, colors, W, H, pad, currentOpts);
             break;
+          case "radar":
+            svg = renderRadar(state.currentData, colors, W, H, pad, currentOpts);
+            break;
           case "scatter":
             svg = renderScatter(state.currentData, colors, W, H, pad, currentOpts);
+            break;
+          case "dot":
+            svg = renderDot(state.currentData, colors, W, H, pad, currentOpts);
             break;
           case "histogram":
             svg = renderHistogram(state.currentData, colors, W, H, pad, currentOpts, state.globalSettings.padding);
@@ -461,6 +514,8 @@
         case "pie":
           break;
         case "scatter":
+          break;
+        case "radar":
           break;
         case "histogram":
           opts.barSpacing = padding;
@@ -525,11 +580,23 @@
           base.border = getBorderColor(base.line);
           base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
           break;
+        case "radar":
+          base.series = data.series.map((_, index) => (
+            normalizeColorValue(storedColors.series && storedColors.series[index]) || base.series[index]
+          ));
+          base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
+          break;
         case "scatter":
           base.series = (data.series || [{ label: "Series 1" }]).map((_, index) => (
             normalizeColorValue(storedColors.series && storedColors.series[index])
             || (index === 0 && normalizeColorValue(storedColors.points))
             || base.series[index]
+          ));
+          base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
+          break;
+        case "dot":
+          base.series = (data.series || [{ label: "Series 1" }]).map((_, index) => (
+            normalizeColorValue(storedColors.series && storedColors.series[index]) || base.series[index]
           ));
           base.borders = base.series.map((fillColor) => getBorderColor(fillColor));
           break;
@@ -568,7 +635,11 @@
           return data.series.length > 1 ? data.series.length : data.categories.length;
         case "line":
           return data.series ? data.series.length : 1;
+        case "radar":
+          return data.series ? data.series.length : 1;
         case "scatter":
+          return data.series ? data.series.length : 1;
+        case "dot":
           return data.series ? data.series.length : 1;
         case "histogram":
           return 1;
@@ -625,7 +696,23 @@
             hint: `Line ${index + 1}`,
             value: colors.series[index],
           }));
+        case "radar":
+          return data.series.map((series, index) => ({
+            key: "series",
+            index,
+            label: String((series && series.label) || `Series ${index + 1}`),
+            hint: `Radar ${index + 1}`,
+            value: colors.series[index],
+          }));
         case "scatter":
+          return (data.series || [{ label: "Series 1" }]).map((series, index) => ({
+            key: "series",
+            index,
+            label: String((series && series.label) || `Series ${index + 1}`),
+            hint: `Series ${index + 1}`,
+            value: colors.series[index],
+          }));
+        case "dot":
           return (data.series || [{ label: "Series 1" }]).map((series, index) => ({
             key: "series",
             index,
@@ -675,10 +762,9 @@
     }
 
     function renderCustomColorsPanel() {
-      if (!customColorsList || !customColorsTitle || !customColorsCopy) return;
+      if (!customColorsList || !customColorsTitle) return;
       const chartLabel = getChartTypeLabel(state.chartType);
       customColorsTitle.textContent = `${chartLabel} Colors`;
-      customColorsCopy.textContent = "Adjust the current chart palette. Applying saves the palette for this chart type.";
       customColorsList.innerHTML = customColorDraft.map((entry, index) => `
         <div class="custom-colors-row">
           <div class="custom-colors-label">
@@ -686,10 +772,20 @@
             <span>${entry.hint}</span>
           </div>
           <div class="custom-colors-inputs">
-            <label class="custom-colors-swatch" aria-label="${entry.label} color">
-              <input type="color" value="${entry.value}" data-custom-color-index="${index}" data-input-type="picker">
-            </label>
-            <input class="custom-colors-hex" type="text" value="${entry.value.toUpperCase()}" data-custom-color-index="${index}" data-input-type="hex" spellcheck="false">
+            <button
+              class="figma-color-control custom-colors-control"
+              type="button"
+              data-custom-color-index="${index}"
+              aria-label="Edit ${entry.label} color"
+            >
+              <span class="figma-color-swatch-wrap">
+                <span class="figma-color-swatch" style="background:${entry.value}"></span>
+              </span>
+              <span class="figma-color-meta">
+                <span class="figma-color-label">Color</span>
+                <span class="figma-color-value">${entry.value.toUpperCase()}</span>
+              </span>
+            </button>
           </div>
         </div>
       `).join("");
@@ -697,7 +793,9 @@
 
     function closeCustomColorsPanel() {
       customColorDraft = [];
+      activeCustomColorIndex = null;
       if (customColorsPanel) customColorsPanel.hidden = true;
+      if (customColorPickerPanel) customColorPickerPanel.classList.remove("visible");
     }
 
     function openCustomColorsPanel() {
@@ -730,6 +828,69 @@
       updateColorPresetSelection("custom");
       updatePreview();
       closeCustomColorsPanel();
+    }
+
+    function getCustomPickerInputFormat() {
+      return customColorFormat ? customColorFormat.value : "hex";
+    }
+
+    function updateCustomPickerInputField(hex) {
+      if (!customColorValue) return;
+      const format = getCustomPickerInputFormat();
+      customColorValue.placeholder = getBgInputPlaceholder(format);
+      customColorValue.value = formatColorForInput(hex, format);
+    }
+
+    function renderCustomPickerUi() {
+      if (!customColorCanvas || !customColorCanvasCursor || !customColorHue) return;
+      const hueColor = hsvToRgb(customPickerState.h, 1, 1);
+      const hueHex = rgbToHex(hueColor.r, hueColor.g, hueColor.b);
+      customColorCanvas.style.background = `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, ${hueHex})`;
+      customColorHue.style.background = "linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)";
+      customColorHue.value = Math.round(customPickerState.h);
+      const xPct = clamp01(customPickerState.s) * 100;
+      const yPct = (1 - clamp01(customPickerState.v)) * 100;
+      customColorCanvasCursor.style.left = `${xPct}%`;
+      customColorCanvasCursor.style.top = `${yPct}%`;
+    }
+
+    function syncCustomPickerFromHex(hex) {
+      const rgb = hexToRgb(hex);
+      if (!rgb) return;
+      const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+      customPickerState.h = hsv.h;
+      customPickerState.s = hsv.s;
+      customPickerState.v = hsv.v;
+      renderCustomPickerUi();
+    }
+
+    function setCustomDraftColor(index, value) {
+      const normalized = String(value || "").trim();
+      if (!isHexColor(normalized) || !customColorDraft[index]) return;
+      const hex = normalized.toLowerCase();
+      customColorDraft[index].value = hex;
+      const control = customColorsList && customColorsList.querySelector(`button[data-custom-color-index="${index}"]`);
+      if (control) {
+        const swatch = control.querySelector(".figma-color-swatch");
+        const valueLabel = control.querySelector(".figma-color-value");
+        if (swatch) swatch.style.background = hex;
+        if (valueLabel) valueLabel.textContent = hex.toUpperCase();
+      }
+      if (activeCustomColorIndex === index) {
+        if (customColorPickerTitle) customColorPickerTitle.textContent = customColorDraft[index].label;
+        updateCustomPickerInputField(hex);
+        syncCustomPickerFromHex(hex);
+      }
+    }
+
+    function openCustomColorPicker(index, trigger) {
+      if (!customColorPickerPanel || !trigger || !customColorDraft[index]) return;
+      activeCustomColorIndex = index;
+      if (customColorPickerTitle) customColorPickerTitle.textContent = customColorDraft[index].label;
+      updateCustomPickerInputField(customColorDraft[index].value);
+      syncCustomPickerFromHex(customColorDraft[index].value);
+      positionDropdown(trigger, customColorPickerPanel);
+      customColorPickerPanel.classList.add("visible");
     }
 
     // Apply color preset
@@ -804,6 +965,7 @@
     function closeAllDropdowns() {
       colorPresetDropdown.classList.remove("visible");
       bgColorPanel.classList.remove("visible");
+      if (customColorPickerPanel) customColorPickerPanel.classList.remove("visible");
       fontSizePopup.classList.remove("visible");
       paddingPopup.classList.remove("visible");
       borderRadiusPopup.classList.remove("visible");
@@ -813,7 +975,11 @@
       if (aiExportDropdown) aiExportDropdown.classList.remove("visible");
       if (aiBtnExportToggle) aiBtnExportToggle.setAttribute("aria-expanded", "false");
       lineWidthPopup.classList.remove("visible"); 
+      if (radarLineWidthPopup) radarLineWidthPopup.classList.remove("visible");
+      if (radarStartAnglePopup) radarStartAnglePopup.classList.remove("visible");
+      if (dotLineWidthPopup) dotLineWidthPopup.classList.remove("visible");
       pointShapesPopup.classList.remove("visible");
+      if (radarGridShapePopup) radarGridShapePopup.classList.remove("visible");
       scatterPointShapesPopup.classList.remove("visible");
       if (scatterPointSizePopup) scatterPointSizePopup.classList.remove("visible");
       if (scatterPointPaddingPopup) scatterPointPaddingPopup.classList.remove("visible");
@@ -984,6 +1150,7 @@
     // ===== TOOLBAR MANAGEMENT =====
     const bgPickerState = { h: 220, s: 0.88, v: 0.10 };
     const fontPickerState = { h: 220, s: 0.20, v: 0.70 };
+    const customPickerState = { h: 220, s: 0.88, v: 0.10 };
 
     function clamp01(v) {
       return Math.min(1, Math.max(0, v));
@@ -1245,6 +1412,13 @@
       paddingValue.textContent = state.globalSettings.padding + "%";
       popupBorderRadius.value = state.globalSettings.borderRadius;
       borderRadiusValue.textContent = state.globalSettings.borderRadius + "px";
+      if (popupRadarLineWidth) popupRadarLineWidth.value = String(state.opts.radar.lineWidth || 2);
+      if (radarLineWidthValue) radarLineWidthValue.textContent = `${state.opts.radar.lineWidth || 2}px`;
+      if (popupRadarStartAngle) popupRadarStartAngle.value = String(state.opts.radar.startAngle ?? -90);
+      if (radarStartAngleValue) radarStartAngleValue.textContent = `${state.opts.radar.startAngle ?? -90}°`;
+      if (popupDotLineWidth) popupDotLineWidth.max = String(Math.max(1, state.opts.dot.pointSize || 6));
+      if (popupDotLineWidth) popupDotLineWidth.value = String(Math.min(state.opts.dot.lineWidth || 2, state.opts.dot.pointSize || 6));
+      if (dotLineWidthValue) dotLineWidthValue.textContent = `${Math.min(state.opts.dot.lineWidth || 2, state.opts.dot.pointSize || 6)}px`;
 
       if (state.globalSettings.showGrid) {
         document.getElementById("global-grid-toggle").classList.add("active");
@@ -1264,6 +1438,7 @@
       const gridAxesControls = document.getElementById('grid-axes-controls');
       const pieControls = document.getElementById('pie-controls');
       const lineControls = document.getElementById('line-controls');
+      const radarControls = document.getElementById('radar-controls');
       const scatterControls = document.getElementById('scatter-controls');
       const paddingBtn = document.getElementById('padding-btn').closest('.toolbar-item');
       const borderRadiusBtn = document.getElementById('border-radius-btn').closest('.toolbar-item');
@@ -1274,7 +1449,9 @@
       gridAxesControls.style.display = 'none';
       pieControls.style.display = 'none';
       lineControls.style.display = 'none';
+      if (radarControls) radarControls.style.display = 'none';
       scatterControls.style.display = 'none';
+      if (dotLineWidthControl) dotLineWidthControl.classList.add('hidden');
       paddingBtn.classList.remove('hidden');
       borderRadiusBtn.classList.remove('hidden');
       gridToggle.classList.remove('hidden');
@@ -1292,6 +1469,22 @@
         syncShapePopupSelection('#point-shapes-popup', state.opts.line.pointShape);
         document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
         document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
+      } else if (state.chartType === 'radar') {
+        if (radarControls) radarControls.style.display = 'flex';
+        gridAxesControls.style.display = 'flex';
+        paddingBtn.classList.add('hidden');
+        borderRadiusBtn.classList.add('hidden');
+        if (radarAreaToggle) radarAreaToggle.classList.toggle('active', state.opts.radar.areaFill);
+        if (popupRadarLineWidth) popupRadarLineWidth.value = String(state.opts.radar.lineWidth || 2);
+        if (radarLineWidthValue) radarLineWidthValue.textContent = `${state.opts.radar.lineWidth || 2}px`;
+        if (popupRadarStartAngle) popupRadarStartAngle.value = String(state.opts.radar.startAngle ?? -90);
+        if (radarStartAngleValue) radarStartAngleValue.textContent = `${state.opts.radar.startAngle ?? -90}°`;
+        updateRadarPointShapeIcon(state.opts.radar.pointShape);
+        syncShapePopupSelection('#point-shapes-popup', state.opts.radar.pointShape);
+        updateRadarGridShapeIcon(state.opts.radar.gridShape);
+        syncRadarGridShapePopupSelection(state.opts.radar.gridShape);
+        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
+        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
       } else if (state.chartType === 'pie') {
         pieControls.style.display = 'flex';
         gridToggle.classList.add('hidden');
@@ -1303,8 +1496,26 @@
         gridAxesControls.style.display = 'flex';
         paddingBtn.classList.add('hidden');
         borderRadiusBtn.classList.add('hidden');
-        updateScatterPointShapeIcon(state.opts.scatter.pointShape);
-        syncShapePopupSelection('#scatter-point-shapes-popup', state.opts.scatter.pointShape);
+        const pointShape = state.opts.scatter.pointShape;
+        updateScatterPointShapeIcon(pointShape);
+        syncShapePopupSelection('#scatter-point-shapes-popup', pointShape);
+        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
+        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
+      } else if (state.chartType === 'dot') {
+        scatterControls.style.display = 'flex';
+        gridAxesControls.style.display = 'flex';
+        paddingBtn.classList.add('hidden');
+        borderRadiusBtn.classList.add('hidden');
+        if (dotLineWidthControl) dotLineWidthControl.classList.remove('hidden');
+        if (barOrientationControl) barOrientationControl.classList.remove('hidden');
+        if (toolbarBarVerticalOption) toolbarBarVerticalOption.classList.toggle('active', !state.opts.dot.horizontal);
+        if (toolbarBarHorizontalOption) toolbarBarHorizontalOption.classList.toggle('active', !!state.opts.dot.horizontal);
+        const pointShape = state.opts.dot.pointShape;
+        updateScatterPointShapeIcon(pointShape);
+        syncShapePopupSelection('#scatter-point-shapes-popup', pointShape);
+        if (popupDotLineWidth) popupDotLineWidth.max = String(Math.max(1, state.opts.dot.pointSize || 6));
+        if (popupDotLineWidth) popupDotLineWidth.value = String(Math.min(state.opts.dot.lineWidth || 2, state.opts.dot.pointSize || 6));
+        if (dotLineWidthValue) dotLineWidthValue.textContent = `${Math.min(state.opts.dot.lineWidth || 2, state.opts.dot.pointSize || 6)}px`;
         document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
         document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
       } else if (state.chartType === 'bar') {
@@ -1342,6 +1553,24 @@
       pointShapesBtn.innerHTML = iconHTML;
     }
 
+    function pointShapeIconMarkup(shape) {
+      switch (shape) {
+        case 'none':
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15"><path fill="currentColor" d="M7.5.877c1.648 0 3.155.604 4.315 1.6l.832-.83a.5.5 0 0 1 .707.707l-.832.83a6.623 6.623 0 0 1-9.337 9.337l-.831.833a.5.5 0 0 1-.707-.707l.83-.832A6.623 6.623 0 0 1 7.499.877M3.856 11.85a5.673 5.673 0 0 0 7.991-7.991zM7.5 1.826A5.674 5.674 0 0 0 1.826 7.5a5.65 5.65 0 0 0 1.325 3.642l7.99-7.99a5.65 5.65 0 0 0-3.642-1.325"/></svg>`;
+        case 'square':
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/></svg>`;
+        case 'triangle':
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/></svg>`;
+        default:
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/></svg>`;
+      }
+    }
+
+    function updateRadarPointShapeIcon(shape) {
+      if (!radarPointShapesBtn) return;
+      radarPointShapesBtn.innerHTML = pointShapeIconMarkup(shape);
+    }
+
     function updateScatterPointShapeIcon(shape) {
       const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
       if (!scatterPointShapesBtn) return;
@@ -1366,6 +1595,19 @@
       const options = document.querySelectorAll(`${popupSelector} .shape-option`);
       options.forEach((opt) => {
         opt.classList.toggle('active', opt.dataset.shape === shape);
+      });
+    }
+
+    function updateRadarGridShapeIcon(shape) {
+      if (!radarGridShapeBtn) return;
+      radarGridShapeBtn.innerHTML = shape === 'circle'
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3L19 7v10l-7 4l-7-4V7z"/><path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M12 7l3.5 2v6L12 17l-3.5-2V9z"/></svg>`;
+    }
+
+    function syncRadarGridShapePopupSelection(shape) {
+      document.querySelectorAll('#radar-grid-shape-popup .shape-option').forEach((opt) => {
+        opt.classList.toggle('active', opt.dataset.gridShape === shape);
       });
     }
 
@@ -1431,7 +1673,7 @@
     }
 
     function syncCurrentSeriesFromData(data, chartType = state.chartType) {
-      if (chartType === "bar" || chartType === "line" || chartType === "scatter") {
+      if (chartType === "bar" || chartType === "line" || chartType === "radar" || chartType === "scatter" || chartType === "dot") {
         const tableData = getTableDataFromChartData(data, chartType);
         currentSeries = Math.max(1, tableData[0] ? tableData[0].length - 1 : 1);
         return;
@@ -1530,7 +1772,9 @@
           bar: "Bar Chart",
           pie: "Pie Chart",
           line: "Line Chart",
+          radar: "Radar Chart",
           scatter: "Scatter Plot",
+          dot: "Dot Plot",
           histogram: "Histogram",
         }[state.chartType] || "Chart";
         chartDataChartTypeBadge.textContent = label;
@@ -1734,7 +1978,7 @@
         }
         if (parsed.chartType && parsed.data && typeof parsed.data === "object") {
           const parsedChartType = String(parsed.chartType).toLowerCase();
-          if (["bar", "pie", "line", "scatter", "histogram"].includes(parsedChartType) && parsedChartType !== state.chartType) {
+          if (["bar", "pie", "line", "radar", "scatter", "dot", "histogram"].includes(parsedChartType) && parsedChartType !== state.chartType) {
             syncChartTypeSelectorUi(parsedChartType);
             handleChartTypeChange(parsedChartType);
           }
@@ -1800,7 +2044,7 @@
     function getManualHeadersForChart(chartType, sampleRow) {
       const config = dataTableConfig[chartType];
       if (!config) return [];
-      if ((chartType === "bar" || chartType === "line" || chartType === "scatter") && sampleRow && sampleRow.length > 2) {
+      if ((chartType === "bar" || chartType === "line" || chartType === "radar" || chartType === "scatter" || chartType === "dot") && sampleRow && sampleRow.length > 2) {
         const headers = [config.headers[0]];
         for (let i = 1; i < sampleRow.length; i++) {
           headers.push(`Series ${i}`);
@@ -1813,7 +2057,7 @@
     function getManualTypesForChart(chartType, sampleRow) {
       const config = dataTableConfig[chartType];
       if (!config) return [];
-      if ((chartType === "bar" || chartType === "line" || chartType === "scatter") && sampleRow && sampleRow.length > 2) {
+      if ((chartType === "bar" || chartType === "line" || chartType === "radar" || chartType === "scatter" || chartType === "dot") && sampleRow && sampleRow.length > 2) {
         const firstType = chartType === "scatter" ? "number" : "text";
         const types = [firstType];
         for (let i = 1; i < sampleRow.length; i++) {
@@ -1832,8 +2076,12 @@
           return "Pie chart form: add a label and value for each slice.";
         case "line":
           return "Line chart form: first column is x-axis label, remaining columns are series values.";
+        case "radar":
+          return "Radar chart form: first column is axis label, remaining columns are series values.";
         case "scatter":
           return "Scatter form: first column is X, remaining columns are series Y values.";
+        case "dot":
+          return "Dot plot form: first column is category, remaining columns are series values.";
         case "histogram":
           return "Histogram form: enter raw numeric values, one per row.";
         default:
@@ -1842,7 +2090,7 @@
     }
 
     function isManualSeriesSupported(chartType) {
-      return chartType === "bar" || chartType === "line" || chartType === "scatter";
+      return chartType === "bar" || chartType === "line" || chartType === "radar" || chartType === "scatter" || chartType === "dot";
     }
 
     function getManualGridTemplate(columnCount) {
@@ -2326,6 +2574,7 @@
 
     // ===== THEME MANAGEMENT =====
     const THEME_STORAGE_KEY = "graph_generator_theme";
+    const GLOBAL_SETTINGS_STORAGE_KEY = "graph_generator_global_settings_v1";
     let currentTheme = "light";
 
     function getStoredTheme() {
@@ -2342,6 +2591,61 @@
       } catch (error) {
         // Ignore storage failures in restricted environments.
       }
+    }
+
+    function normalizeStoredGlobalSettings(value) {
+      const fallback = { ...state.globalSettings };
+      if (!value || typeof value !== "object") return fallback;
+      return {
+        ...fallback,
+        ...value,
+        backgroundOpacity: Number.isFinite(Number(value.backgroundOpacity))
+          ? Math.max(0, Math.min(1, Number(value.backgroundOpacity)))
+          : fallback.backgroundOpacity,
+        showGrid: typeof value.showGrid === "boolean" ? value.showGrid : fallback.showGrid,
+        showAxes: typeof value.showAxes === "boolean" ? value.showAxes : fallback.showAxes,
+        showText: typeof value.showText === "boolean" ? value.showText : fallback.showText,
+        fontSize: Number.isFinite(Number(value.fontSize))
+          ? Math.max(8, Math.min(48, parseInt(value.fontSize, 10)))
+          : fallback.fontSize,
+        padding: Number.isFinite(Number(value.padding))
+          ? Math.max(0, Math.min(24, parseInt(value.padding, 10)))
+          : fallback.padding,
+        borderRadius: Number.isFinite(Number(value.borderRadius))
+          ? Math.max(0, Math.min(28, parseInt(value.borderRadius, 10)))
+          : fallback.borderRadius,
+        previewPanelFill: typeof value.previewPanelFill === "boolean" ? value.previewPanelFill : fallback.previewPanelFill,
+        dotLineUseGradient: typeof value.dotLineUseGradient === "boolean" ? value.dotLineUseGradient : fallback.dotLineUseGradient,
+        defaultLayoutMode: normalizeDefaultLayoutMode(value.defaultLayoutMode),
+      };
+    }
+
+    async function getStoredGlobalSettings() {
+      const pluginSettings = await getPluginGlobalSettings();
+      if (pluginSettings) {
+        return normalizeStoredGlobalSettings(pluginSettings);
+      }
+      try {
+        const raw = localStorage.getItem(GLOBAL_SETTINGS_STORAGE_KEY);
+        if (!raw) return null;
+        return normalizeStoredGlobalSettings(JSON.parse(raw));
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function storeGlobalSettings(settings) {
+      const normalized = normalizeStoredGlobalSettings(settings);
+      const savedInPlugin = await savePluginGlobalSettings(normalized);
+      try {
+        localStorage.setItem(
+          GLOBAL_SETTINGS_STORAGE_KEY,
+          JSON.stringify(normalized)
+        );
+      } catch (error) {
+        // Ignore storage failures in restricted environments.
+      }
+      return savedInPlugin;
     }
 
     function updateThemeToggleLabel() {
@@ -2425,6 +2729,8 @@
       if (settingsAxesToggleLabel) settingsAxesToggleLabel.textContent = draft.showAxes ? "On" : "Off";
       if (settingsTextToggle) settingsTextToggle.checked = !!draft.showText;
       if (settingsTextToggleLabel) settingsTextToggleLabel.textContent = draft.showText ? "On" : "Off";
+      if (settingsDotGradientToggle) settingsDotGradientToggle.checked = !!draft.dotLineUseGradient;
+      if (settingsDotGradientToggleLabel) settingsDotGradientToggleLabel.textContent = draft.dotLineUseGradient ? "On" : "Off";
       if (settingsBgOpacity) settingsBgOpacity.value = String(Math.round(draft.backgroundOpacity * 100));
       if (settingsBgOpacityValue) settingsBgOpacityValue.textContent = `${Math.round(draft.backgroundOpacity * 100)}%`;
       if (settingsPreviewFillToggle) settingsPreviewFillToggle.checked = !!draft.previewPanelFill;
@@ -2443,7 +2749,9 @@
         bar: "Bar Chart",
         pie: "Pie Chart",
         line: "Line Chart",
+        radar: "Radar Chart",
         scatter: "Scatter Plot",
+        dot: "Dot Plot",
         histogram: "Histogram",
       };
       return labels[chartType] || chartType;
@@ -2566,7 +2874,9 @@
       const normalized = prompt.toLowerCase();
       if (normalized.includes("pie") || normalized.includes("donut")) return "pie";
       if (normalized.includes("line")) return "line";
+      if (normalized.includes("radar")) return "radar";
       if (normalized.includes("scatter")) return "scatter";
+      if (normalized.includes("dot plot") || normalized.includes("dotplot") || normalized.includes("dot")) return "dot";
       if (normalized.includes("histogram")) return "histogram";
       if (normalized.includes("bar")) return "bar";
       return null;
@@ -2593,7 +2903,7 @@
 
       appendAiChatMessage(
         "assistant",
-        "Graph generated on the right panel. Mention a chart type like bar, pie, line, scatter, or histogram to switch."
+        "Graph generated on the right panel. Mention a chart type like bar, pie, line, radar, scatter, dot, or histogram to switch."
       );
     }
 
@@ -2790,6 +3100,13 @@
           syncSettingsControlValues();
         });
       }
+      if (settingsDotGradientToggle) {
+        settingsDotGradientToggle.addEventListener("change", () => {
+          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
+          pendingGlobalSettings.dotLineUseGradient = settingsDotGradientToggle.checked;
+          syncSettingsControlValues();
+        });
+      }
       if (settingsBgOpacity) {
         settingsBgOpacity.addEventListener("input", () => {
           if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
@@ -2844,11 +3161,13 @@
         });
       }
       if (settingsSaveBtn) {
-        settingsSaveBtn.addEventListener("click", () => {
+        settingsSaveBtn.addEventListener("click", async () => {
           const themeChanged = pendingTheme !== currentTheme;
           if (pendingGlobalSettings) {
             state.globalSettings = { ...pendingGlobalSettings };
           }
+          state.globalSettings = normalizeStoredGlobalSettings(state.globalSettings);
+          await storeGlobalSettings(state.globalSettings);
           setTheme(pendingTheme);
           applyPreviewPanelFill(state.globalSettings.previewPanelFill);
           applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
@@ -3129,11 +3448,16 @@
         updateBgCanvasFromPointer(e.clientX, e.clientY);
       });
       document.addEventListener("mousemove", (e) => {
+        if (!draggingCustomCanvas) return;
+        updateCustomCanvasFromPointer(e.clientX, e.clientY);
+      });
+      document.addEventListener("mousemove", (e) => {
         if (!draggingFontCanvas) return;
         updateFontCanvasFromPointer(e.clientX, e.clientY);
       });
       document.addEventListener("mouseup", () => {
         draggingBgCanvas = false;
+        draggingCustomCanvas = false;
         draggingFontCanvas = false;
       });
 
@@ -3189,8 +3513,8 @@
 
       if (toolbarBarVerticalOption) {
         toolbarBarVerticalOption.addEventListener("click", function() {
-          if (state.chartType !== "bar") return;
-          state.opts.bar.horizontal = false;
+          if (state.chartType !== "bar" && state.chartType !== "dot") return;
+          state.opts[state.chartType].horizontal = false;
           toolbarBarVerticalOption.classList.add("active");
           if (toolbarBarHorizontalOption) toolbarBarHorizontalOption.classList.remove("active");
           updatePreview();
@@ -3198,8 +3522,8 @@
       }
       if (toolbarBarHorizontalOption) {
         toolbarBarHorizontalOption.addEventListener("click", function() {
-          if (state.chartType !== "bar") return;
-          state.opts.bar.horizontal = true;
+          if (state.chartType !== "bar" && state.chartType !== "dot") return;
+          state.opts[state.chartType].horizontal = true;
           toolbarBarHorizontalOption.classList.add("active");
           if (toolbarBarVerticalOption) toolbarBarVerticalOption.classList.remove("active");
           updatePreview();
@@ -3220,6 +3544,7 @@
           padding: 0,
           borderRadius: 6,
           previewPanelFill: true,
+          dotLineUseGradient: true,
           defaultLayoutMode: state.globalSettings.defaultLayoutMode,
         };
         applyPreviewPanelFill(state.globalSettings.previewPanelFill);
@@ -3316,6 +3641,14 @@
         updatePreview();
       });
 
+      if (radarAreaToggle) {
+        radarAreaToggle.addEventListener('click', () => {
+          radarAreaToggle.classList.toggle('active');
+          state.opts.radar.areaFill = radarAreaToggle.classList.contains('active');
+          updatePreview();
+        });
+      }
+
       lineCurveToggle.addEventListener('click', () => {
         lineCurveToggle.classList.toggle('active');
         state.opts.line.smooth = lineCurveToggle.classList.contains('active');
@@ -3329,11 +3662,28 @@
         lineWidthPopup.classList.toggle('visible');
       });
 
+      if (radarLineWidthBtn && radarLineWidthPopup) {
+        radarLineWidthBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          positionDropdown(radarLineWidthBtn, radarLineWidthPopup);
+          radarLineWidthPopup.classList.toggle('visible');
+        });
+      }
+
       popupLineWidth.addEventListener('input', (e) => {
         state.opts.line.lineWidth = parseInt(e.target.value);
         lineWidthValue.textContent = e.target.value + 'px';
         updatePreview();
       });
+
+      if (popupRadarLineWidth) {
+        popupRadarLineWidth.addEventListener('input', (e) => {
+          state.opts.radar.lineWidth = parseInt(e.target.value, 10) || 2;
+          if (radarLineWidthValue) radarLineWidthValue.textContent = e.target.value + 'px';
+          updatePreview();
+        });
+      }
 
       pointShapesBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -3343,18 +3693,73 @@
         pointShapesPopup.classList.toggle('visible');
       });
 
+      if (radarPointShapesBtn) {
+        radarPointShapesBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          syncShapePopupSelection('#point-shapes-popup', state.opts.radar.pointShape);
+          positionDropdown(radarPointShapesBtn, pointShapesPopup);
+          pointShapesPopup.classList.toggle('visible');
+        });
+      }
+
       document.querySelectorAll('#point-shapes-popup .shape-option').forEach(option => {
         option.addEventListener('click', (e) => {
           const shape = e.currentTarget.dataset.shape;
           document.querySelectorAll('#point-shapes-popup .shape-option').forEach(opt => { opt.classList.remove('active'); });
           e.currentTarget.classList.add('active');
-          state.opts.line.pointShape = shape;
-          state.opts.line.showPoints = shape !== 'none';
-          updatePointShapeIcon(shape);
+          if (state.chartType === 'radar') {
+            state.opts.radar.pointShape = shape;
+            updateRadarPointShapeIcon(shape);
+          } else {
+            state.opts.line.pointShape = shape;
+            state.opts.line.showPoints = shape !== 'none';
+            updatePointShapeIcon(shape);
+          }
           updatePreview();
           pointShapesPopup.classList.remove('visible');
         });
       });
+
+      if (radarGridShapeBtn && radarGridShapePopup) {
+        radarGridShapeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          syncRadarGridShapePopupSelection(state.opts.radar.gridShape);
+          positionDropdown(radarGridShapeBtn, radarGridShapePopup);
+          radarGridShapePopup.classList.toggle('visible');
+        });
+      }
+
+      document.querySelectorAll('#radar-grid-shape-popup .shape-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          const gridShape = e.currentTarget.dataset.gridShape || 'polygon';
+          state.opts.radar.gridShape = gridShape;
+          syncRadarGridShapePopupSelection(gridShape);
+          updateRadarGridShapeIcon(gridShape);
+          updatePreview();
+          radarGridShapePopup.classList.remove('visible');
+        });
+      });
+
+      if (radarStartAngleBtn && radarStartAnglePopup) {
+        radarStartAngleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          if (popupRadarStartAngle) popupRadarStartAngle.value = String(state.opts.radar.startAngle ?? -90);
+          if (radarStartAngleValue) radarStartAngleValue.textContent = `${state.opts.radar.startAngle ?? -90}°`;
+          positionDropdown(radarStartAngleBtn, radarStartAnglePopup);
+          radarStartAnglePopup.classList.toggle('visible');
+        });
+      }
+
+      if (popupRadarStartAngle) {
+        popupRadarStartAngle.addEventListener('input', (e) => {
+          state.opts.radar.startAngle = parseInt(e.target.value, 10) || 0;
+          if (radarStartAngleValue) radarStartAngleValue.textContent = `${state.opts.radar.startAngle}°`;
+          updatePreview();
+        });
+      }
 
       // Pie chart controls
       pieGapToggle.addEventListener('click', () => {
@@ -3376,6 +3781,19 @@
         positionDropdown(colorPresetBtn, colorPresetDropdown);
         colorPresetDropdown.classList.toggle("visible");
       });
+
+      if (globalToolbar) {
+        globalToolbar.addEventListener("wheel", (e) => {
+          const canScrollHorizontally = globalToolbar.scrollWidth > globalToolbar.clientWidth + 1;
+          if (!canScrollHorizontally) return;
+
+          const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+          if (!delta) return;
+
+          globalToolbar.scrollLeft += delta;
+          e.preventDefault();
+        }, { passive: false });
+      }
 
       // Font size popup
       fontSizeBtn.addEventListener("click", (e) => {
@@ -3477,46 +3895,71 @@
         });
       }
 
-      document.querySelectorAll("[data-custom-preset]").forEach((button) => {
-        button.addEventListener("click", (e) => {
-          seedCustomColorsDraftFromPreset(e.currentTarget.dataset.customPreset);
-        });
-      });
-
       if (customColorsList) {
-        customColorsList.addEventListener("input", (e) => {
-          const target = e.target;
-          const index = Number(target.dataset.customColorIndex);
+        customColorsList.addEventListener("click", (e) => {
+          const trigger = e.target.closest("button[data-custom-color-index]");
+          if (!trigger) return;
+          e.stopPropagation();
+          const index = Number(trigger.dataset.customColorIndex);
           if (Number.isNaN(index) || !customColorDraft[index]) return;
+          closeAllDropdowns();
+          openCustomColorPicker(index, trigger);
+        });
+      }
 
-          if (target.dataset.inputType === "picker") {
-            customColorDraft[index].value = String(target.value || "").toLowerCase();
-            const hexInput = customColorsList.querySelector(`input[data-custom-color-index="${index}"][data-input-type="hex"]`);
-            if (hexInput) hexInput.value = customColorDraft[index].value.toUpperCase();
-            return;
-          }
+      if (customColorHue) {
+        customColorHue.addEventListener("input", (e) => {
+          if (activeCustomColorIndex == null) return;
+          customPickerState.h = parseInt(e.target.value, 10) || 0;
+          const rgb = hsvToRgb(customPickerState.h, customPickerState.s, customPickerState.v);
+          renderCustomPickerUi();
+          setCustomDraftColor(activeCustomColorIndex, rgbToHex(rgb.r, rgb.g, rgb.b));
+        });
+      }
 
-          if (target.dataset.inputType === "hex") {
-            const normalized = String(target.value || "").trim();
-            if (isHexColor(normalized)) {
-              customColorDraft[index].value = normalized.toLowerCase();
-              const pickerInput = customColorsList.querySelector(`input[data-custom-color-index="${index}"][data-input-type="picker"]`);
-              if (pickerInput) pickerInput.value = customColorDraft[index].value;
-            }
+      let draggingCustomCanvas = false;
+      const updateCustomCanvasFromPointer = (clientX, clientY) => {
+        if (!customColorCanvas || activeCustomColorIndex == null) return;
+        const rect = customColorCanvas.getBoundingClientRect();
+        const x = Math.min(rect.width, Math.max(0, clientX - rect.left));
+        const y = Math.min(rect.height, Math.max(0, clientY - rect.top));
+        customPickerState.s = rect.width ? x / rect.width : 0;
+        customPickerState.v = rect.height ? 1 - y / rect.height : 0;
+        const rgb = hsvToRgb(customPickerState.h, customPickerState.s, customPickerState.v);
+        renderCustomPickerUi();
+        setCustomDraftColor(activeCustomColorIndex, rgbToHex(rgb.r, rgb.g, rgb.b));
+      };
+
+      if (customColorCanvas) {
+        customColorCanvas.addEventListener("mousedown", (e) => {
+          draggingCustomCanvas = true;
+          updateCustomCanvasFromPointer(e.clientX, e.clientY);
+        });
+      }
+
+      if (customColorValue) {
+        customColorValue.addEventListener("change", (e) => {
+          if (activeCustomColorIndex == null) return;
+          const hex = parseColorFromInput(e.target.value, getCustomPickerInputFormat());
+          if (hex) {
+            setCustomDraftColor(activeCustomColorIndex, hex);
+          } else {
+            updateCustomPickerInputField(customColorDraft[activeCustomColorIndex].value);
           }
         });
 
-        customColorsList.addEventListener("change", (e) => {
-          const target = e.target;
-          if (target.dataset.inputType !== "hex") return;
-          const index = Number(target.dataset.customColorIndex);
-          if (Number.isNaN(index) || !customColorDraft[index]) return;
-          const normalized = String(target.value || "").trim();
-          const nextValue = isHexColor(normalized) ? normalized.toLowerCase() : customColorDraft[index].value;
-          customColorDraft[index].value = nextValue;
-          target.value = nextValue.toUpperCase();
-          const pickerInput = customColorsList.querySelector(`input[data-custom-color-index="${index}"][data-input-type="picker"]`);
-          if (pickerInput) pickerInput.value = nextValue;
+        customColorValue.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            customColorValue.blur();
+          }
+        });
+      }
+
+      if (customColorFormat) {
+        customColorFormat.addEventListener("change", () => {
+          if (activeCustomColorIndex == null || !customColorDraft[activeCustomColorIndex]) return;
+          updateCustomPickerInputField(customColorDraft[activeCustomColorIndex].value);
         });
       }
 
@@ -3524,7 +3967,8 @@
       scatterPointShapesBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAllDropdowns();
-        syncShapePopupSelection('#scatter-point-shapes-popup', state.opts.scatter.pointShape);
+        const pointOpts = state.opts[state.chartType === "dot" ? "dot" : "scatter"];
+        syncShapePopupSelection('#scatter-point-shapes-popup', pointOpts.pointShape);
         positionDropdown(scatterPointShapesBtn, scatterPointShapesPopup);
         scatterPointShapesPopup.classList.toggle('visible');
       });
@@ -3534,7 +3978,8 @@
           const shape = e.currentTarget.dataset.shape;
           document.querySelectorAll('#scatter-point-shapes-popup .shape-option').forEach(opt => { opt.classList.remove('active'); });
           e.currentTarget.classList.add('active');
-          state.opts.scatter.pointShape = shape;
+          const activePointChart = state.chartType === "dot" ? "dot" : "scatter";
+          state.opts[activePointChart].pointShape = shape;
           updateScatterPointShapeIcon(shape);
           updatePreview();
           scatterPointShapesPopup.classList.remove('visible');
@@ -3545,8 +3990,9 @@
         scatterPointSizeBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           closeAllDropdowns();
-          if (popupScatterPointSize) popupScatterPointSize.value = state.opts.scatter.pointSize;
-          if (scatterPointSizeValue) scatterPointSizeValue.textContent = `${state.opts.scatter.pointSize}px`;
+          const pointOpts = state.opts[state.chartType === "dot" ? "dot" : "scatter"];
+          if (popupScatterPointSize) popupScatterPointSize.value = pointOpts.pointSize;
+          if (scatterPointSizeValue) scatterPointSizeValue.textContent = `${pointOpts.pointSize}px`;
           positionDropdown(scatterPointSizeBtn, scatterPointSizePopup);
           scatterPointSizePopup.classList.toggle('visible');
         });
@@ -3554,12 +4000,21 @@
 
       if (popupScatterPointSize) {
         popupScatterPointSize.addEventListener('input', (e) => {
-          state.opts.scatter.pointSize = parseInt(e.target.value, 10) || 6;
-          if (scatterPointSizeValue) scatterPointSizeValue.textContent = `${state.opts.scatter.pointSize}px`;
-          if (state.opts.scatter.pointPadding > state.opts.scatter.pointSize - 1) {
-            state.opts.scatter.pointPadding = Math.max(0, state.opts.scatter.pointSize - 1);
-            if (popupScatterPointPadding) popupScatterPointPadding.value = state.opts.scatter.pointPadding;
-            if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts.scatter.pointPadding}px`;
+          const activePointChart = state.chartType === "dot" ? "dot" : "scatter";
+          state.opts[activePointChart].pointSize = parseInt(e.target.value, 10) || 6;
+          if (scatterPointSizeValue) scatterPointSizeValue.textContent = `${state.opts[activePointChart].pointSize}px`;
+          if (state.opts[activePointChart].pointPadding > state.opts[activePointChart].pointSize - 1) {
+            state.opts[activePointChart].pointPadding = Math.max(0, state.opts[activePointChart].pointSize - 1);
+            if (popupScatterPointPadding) popupScatterPointPadding.value = state.opts[activePointChart].pointPadding;
+            if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts[activePointChart].pointPadding}px`;
+          }
+          if (activePointChart === "dot" && state.opts.dot.lineWidth > state.opts.dot.pointSize) {
+            state.opts.dot.lineWidth = state.opts.dot.pointSize;
+            if (popupDotLineWidth) {
+              popupDotLineWidth.max = String(state.opts.dot.pointSize);
+              popupDotLineWidth.value = String(state.opts.dot.lineWidth);
+            }
+            if (dotLineWidthValue) dotLineWidthValue.textContent = `${state.opts.dot.lineWidth}px`;
           }
           updatePreview();
         });
@@ -3569,11 +4024,12 @@
         scatterPointPaddingBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           closeAllDropdowns();
+          const pointOpts = state.opts[state.chartType === "dot" ? "dot" : "scatter"];
           if (popupScatterPointPadding) {
-            popupScatterPointPadding.max = String(Math.max(0, state.opts.scatter.pointSize - 1));
-            popupScatterPointPadding.value = state.opts.scatter.pointPadding;
+            popupScatterPointPadding.max = String(Math.max(0, pointOpts.pointSize - 1));
+            popupScatterPointPadding.value = pointOpts.pointPadding;
           }
-          if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts.scatter.pointPadding}px`;
+          if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${pointOpts.pointPadding}px`;
           positionDropdown(scatterPointPaddingBtn, scatterPointPaddingPopup);
           scatterPointPaddingPopup.classList.toggle('visible');
         });
@@ -3581,12 +4037,39 @@
 
       if (popupScatterPointPadding) {
         popupScatterPointPadding.addEventListener('input', (e) => {
-          state.opts.scatter.pointPadding = Math.min(
+          const activePointChart = state.chartType === "dot" ? "dot" : "scatter";
+          state.opts[activePointChart].pointPadding = Math.min(
             parseInt(e.target.value, 10) || 0,
-            Math.max(0, state.opts.scatter.pointSize - 1)
+            Math.max(0, state.opts[activePointChart].pointSize - 1)
           );
-          e.target.value = state.opts.scatter.pointPadding;
-          if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts.scatter.pointPadding}px`;
+          e.target.value = state.opts[activePointChart].pointPadding;
+          if (scatterPointPaddingValue) scatterPointPaddingValue.textContent = `${state.opts[activePointChart].pointPadding}px`;
+          updatePreview();
+        });
+      }
+
+      if (dotLineWidthBtn && dotLineWidthPopup) {
+        dotLineWidthBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          if (popupDotLineWidth) {
+            popupDotLineWidth.max = String(Math.max(1, state.opts.dot.pointSize));
+            popupDotLineWidth.value = String(Math.min(state.opts.dot.lineWidth || 2, state.opts.dot.pointSize));
+          }
+          if (dotLineWidthValue) dotLineWidthValue.textContent = `${Math.min(state.opts.dot.lineWidth || 2, state.opts.dot.pointSize)}px`;
+          positionDropdown(dotLineWidthBtn, dotLineWidthPopup);
+          dotLineWidthPopup.classList.toggle('visible');
+        });
+      }
+
+      if (popupDotLineWidth) {
+        popupDotLineWidth.addEventListener('input', (e) => {
+          state.opts.dot.lineWidth = Math.min(
+            parseInt(e.target.value, 10) || 1,
+            Math.max(1, state.opts.dot.pointSize)
+          );
+          e.target.value = String(state.opts.dot.lineWidth);
+          if (dotLineWidthValue) dotLineWidthValue.textContent = `${state.opts.dot.lineWidth}px`;
           updatePreview();
         });
       }
@@ -3594,7 +4077,7 @@
 
     // ===== INITIALIZATION =====
     // Initialize the application
-    function init() {
+    async function init() {
       if (defaultApp) defaultApp.hidden = false;
       if (defaultApp) defaultApp.style.display = "grid";
       if (aiApp) aiApp.hidden = true;
@@ -3606,6 +4089,10 @@
       state.dataRegistry = loadDataRegistry();
       state.dataSource = state.dataRegistry.activeSource || "default";
       jsonInputMode = state.dataRegistry.jsonInputMode === "upload" ? "upload" : "editor";
+      const storedGlobalSettings = await getStoredGlobalSettings();
+      if (storedGlobalSettings) {
+        state.globalSettings = { ...state.globalSettings, ...storedGlobalSettings };
+      }
       state.currentData = getSourceData(state.dataSource, state.chartType);
       loadChartColorState(state.chartType, state.currentData);
       syncCurrentSeriesFromData(state.currentData);
@@ -3613,10 +4100,7 @@
       const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
       setTheme(savedTheme || (prefersDark ? "dark" : "light"));
       pendingTheme = currentTheme;
-      state.globalSettings.defaultLayoutMode = normalizeDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
-      if (typeof state.globalSettings.previewPanelFill !== "boolean") {
-        state.globalSettings.previewPanelFill = true;
-      }
+      state.globalSettings = normalizeStoredGlobalSettings(state.globalSettings);
       applyPreviewPanelFill(state.globalSettings.previewPanelFill);
       applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
       syncHeaderLayoutSelection();

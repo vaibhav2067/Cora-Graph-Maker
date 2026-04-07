@@ -62,6 +62,17 @@
               <span>Line Chart</span>
             </div>
 
+            <div class="chart-option" data-value="radar">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 2.5L16.5 6.25V13.75L10 17.5L3.5 13.75V6.25L10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                  <path d="M10 5.5L13.9 7.75V12.25L10 14.5L6.1 12.25V7.75L10 5.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                  <path d="M10 10L16.5 6.25M10 10L16.5 13.75M10 10L10 2.5M10 10L3.5 6.25M10 10L3.5 13.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span>Radar Chart</span>
+            </div>
+
             <div class="chart-option" data-value="scatter">
               <div class="chart-icon">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,6 +85,18 @@
                 </svg>
               </div>
               <span>Scatter Plot</span>
+            </div>
+
+            <div class="chart-option" data-value="dot">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 3V15.8571C3 16.4255 3.21852 16.9705 3.60748 17.3724C3.99645 17.7742 4.524 18 5.07407 18H17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="6.5" cy="12.5" r="1.4" fill="currentColor" />
+                  <circle cx="10.5" cy="8.5" r="1.4" fill="currentColor" />
+                  <circle cx="14.5" cy="10.5" r="1.4" fill="currentColor" />
+                </svg>
+              </div>
+              <span>Dot Plot</span>
             </div>
 
             <div class="chart-option" data-value="histogram">
@@ -232,18 +255,9 @@
         <section class="left-panel-card custom-colors-panel" id="custom-colors-panel" hidden>
           <div class="left-panel-card-head">
             <div>
-              <p class="left-panel-card-eyebrow">Color Studio</p>
               <h3 class="left-panel-card-title" id="custom-colors-title">Custom Colors</h3>
-              <p class="left-panel-card-copy" id="custom-colors-copy">Adjust the chart palette and apply it to the current graph.</p>
             </div>
             <button id="custom-colors-close" class="custom-colors-close" type="button" aria-label="Close custom colors panel">&times;</button>
-          </div>
-
-          <div class="custom-colors-presets" id="custom-colors-presets">
-            <button class="custom-colors-preset-btn" type="button" data-custom-preset="default">Default</button>
-            <button class="custom-colors-preset-btn" type="button" data-custom-preset="vibrant">Vibrant</button>
-            <button class="custom-colors-preset-btn" type="button" data-custom-preset="pastel">Pastel</button>
-            <button class="custom-colors-preset-btn" type="button" data-custom-preset="monochrome">Monochrome</button>
           </div>
 
           <div class="custom-colors-list" id="custom-colors-list"></div>
@@ -395,6 +409,49 @@
           </div>
         </div>
 
+        <!-- Radar Chart Specific Controls -->
+        <div class="toolbar-item" id="radar-controls" style="display: none">
+          <div class="toolbar-item">
+            <div class="tool-icon" id="radar-area-toggle" title="Fill Area">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12 3L20 8v8l-8 5l-8-5V8zm0 2.1L6 8.58v6.84l6 3.48l6-3.48V8.58z" opacity=".35"/>
+                <path fill="currentColor" d="M12 6.8l4.4 2.55v5.3L12 17.2l-4.4-2.55v-5.3z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-line-width-btn" title="Line Width">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20">
+                <path fill="currentColor" d="M2 14.5h16v2H2zm2-5h12v2H4zm2-5h8v2H6z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-point-shapes-btn" title="Point Shape">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-grid-shape-btn" title="Grid Shape">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3L19 7v10l-7 4l-7-4V7z"/>
+                <path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M12 7l3.5 2v6L12 17l-3.5-2V9z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-start-angle-btn" title="Start Angle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M12 4a8 8 0 1 1-8 8"/>
+                <path fill="currentColor" d="M11 2h2v7h-2z"/>
+                <path fill="currentColor" d="M12 10l4 2l-1 1.7l-4-2.4z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
         <!-- Scatter Chart Specific Controls -->
         <div class="toolbar-item" id="scatter-controls" style="display: none">
         <!-- Point Shapes Popup -->
@@ -422,6 +479,14 @@
           </div>
         </div>
       </div>
+
+        <div class="toolbar-item hidden" id="dot-line-width-control">
+          <div class="tool-icon active" id="dot-line-width-btn" title="Dot Range Width">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20">
+              <path fill="currentColor" d="m15.503 15.003l-.735.71a.75.75 0 1 0 1.042 1.078l1.886-1.82a1 1 0 0 0 0-1.44l-1.886-1.82a.75.75 0 0 0-1.042 1.079l.739.713H12.75a.75.75 0 0 0 0 1.5zM15 3a2 2 0 0 1 2 2v4.25a.75.75 0 0 1-1.5 0V5a.5.5 0 0 0-.5-.5H5a.5.5 0 0 0-.5.5v4.25a.75.75 0 0 1-1.5 0V5a2 2 0 0 1 2-2zM5.234 15.712l-.735-.71h2.752a.75.75 0 1 0 0-1.5H4.495l.739-.713a.75.75 0 0 0-1.042-1.078l-1.886 1.82a1 1 0 0 0 0 1.44l1.886 1.82a.75.75 0 0 0 1.042-1.079"/>
+            </svg>
+          </div>
+        </div>
 
         <!-- Bar Orientation Options -->
         <div class="toolbar-item hidden" id="bar-orientation-control">
@@ -583,6 +648,21 @@
         <div class="slider-value" id="line-width-value">2px</div>
       </div>
 
+      <div class="slider-popup" id="radar-line-width-popup">
+        <input type="range" class="popup-slider" id="popup-radar-line-width" min="1" max="10" value="2" />
+        <div class="slider-value" id="radar-line-width-value">2px</div>
+      </div>
+
+      <div class="slider-popup" id="radar-start-angle-popup">
+        <input type="range" class="popup-slider" id="popup-radar-start-angle" min="-180" max="180" value="-90" />
+        <div class="slider-value" id="radar-start-angle-value">-90°</div>
+      </div>
+
+      <div class="slider-popup" id="dot-line-width-popup">
+        <input type="range" class="popup-slider" id="popup-dot-line-width" min="1" max="10" value="2" />
+        <div class="slider-value" id="dot-line-width-value">2px</div>
+      </div>
+
       <!-- Point Shapes Popup -->
       <div class="shape-popup" id="point-shapes-popup">
         <button class="shape-option" data-shape="none" title="No Points">
@@ -603,6 +683,21 @@
         <button class="shape-option" data-shape="triangle" title="Triangle Points">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="shape-popup" id="radar-grid-shape-popup">
+        <button class="shape-option active" data-grid-shape="polygon" title="Polygon Grid">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3L19 7v10l-7 4l-7-4V7z"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M12 7l3.5 2v6L12 17l-3.5-2V9z"/>
+          </svg>
+        </button>
+        <button class="shape-option" data-grid-shape="circle" title="Circle Grid">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
           </svg>
         </button>
       </div>
@@ -694,6 +789,27 @@
             <span class="bg-format-caret" aria-hidden="true">&#9662;</span>
           </div>
           <input type="text" id="bg-color-hex" placeholder="#111318" />
+        </div>
+      </div>
+
+      <div class="bg-color-panel custom-color-picker-panel" id="custom-color-picker-panel">
+        <div class="bg-color-panel-title" id="custom-color-picker-title">Color</div>
+        <div class="bg-color-canvas" id="custom-color-canvas">
+          <div class="bg-color-canvas-cursor" id="custom-color-canvas-cursor"></div>
+        </div>
+        <div class="bg-color-slider-wrap">
+          <input type="range" id="custom-color-hue" min="0" max="360" value="220" />
+        </div>
+        <div class="bg-color-input-row">
+          <div class="bg-format-select">
+            <select id="custom-color-format" title="Color Format">
+              <option value="hex">HEX</option>
+              <option value="rgb">RGB</option>
+              <option value="hsl">HSL</option>
+            </select>
+            <span class="bg-format-caret" aria-hidden="true">&#9662;</span>
+          </div>
+          <input type="text" id="custom-color-value" placeholder="#111318" />
         </div>
       </div>
       <div class="export-dropdown-wrapper has-dropdown">
@@ -1079,6 +1195,16 @@
                 <span class="settings-toggle-slider" aria-hidden="true"></span>
               </span>
             </label>
+            <label class="settings-toggle-row" for="settings-dot-gradient-toggle">
+              <span class="settings-toggle-copy">
+                <span class="settings-toggle-title">Dot Range Gradient</span>
+                <span class="settings-toggle-subtitle" id="settings-dot-gradient-toggle-label">On</span>
+              </span>
+              <span class="settings-toggle-control">
+                <input id="settings-dot-gradient-toggle" type="checkbox" />
+                <span class="settings-toggle-slider" aria-hidden="true"></span>
+              </span>
+            </label>
           </div>
         </section>
 
@@ -1204,7 +1330,7 @@
           <div class="settings-list-block">
             <h4>Current Features</h4>
             <ul>
-              <li>5 chart types: Bar, Pie, Line, Scatter, Histogram</li>
+              <li>7 chart types: Bar, Pie, Line, Radar, Scatter, Dot, Histogram</li>
               <li>Default, Manual, and JSON chart data workflows</li>
               <li>Global styling controls and export options</li>
             </ul>
@@ -1404,7 +1530,7 @@
       <div>
         <h4>Current Features:</h4>
         <ul>
-          <li>5 chart types (Bar, Pie, Line, Scatter, Histogram)</li>
+          <li>7 chart types (Bar, Pie, Line, Radar, Scatter, Dot, Histogram)</li>
           <li>Default random data generation</li>
           <li>Global styling controls</li>
           <li>Export options (SVG, PNG, Figma)</li>

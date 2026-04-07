@@ -234,6 +234,42 @@ function postCurrentUserData() {
 postCurrentUserData();
 
 figma.ui.onmessage = async (msg) => {
+  if (msg.type === 'GET_GLOBAL_SETTINGS') {
+    try {
+      const settings = await figma.clientStorage.getAsync('globalSettings');
+      figma.ui.postMessage({
+        type: 'GLOBAL_SETTINGS_RESULT',
+        requestId: msg.requestId,
+        settings: settings || null,
+      });
+    } catch (error) {
+      figma.ui.postMessage({
+        type: 'GLOBAL_SETTINGS_RESULT',
+        requestId: msg.requestId,
+        settings: null,
+      });
+    }
+    return;
+  }
+
+  if (msg.type === 'SAVE_GLOBAL_SETTINGS') {
+    try {
+      await figma.clientStorage.setAsync('globalSettings', msg.settings || null);
+      figma.ui.postMessage({
+        type: 'GLOBAL_SETTINGS_SAVED',
+        requestId: msg.requestId,
+        ok: true,
+      });
+    } catch (error) {
+      figma.ui.postMessage({
+        type: 'GLOBAL_SETTINGS_SAVED',
+        requestId: msg.requestId,
+        ok: false,
+      });
+    }
+    return;
+  }
+
   if (msg.type === 'EXPORT_SVG' && typeof msg.svg === 'string') {
     try {
       const { x: cx, y: cy } = figma.viewport.center;

@@ -1299,8 +1299,15 @@ body {
   z-index: 1000;
   max-height: 250px;
   overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   padding: 8px;
   backdrop-filter: blur(14px);
+}
+
+.chart-options::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .header .chart-options {
@@ -1773,6 +1780,7 @@ body {
   min-width: 0;
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
 }
 
 .global-toolbar::-webkit-scrollbar {
@@ -1787,6 +1795,7 @@ body {
 .global-toolbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  scrollbar-color: transparent transparent;
 }
 
 .toolbar-item {
@@ -2390,35 +2399,11 @@ body {
   border-color: var(--brand-2);
 }
 
-.custom-colors-presets {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.custom-colors-preset-btn {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
-  color: var(--ink);
-  padding: 8px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
-}
-
-.custom-colors-preset-btn:hover {
-  border-color: var(--brand-2);
-  background: var(--panel-2);
-  transform: translateY(-1px);
-}
-
 .custom-colors-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 12px;
 }
 
 .custom-colors-row {
@@ -2452,35 +2437,16 @@ body {
 .custom-colors-inputs {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-end;
+  min-width: 136px;
 }
 
-.custom-colors-swatch {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--panel-2);
-  flex-shrink: 0;
+.custom-colors-control {
+  min-width: 132px;
 }
 
-.custom-colors-swatch input[type="color"] {
-  width: 100%;
-  height: 100%;
-  border: none;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.custom-colors-hex {
-  width: 92px;
-  min-width: 92px;
-  text-transform: uppercase;
-  text-align: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11px;
+.custom-color-picker-panel {
+  max-width: 220px;
 }
 
 .custom-colors-actions {
