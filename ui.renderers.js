@@ -179,23 +179,24 @@
     const hasPadding = padding > 0;
     let bars = "";
 
-    const drawBar = (x, y, w, h, fill, index) => {
-      const borderColor = colors.borders && colors.borders[index] ? colors.borders[index] : getBorderColor(fill);
+    const drawBar = (x, y, w, h, fill, colorIndex, animationIndex) => {
+      const borderColor = colors.borders && colors.borders[colorIndex] ? colors.borders[colorIndex] : getBorderColor(fill);
       const barRadius = Math.max(0, isHorizontal ? hrx : rx);
       const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
+      const animationClass = `class="preview-bar-animatable${isHorizontal ? " is-horizontal" : ""}" data-bar-index="${animationIndex}"`;
 
       if (hasPadding) {
-        const outerBar = `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="transparent" ${strokeAttrs}/>`;
+        const outerBar = `<rect ${animationClass} x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="transparent" ${strokeAttrs}/>`;
         const innerX = x + padding;
         const innerY = y + padding;
         const innerW = Math.max(0, w - padding * 2);
         const innerH = Math.max(0, h - padding * 2);
         const innerRx = Math.max(0, barRadius - padding);
-        const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
+        const innerBar = `<rect ${animationClass} x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
         return outerBar + innerBar;
       }
 
-      return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
+      return `<rect ${animationClass} x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${barRadius}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
     };
 
     if (isHorizontal) {
@@ -208,7 +209,7 @@
             const w = toX(v) - x0;
             const h = barH - gap;
             const fill = colors.series && colors.series[si];
-            bars += drawBar(x, y, w, h, fill, si);
+            bars += drawBar(x, y, w, h, fill, si, ci * data.series.length + si);
           });
         } else {
           const v = data.series[0].y[ci];
@@ -217,7 +218,7 @@
           const w = toX(v) - x0;
           const h = barH - gap;
           const fill = colors.bars && colors.bars[ci];
-          bars += drawBar(x, y, w, h, fill, ci);
+          bars += drawBar(x, y, w, h, fill, ci, ci);
         }
       });
     } else {
@@ -229,7 +230,7 @@
             const y = toY(v);
             const h = y0 - y;
             const fill = colors.series && colors.series[si];
-            bars += drawBar(x, y, barW - gap, h, fill, si);
+            bars += drawBar(x, y, barW - gap, h, fill, si, ci * data.series.length + si);
           });
         } else {
           const v = data.series[0].y[ci];
@@ -237,7 +238,7 @@
           const y = toY(v);
           const h = y0 - y;
           const fill = colors.bars && colors.bars[ci];
-          bars += drawBar(x, y, barW - gap, h, fill, ci);
+          bars += drawBar(x, y, barW - gap, h, fill, ci, ci);
         }
       });
     }

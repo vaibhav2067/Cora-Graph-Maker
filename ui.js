@@ -24,6 +24,7 @@
     const animationStudioBtn = document.getElementById("animation-studio-btn");
     const aiAnimationStudioBtn = document.getElementById("ai-animation-studio-btn");
     const animationHomeBtn = document.getElementById("animation-home-btn");
+    const animationPreviewBtn = document.getElementById("animation-preview-btn");
     const animationSaveBtn = document.getElementById("animation-save-btn");
     const animationPresetSelect = document.getElementById("animation-preset-select");
     const animationTriggerSelect = document.getElementById("animation-trigger-select");
@@ -34,6 +35,7 @@
     const animationPresetCopy = document.getElementById("animation-preset-copy");
     const animationStateSummary = document.getElementById("animation-state-summary");
     const settingsHomeBtn = document.getElementById("settings-home-btn");
+    const settingsResetBtn = document.getElementById("settings-reset-btn");
     const settingsSaveBtn = document.getElementById("settings-save-btn");
     const settingsNavItems = Array.from(document.querySelectorAll(".settings-nav-item"));
     const settingsDetailPanels = Array.from(document.querySelectorAll(".settings-detail-panel"));
@@ -41,32 +43,10 @@
     const settingsThemeToggleLabel = document.getElementById("settings-theme-toggle-label");
     const settingsPreviewFillToggle = document.getElementById("settings-preview-fill-toggle");
     const settingsPreviewFillToggleLabel = document.getElementById("settings-preview-fill-toggle-label");
-    const settingsLayoutOptions = Array.from(document.querySelectorAll(".settings-layout-option"));
-    const settingsChartTypeValue = document.getElementById("settings-chart-type-value");
-    const settingsDataSourceValue = document.getElementById("settings-data-source-value");
-    const settingsGridValue = document.getElementById("settings-grid-value");
-    const settingsAxesValue = document.getElementById("settings-axes-value");
-    const settingsPaddingValue = document.getElementById("settings-padding-value");
-    const settingsRadiusValue = document.getElementById("settings-radius-value");
-    const settingsHighlightChart = document.getElementById("settings-highlight-chart");
-    const settingsHighlightSource = document.getElementById("settings-highlight-source");
-    const settingsHighlightLabels = document.getElementById("settings-highlight-labels");
-    const settingsGridToggle = document.getElementById("settings-grid-toggle");
-    const settingsGridToggleLabel = document.getElementById("settings-grid-toggle-label");
-    const settingsAxesToggle = document.getElementById("settings-axes-toggle");
-    const settingsAxesToggleLabel = document.getElementById("settings-axes-toggle-label");
-    const settingsTextToggle = document.getElementById("settings-text-toggle");
-    const settingsTextToggleLabel = document.getElementById("settings-text-toggle-label");
-    const settingsDotGradientToggle = document.getElementById("settings-dot-gradient-toggle");
-    const settingsDotGradientToggleLabel = document.getElementById("settings-dot-gradient-toggle-label");
-    const settingsBgOpacity = document.getElementById("settings-bg-opacity");
-    const settingsBgOpacityValue = document.getElementById("settings-bg-opacity-value");
-    const settingsFontSize = document.getElementById("settings-font-size");
-    const settingsFontSizeValue = document.getElementById("settings-font-size-value");
-    const settingsPaddingRange = document.getElementById("settings-padding-range");
-    const settingsPaddingRangeValue = document.getElementById("settings-padding-range-value");
-    const settingsRadiusRange = document.getElementById("settings-radius-range");
-    const settingsRadiusRangeValue = document.getElementById("settings-radius-range-value");
+    const settingsProfileName = document.getElementById("settings-profile-name");
+    const settingsProfileToggle = document.getElementById("settings-profile-toggle");
+    const settingsProfileToggleLabel = document.getElementById("settings-profile-toggle-label");
+    const settingsLayoutSelect = document.getElementById("settings-layout-select");
     const infoModal = document.getElementById("info-modal");
     const modalClose = document.getElementById("modal-close");
     const experienceModal = document.getElementById("experience-modal");
@@ -191,6 +171,7 @@
     let pendingTheme = "light";
     let activeSettingsPanel = "general";
     let pendingGlobalSettings = null;
+    let latestUserData = null;
 
     // Pie chart controls
     const pieGapToggle = document.getElementById('pie-gap-toggle');
@@ -320,6 +301,7 @@
         padding: 0,
         borderRadius: 0,
         previewPanelFill: true,
+        profileSyncEnabled: true,
         dotLineUseGradient: true,
         defaultLayoutMode: "layout-option-1",
       },
@@ -359,6 +341,27 @@
       },
       dataRegistry: null,
     };
+    let animationPreviewResetTimer = null;
+
+    function getDefaultGlobalSettings() {
+      return {
+        backgroundColor: "#ffffff",
+        backgroundOpacity: 1,
+        showGrid: true,
+        showAxes: true,
+        showText: true,
+        fontFamily: "Segoe UI",
+        fontSize: 12,
+        fontWeight: "normal",
+        fontColor: "#9aa4b2",
+        padding: 0,
+        borderRadius: 0,
+        previewPanelFill: true,
+        profileSyncEnabled: true,
+        dotLineUseGradient: true,
+        defaultLayoutMode: "layout-option-1",
+      };
+    }
 
     // Multi-series support
     let currentSeries = 1;
@@ -433,9 +436,104 @@
       return document.getElementById("svg-host");
     }
 
+    function getPreviewAnimationEasing(easing) {
+      switch (easing) {
+        case "ease-in":
+          return "cubic-bezier(0.42, 0, 1, 1)";
+        case "ease-in-out":
+          return "cubic-bezier(0.42, 0, 0.58, 1)";
+        case "linear":
+          return "linear";
+        case "gentle":
+          return "cubic-bezier(0.2, 0.8, 0.2, 1)";
+        case "quick":
+          return "cubic-bezier(0.35, 0, 0.15, 1)";
+        case "ease-out":
+        default:
+          return "cubic-bezier(0, 0, 0.2, 1)";
+      }
+    }
+
+    function resetAnimationPreviewPlayback() {
+      if (animationPreviewResetTimer) {
+        clearTimeout(animationPreviewResetTimer);
+        animationPreviewResetTimer = null;
+      }
+
+      const animationHost = document.getElementById("animation-svg-host");
+      if (!animationHost) return;
+
+      animationHost.querySelectorAll(".preview-bar-animatable").forEach((bar) => {
+        bar.classList.remove(
+          "is-preview-playing",
+          "axis-vertical",
+          "axis-horizontal",
+          "flow-up",
+          "flow-right",
+          "flow-down",
+          "flow-left",
+          "flow-smart"
+        );
+        bar.style.removeProperty("--bar-grow-duration");
+        bar.style.removeProperty("--bar-grow-delay");
+        bar.style.removeProperty("--bar-grow-easing");
+      });
+    }
+
+    function syncAnimationPreviewButton() {
+      if (!animationPreviewBtn) return;
+      const isReady = state.chartType === "bar" && !!state.currentData;
+      animationPreviewBtn.disabled = !isReady;
+      animationPreviewBtn.textContent = isReady ? "See Animation" : "Bar Preview Only";
+      animationPreviewBtn.title = isReady
+        ? "Play the current bar animation preset in the preview"
+        : "Animation preview is currently available for bar graphs with data";
+    }
+
+    function playAnimationPreview() {
+      if (!animationApp || animationApp.hidden || state.chartType !== "bar") {
+        syncAnimationPreviewButton();
+        return;
+      }
+
+      const animationHost = document.getElementById("animation-svg-host");
+      if (!animationHost) return;
+
+      const bars = Array.from(animationHost.querySelectorAll(".preview-bar-animatable"));
+      if (!bars.length) return;
+
+      resetAnimationPreviewPlayback();
+
+      const isHorizontal = !!state.opts.bar.horizontal;
+      const selectedDirection = String(state.animationSettings.direction || "smart");
+      const flowDirection = isHorizontal
+        ? (selectedDirection === "left" || selectedDirection === "right" ? selectedDirection : "right")
+        : (selectedDirection === "up" || selectedDirection === "down" ? selectedDirection : "up");
+      const axisClass = isHorizontal ? "axis-horizontal" : "axis-vertical";
+      const easing = getPreviewAnimationEasing(state.animationSettings.easing);
+      const duration = Math.max(100, parseInt(state.animationSettings.durationMs, 10) || 450);
+      const uniqueBarCount = new Set(
+        bars.map((bar) => String(bar.dataset.barIndex || "0"))
+      ).size || 1;
+      const staggerStep = Math.min(80, Math.round(duration / Math.max(4, uniqueBarCount * 1.5)));
+
+      bars.forEach((bar, index) => {
+        const animationIndex = parseInt(bar.dataset.barIndex || String(index), 10) || 0;
+        bar.style.setProperty("--bar-grow-duration", `${duration}ms`);
+        bar.style.setProperty("--bar-grow-delay", `${animationIndex * staggerStep}ms`);
+        bar.style.setProperty("--bar-grow-easing", easing);
+        bar.classList.add("is-preview-playing", axisClass, `flow-${flowDirection}`);
+      });
+
+      animationPreviewResetTimer = window.setTimeout(() => {
+        resetAnimationPreviewPlayback();
+      }, duration + ((uniqueBarCount - 1) * staggerStep) + 120);
+    }
+
     // Update chart preview
     function updatePreview() {
       const svgHost = getActiveSvgHost();
+      syncAnimationPreviewButton();
       if (!svgHost) return;
       if (!state.currentData) {
         svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;"><p>Please configure your data to see the chart preview</p></div>`;
@@ -498,10 +596,12 @@
             svg = renderBar(state.currentData, colors, W, H, pad, currentOpts, state.globalSettings.padding);
         }
         svgHost.innerHTML = svg;
+        syncAnimationPreviewButton();
         setTimeout(() => { addChartElementInteractivity(); }, 100);
       } catch (error) {
         console.error("Chart rendering error:", error);
         svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;"><p>Error rendering chart. Please check your data.</p><p style="font-size:12px; color:var(--ink-2);">${error.message}</p></div>`;
+        syncAnimationPreviewButton();
       }
     }
 
@@ -2570,7 +2670,10 @@
     let currentElementData = { type: null, index: null, originalStyles: null };
 
     // Listen for user data from Figma
-    bindUserDataListener(updateUserProfile);
+    bindUserDataListener((userData) => {
+      latestUserData = userData || null;
+      applyStoredUserProfile();
+    });
 
     // ===== THEME MANAGEMENT =====
     const THEME_STORAGE_KEY = "graph_generator_theme";
@@ -2596,18 +2699,30 @@
     function normalizeStoredGlobalSettings(value) {
       const fallback = { ...state.globalSettings };
       if (!value || typeof value !== "object") return fallback;
+      const normalizedBackgroundColor = normalizeColorValue(value.backgroundColor);
+      const normalizedFontColor = normalizeColorValue(value.fontColor);
+      const normalizedFontFamily = typeof value.fontFamily === "string" && value.fontFamily.trim()
+        ? value.fontFamily.trim()
+        : fallback.fontFamily;
+      const normalizedFontWeight = typeof value.fontWeight === "string" && value.fontWeight.trim()
+        ? value.fontWeight.trim()
+        : fallback.fontWeight;
       return {
         ...fallback,
         ...value,
+        backgroundColor: normalizedBackgroundColor || fallback.backgroundColor,
         backgroundOpacity: Number.isFinite(Number(value.backgroundOpacity))
           ? Math.max(0, Math.min(1, Number(value.backgroundOpacity)))
           : fallback.backgroundOpacity,
         showGrid: typeof value.showGrid === "boolean" ? value.showGrid : fallback.showGrid,
         showAxes: typeof value.showAxes === "boolean" ? value.showAxes : fallback.showAxes,
         showText: typeof value.showText === "boolean" ? value.showText : fallback.showText,
+        fontFamily: normalizedFontFamily,
         fontSize: Number.isFinite(Number(value.fontSize))
           ? Math.max(8, Math.min(48, parseInt(value.fontSize, 10)))
           : fallback.fontSize,
+        fontWeight: normalizedFontWeight,
+        fontColor: normalizedFontColor || fallback.fontColor,
         padding: Number.isFinite(Number(value.padding))
           ? Math.max(0, Math.min(24, parseInt(value.padding, 10)))
           : fallback.padding,
@@ -2615,6 +2730,7 @@
           ? Math.max(0, Math.min(28, parseInt(value.borderRadius, 10)))
           : fallback.borderRadius,
         previewPanelFill: typeof value.previewPanelFill === "boolean" ? value.previewPanelFill : fallback.previewPanelFill,
+        profileSyncEnabled: typeof value.profileSyncEnabled === "boolean" ? value.profileSyncEnabled : fallback.profileSyncEnabled,
         dotLineUseGradient: typeof value.dotLineUseGradient === "boolean" ? value.dotLineUseGradient : fallback.dotLineUseGradient,
         defaultLayoutMode: normalizeDefaultLayoutMode(value.defaultLayoutMode),
       };
@@ -2646,6 +2762,16 @@
         // Ignore storage failures in restricted environments.
       }
       return savedInPlugin;
+    }
+
+    async function clearStoredGlobalSettings() {
+      await savePluginGlobalSettings(null);
+      try {
+        localStorage.removeItem(GLOBAL_SETTINGS_STORAGE_KEY);
+        localStorage.removeItem(THEME_STORAGE_KEY);
+      } catch (error) {
+        // Ignore storage failures in restricted environments.
+      }
     }
 
     function updateThemeToggleLabel() {
@@ -2692,15 +2818,42 @@
     function syncSettingsLayoutSelection() {
       const draft = getSettingsDraft();
       const activeLayoutMode = normalizeDefaultLayoutMode(draft.defaultLayoutMode);
-      settingsLayoutOptions.forEach((option) => {
-        const isActive = option.dataset.layoutOption === activeLayoutMode;
-        option.classList.toggle("active", isActive);
-        option.setAttribute("aria-pressed", isActive ? "true" : "false");
-      });
+      if (settingsLayoutSelect) {
+        settingsLayoutSelect.value = activeLayoutMode;
+        refreshCustomStyledSelect(settingsLayoutSelect);
+      }
     }
 
     function getSettingsDraft() {
       return pendingGlobalSettings || state.globalSettings;
+    }
+
+    function applyStoredUserProfile() {
+      const profileEnabled = state.globalSettings.profileSyncEnabled !== false;
+      if (settingsProfileName) {
+        if (!profileEnabled) {
+          settingsProfileName.textContent = "Disabled";
+        } else if (latestUserData && latestUserData.name) {
+          settingsProfileName.textContent = latestUserData.name;
+        } else {
+          settingsProfileName.textContent = "Loading...";
+        }
+      }
+      if (!profileEnabled) {
+        updateUserProfile({ name: "Profile Hidden", photoUrl: null });
+        return;
+      }
+      if (latestUserData) {
+        updateUserProfile(latestUserData);
+      }
+    }
+
+    function requestUserProfileIfEnabled() {
+      if (state.globalSettings.profileSyncEnabled === false) {
+        applyStoredUserProfile();
+        return;
+      }
+      requestUserData();
     }
 
     function applyPreviewPanelFill(enabled) {
@@ -2710,37 +2863,23 @@
 
     function syncGeneralSettingsSummary() {
       const draft = getSettingsDraft();
-      if (settingsChartTypeValue) settingsChartTypeValue.textContent = getChartTypeLabel(state.chartType);
-      if (settingsDataSourceValue) settingsDataSourceValue.textContent = getDataSourceLabel(state.dataSource);
-      if (settingsGridValue) settingsGridValue.textContent = draft.showGrid ? "On" : "Off";
-      if (settingsAxesValue) settingsAxesValue.textContent = draft.showAxes ? "On" : "Off";
-      if (settingsPaddingValue) settingsPaddingValue.textContent = `${draft.padding}%`;
-      if (settingsRadiusValue) settingsRadiusValue.textContent = `${draft.borderRadius}px`;
-      if (settingsHighlightChart) settingsHighlightChart.textContent = getChartTypeLabel(state.chartType);
-      if (settingsHighlightSource) settingsHighlightSource.textContent = getDataSourceLabel(state.dataSource);
-      if (settingsHighlightLabels) settingsHighlightLabels.textContent = draft.showText ? "On" : "Off";
+      if (settingsProfileName) {
+        if (draft.profileSyncEnabled === false) {
+          settingsProfileName.textContent = "Disabled";
+        } else if (latestUserData && latestUserData.name) {
+          settingsProfileName.textContent = latestUserData.name;
+        } else {
+          settingsProfileName.textContent = "Loading...";
+        }
+      }
     }
 
     function syncSettingsControlValues() {
       const draft = getSettingsDraft();
-      if (settingsGridToggle) settingsGridToggle.checked = !!draft.showGrid;
-      if (settingsGridToggleLabel) settingsGridToggleLabel.textContent = draft.showGrid ? "On" : "Off";
-      if (settingsAxesToggle) settingsAxesToggle.checked = !!draft.showAxes;
-      if (settingsAxesToggleLabel) settingsAxesToggleLabel.textContent = draft.showAxes ? "On" : "Off";
-      if (settingsTextToggle) settingsTextToggle.checked = !!draft.showText;
-      if (settingsTextToggleLabel) settingsTextToggleLabel.textContent = draft.showText ? "On" : "Off";
-      if (settingsDotGradientToggle) settingsDotGradientToggle.checked = !!draft.dotLineUseGradient;
-      if (settingsDotGradientToggleLabel) settingsDotGradientToggleLabel.textContent = draft.dotLineUseGradient ? "On" : "Off";
-      if (settingsBgOpacity) settingsBgOpacity.value = String(Math.round(draft.backgroundOpacity * 100));
-      if (settingsBgOpacityValue) settingsBgOpacityValue.textContent = `${Math.round(draft.backgroundOpacity * 100)}%`;
       if (settingsPreviewFillToggle) settingsPreviewFillToggle.checked = !!draft.previewPanelFill;
       if (settingsPreviewFillToggleLabel) settingsPreviewFillToggleLabel.textContent = draft.previewPanelFill ? "On" : "Off";
-      if (settingsFontSize) settingsFontSize.value = String(draft.fontSize);
-      if (settingsFontSizeValue) settingsFontSizeValue.textContent = `${draft.fontSize}px`;
-      if (settingsPaddingRange) settingsPaddingRange.value = String(draft.padding);
-      if (settingsPaddingRangeValue) settingsPaddingRangeValue.textContent = `${draft.padding}%`;
-      if (settingsRadiusRange) settingsRadiusRange.value = String(draft.borderRadius);
-      if (settingsRadiusRangeValue) settingsRadiusRangeValue.textContent = `${draft.borderRadius}px`;
+      if (settingsProfileToggle) settingsProfileToggle.checked = draft.profileSyncEnabled !== false;
+      if (settingsProfileToggleLabel) settingsProfileToggleLabel.textContent = draft.profileSyncEnabled !== false ? "On" : "Off";
       syncSettingsLayoutSelection();
     }
 
@@ -2942,9 +3081,13 @@
         { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
         { closeAllDropdowns, updatePreview }
       );
+      window.requestAnimationFrame(() => {
+        playAnimationPreview();
+      });
     }
 
     function exitAnimationStudioMode() {
+      resetAnimationPreviewPlayback();
       closeAnimationStudio(
         { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
         { closeAllDropdowns, updateToolbarForChartType, updatePreview }
@@ -3076,74 +3219,21 @@
           syncSettingsControlValues();
         });
       }
-      if (settingsGridToggle) {
-        settingsGridToggle.addEventListener("change", () => {
+      if (settingsProfileToggle) {
+        settingsProfileToggle.addEventListener("change", () => {
           if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.showGrid = settingsGridToggle.checked;
+          pendingGlobalSettings.profileSyncEnabled = settingsProfileToggle.checked;
           syncGeneralSettingsSummary();
           syncSettingsControlValues();
         });
       }
-      if (settingsAxesToggle) {
-        settingsAxesToggle.addEventListener("change", () => {
+      if (settingsLayoutSelect) {
+        settingsLayoutSelect.addEventListener("change", () => {
           if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.showAxes = settingsAxesToggle.checked;
-          syncGeneralSettingsSummary();
+          pendingGlobalSettings.defaultLayoutMode = normalizeDefaultLayoutMode(settingsLayoutSelect.value);
           syncSettingsControlValues();
         });
       }
-      if (settingsTextToggle) {
-        settingsTextToggle.addEventListener("change", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.showText = settingsTextToggle.checked;
-          syncGeneralSettingsSummary();
-          syncSettingsControlValues();
-        });
-      }
-      if (settingsDotGradientToggle) {
-        settingsDotGradientToggle.addEventListener("change", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.dotLineUseGradient = settingsDotGradientToggle.checked;
-          syncSettingsControlValues();
-        });
-      }
-      if (settingsBgOpacity) {
-        settingsBgOpacity.addEventListener("input", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.backgroundOpacity = (parseInt(settingsBgOpacity.value, 10) || 0) / 100;
-          syncSettingsControlValues();
-        });
-      }
-      if (settingsFontSize) {
-        settingsFontSize.addEventListener("input", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.fontSize = parseInt(settingsFontSize.value, 10) || state.globalSettings.fontSize;
-          syncSettingsControlValues();
-        });
-      }
-      if (settingsPaddingRange) {
-        settingsPaddingRange.addEventListener("input", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.padding = parseInt(settingsPaddingRange.value, 10) || 0;
-          syncGeneralSettingsSummary();
-          syncSettingsControlValues();
-        });
-      }
-      if (settingsRadiusRange) {
-        settingsRadiusRange.addEventListener("input", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.borderRadius = parseInt(settingsRadiusRange.value, 10) || 0;
-          syncGeneralSettingsSummary();
-          syncSettingsControlValues();
-        });
-      }
-      settingsLayoutOptions.forEach((option) => {
-        option.addEventListener("click", () => {
-          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.defaultLayoutMode = normalizeDefaultLayoutMode(option.dataset.layoutOption);
-          syncSettingsControlValues();
-        });
-      });
       headerLayoutOptions.forEach((option) => {
         option.addEventListener("click", () => {
           const layoutMode = normalizeDefaultLayoutMode(option.dataset.layoutOption);
@@ -3160,6 +3250,25 @@
           exitSettingsMode();
         });
       }
+      if (settingsResetBtn) {
+        settingsResetBtn.addEventListener("click", async () => {
+          await clearStoredGlobalSettings();
+          state.globalSettings = getDefaultGlobalSettings();
+          pendingGlobalSettings = { ...state.globalSettings };
+          pendingTheme = "light";
+          setTheme("light");
+          applyPreviewPanelFill(state.globalSettings.previewPanelFill);
+          applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
+          applyStoredUserProfile();
+          requestUserProfileIfEnabled();
+          updateGlobalToolbarValues();
+          updatePreview();
+          syncSettingsThemeSelection();
+          syncGeneralSettingsSummary();
+          syncSettingsControlValues();
+          showCustomAlert("Stored settings were cleared and defaults were restored.", "success", "Settings Reset");
+        });
+      }
       if (settingsSaveBtn) {
         settingsSaveBtn.addEventListener("click", async () => {
           const themeChanged = pendingTheme !== currentTheme;
@@ -3171,6 +3280,8 @@
           setTheme(pendingTheme);
           applyPreviewPanelFill(state.globalSettings.previewPanelFill);
           applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
+          applyStoredUserProfile();
+          requestUserProfileIfEnabled();
           updateGlobalToolbarValues();
           syncGeneralSettingsSummary();
           exitSettingsMode();
@@ -3206,6 +3317,11 @@
           exitAnimationStudioMode();
         });
       }
+      if (animationPreviewBtn) {
+        animationPreviewBtn.addEventListener("click", () => {
+          playAnimationPreview();
+        });
+      }
       if (animationSaveBtn) {
         animationSaveBtn.addEventListener("click", () => {
           saveAnimationSettings(state, state.chartType);
@@ -3223,6 +3339,16 @@
         animationPresetCopy,
         animationStateSummary,
       });
+      [animationPresetSelect, animationEasingSelect, animationDirectionSelect, animationDurationRange]
+        .filter(Boolean)
+        .forEach((control) => {
+          const eventName = control === animationDurationRange ? "input" : "change";
+          control.addEventListener(eventName, () => {
+            if (animationApp && !animationApp.hidden) {
+              playAnimationPreview();
+            }
+          });
+        });
       if (aiHomeBtn) {
         aiHomeBtn.addEventListener("click", () => {
           exitAiPlaygroundMode();
@@ -4109,6 +4235,7 @@
       initCustomStyledSelect(bgColorFormat, bgColorFormat && bgColorFormat.parentElement);
       initCustomStyledSelect(fontFamilySelect, fontFamilySelect && fontFamilySelect.parentElement);
       initCustomStyledSelect(fontWeightSelect, fontWeightSelect && fontWeightSelect.parentElement);
+      initCustomStyledSelect(settingsLayoutSelect, settingsLayoutSelect && settingsLayoutSelect.parentElement);
       setupEventListeners();
       initChartTypeSelector();
       initDataSourceSelector();
@@ -4124,7 +4251,8 @@
       setJsonInputMode(jsonInputMode);
       updateJsonEditorFromCurrentData();
       // Request user data from Figma
-      requestUserData();
+      applyStoredUserProfile();
+      requestUserProfileIfEnabled();
     }
 
     // Initialize reliably in both browser and Figma UI runtimes.
