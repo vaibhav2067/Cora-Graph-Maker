@@ -46,7 +46,7 @@
       const sliceColor = colors.slices && colors.slices[i] ? colors.slices[i] : defaultColor(i);
       const borderColor = colors.borders && colors.borders[i] ? colors.borders[i] : getBorderColor(sliceColor);
 
-      pieces.push(`<path d="${slicePath}" fill="${sliceColor}" fill-opacity="${opts.fillOpacity}"/>`);
+      pieces.push(`<path class="preview-pie-slice" data-animation-index="${i}" d="${slicePath}" fill="${sliceColor}" fill-opacity="${opts.fillOpacity}"/>`);
 
       if (opts.strokeWidth > 0) {
         const strokePath = createPieSlicePath(
@@ -59,7 +59,7 @@
           opts.borderRadius
         );
         pieces.push(
-          `<path d="${strokePath}" fill="none" stroke="${borderColor}" stroke-width="${opts.strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`
+          `<path class="preview-pie-slice" data-animation-index="${i}" d="${strokePath}" fill="none" stroke="${borderColor}" stroke-width="${opts.strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`
         );
       }
 
@@ -336,11 +336,11 @@
       const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
 
       const baseStroke = `stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity}"`;
-      let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
+      let linePath = `<polyline class="preview-line-animatable preview-line-series" data-animation-index="${seriesIndex}" fill="none" ${baseStroke} points="${points}"/>`;
 
       if (opts.smooth && series.y.length > 1) {
         const d = buildSmoothLinePath(pathPts);
-        linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
+        linePath = `<path class="preview-line-animatable preview-line-series" data-animation-index="${seriesIndex}" d="${d}" fill="none" ${baseStroke}/>`;
       }
 
       svgElements.push(linePath);
@@ -353,13 +353,13 @@
             const r = 3;
             switch (opts.pointShape) {
               case "square":
-                return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
+                return `<rect class="preview-line-animatable preview-line-point" data-animation-index="${i}" x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
               case "triangle":
-                return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
+                return `<polygon class="preview-line-animatable preview-line-point" data-animation-index="${i}" points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
               case "none":
                 return "";
               default:
-                return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
+                return `<circle class="preview-line-animatable preview-line-point" data-animation-index="${i}" cx="${cx}" cy="${cy}" r="${r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
             }
           })
           .filter(Boolean)
@@ -372,9 +372,9 @@
         if (opts.smooth && series.y.length > 1) {
           let areaD = buildSmoothLinePath(pathPts);
           areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
-          svgElements.push(`<path d="${areaD}" fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}"/>`);
+          svgElements.push(`<path class="preview-line-animatable preview-line-area" data-animation-index="${seriesIndex}" d="${areaD}" fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}"/>`);
         } else {
-          svgElements.push(`<polyline fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`);
+          svgElements.push(`<polyline class="preview-line-animatable preview-line-area" data-animation-index="${seriesIndex}" fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`);
         }
       }
     });
@@ -428,18 +428,18 @@
       return `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`;
     }).join(" ") + " Z";
 
-    const drawMarker = (x, y, fillColor, borderColor) => {
+    const drawMarker = (x, y, fillColor, borderColor, animationIndex) => {
       const size = Math.max(3, Math.min(8, (opts.pointSize || 6) * 0.65));
       const strokeWidth = Math.max(1, opts.strokeWidth || 1);
       switch (opts.pointShape) {
         case "square":
-          return `<rect x="${x - size}" y="${y - size}" width="${size * 2}" height="${size * 2}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
+          return `<rect class="preview-radar-animatable preview-radar-point" data-animation-index="${animationIndex}" x="${x - size}" y="${y - size}" width="${size * 2}" height="${size * 2}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
         case "triangle":
-          return `<polygon points="${x},${y - size} ${x - size},${y + size} ${x + size},${y + size}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
+          return `<polygon class="preview-radar-animatable preview-radar-point" data-animation-index="${animationIndex}" points="${x},${y - size} ${x - size},${y + size} ${x + size},${y + size}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
         case "none":
           return "";
         default:
-          return `<circle cx="${x}" cy="${y}" r="${size}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
+          return `<circle class="preview-radar-animatable preview-radar-point" data-animation-index="${animationIndex}" cx="${x}" cy="${y}" r="${size}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`;
       }
     };
 
@@ -483,13 +483,13 @@
       const path = polygonPath(values);
       const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
       const fillMarkup = opts.areaFill
-        ? `<path d="${path}" fill="${fillColor}" opacity="${Math.max(0.12, opts.fillOpacity * 0.28)}"/>`
+        ? `<path class="preview-radar-animatable preview-radar-area" data-animation-index="${index}" d="${path}" fill="${fillColor}" opacity="${Math.max(0.12, opts.fillOpacity * 0.28)}"/>`
         : "";
-      const lineMarkup = `<path d="${path}" fill="none" stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" stroke-opacity="${opts.strokeOpacity}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-linejoin="round"/>`;
+      const lineMarkup = `<path class="preview-radar-animatable preview-radar-line" data-animation-index="${index}" d="${path}" fill="none" stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" stroke-opacity="${opts.strokeOpacity}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-linejoin="round"/>`;
       const markerMarkup = opts.pointShape !== "none"
         ? values.map((value, valueIndex) => {
             const point = pointAt(Math.max(0, value) / maxValue, valueIndex);
-            return drawMarker(point.x, point.y, fillColor, borderColor);
+            return drawMarker(point.x, point.y, fillColor, borderColor, valueIndex);
           }).join("")
         : "";
       return `${fillMarkup}${lineMarkup}${markerMarkup}`;
@@ -542,7 +542,7 @@
     const toY = scaleLinear([ymin, ymax], [y0, y1]);
     const pointInset = Math.max(0, Math.min(opts.pointPadding || 0, Math.max(0, (opts.pointSize || 6) - 1)));
 
-    const drawShape = (p, fillColor, borderColor) => {
+    const drawShape = (p, fillColor, borderColor, animationIndex) => {
       const r = Math.max(2, opts.pointSize || p.r || 6);
       const cx = toX(p.x);
       const cy = toY(p.y);
@@ -555,24 +555,24 @@
       switch (opts.pointShape) {
         case "square":
           if (pointInset > 0) {
-            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="transparent" ${stroke}/><rect x="${cx - innerR}" y="${cy - innerR}" width="${2 * innerR}" height="${2 * innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<rect class="preview-scatter-point" data-animation-index="${animationIndex}" x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="transparent" ${stroke}/><rect class="preview-scatter-point" data-animation-index="${animationIndex}" x="${cx - innerR}" y="${cy - innerR}" width="${2 * innerR}" height="${2 * innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<rect class="preview-scatter-point" data-animation-index="${animationIndex}" x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         case "triangle":
           if (pointInset > 0) {
-            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx - innerR},${cy + innerR} ${cx + innerR},${cy + innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<polygon class="preview-scatter-point" data-animation-index="${animationIndex}" points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="transparent" ${stroke}/><polygon class="preview-scatter-point" data-animation-index="${animationIndex}" points="${cx},${cy - innerR} ${cx - innerR},${cy + innerR} ${cx + innerR},${cy + innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<polygon class="preview-scatter-point" data-animation-index="${animationIndex}" points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         case "diamond":
           if (pointInset > 0) {
-            return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx + innerR},${cy} ${cx},${cy + innerR} ${cx - innerR},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<polygon class="preview-scatter-point" data-animation-index="${animationIndex}" points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="transparent" ${stroke}/><polygon class="preview-scatter-point" data-animation-index="${animationIndex}" points="${cx},${cy - innerR} ${cx + innerR},${cy} ${cx},${cy + innerR} ${cx - innerR},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<polygon class="preview-scatter-point" data-animation-index="${animationIndex}" points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         default:
           if (pointInset > 0) {
-            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="transparent" ${stroke}/><circle cx="${cx}" cy="${cy}" r="${innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<circle class="preview-scatter-point" data-animation-index="${animationIndex}" cx="${cx}" cy="${cy}" r="${r}" fill="transparent" ${stroke}/><circle class="preview-scatter-point" data-animation-index="${animationIndex}" cx="${cx}" cy="${cy}" r="${innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<circle class="preview-scatter-point" data-animation-index="${animationIndex}" cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
       }
     };
 
@@ -580,7 +580,7 @@
       .map((series, seriesIndex) => {
         const fillColor = colors.series && colors.series[seriesIndex] ? colors.series[seriesIndex] : defaultColor(seriesIndex);
         const borderColor = colors.borders && colors.borders[seriesIndex] ? colors.borders[seriesIndex] : getBorderColor(fillColor);
-        return series.points.map((point) => drawShape(point, fillColor, borderColor)).join("");
+        return series.points.map((point, pointIndex) => drawShape(point, fillColor, borderColor, pointIndex)).join("");
       })
       .join("");
     const ticks = 4;
@@ -637,7 +637,7 @@
     const toValueY = scaleLinear([domainMin, domainMax], [y0, y1]);
     const defs = [];
 
-    const drawShape = (cx, cy, radius, fillColor, borderColor) => {
+    const drawShape = (cx, cy, radius, fillColor, borderColor, animationIndex) => {
       const stroke = shapeStrokeAttrs({ ...opts, strokeColor: borderColor }, fillColor);
       const innerR = Math.max(0, radius - pointInset);
       const innerStroke = opts.strokeWidth > 0
@@ -647,24 +647,24 @@
       switch (opts.pointShape) {
         case "square":
           if (pointInset > 0) {
-            return `<rect x="${cx - radius}" y="${cy - radius}" width="${2 * radius}" height="${2 * radius}" fill="transparent" ${stroke}/><rect x="${cx - innerR}" y="${cy - innerR}" width="${2 * innerR}" height="${2 * innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<rect class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" x="${cx - radius}" y="${cy - radius}" width="${2 * radius}" height="${2 * radius}" fill="transparent" ${stroke}/><rect class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" x="${cx - innerR}" y="${cy - innerR}" width="${2 * innerR}" height="${2 * innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<rect x="${cx - radius}" y="${cy - radius}" width="${2 * radius}" height="${2 * radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<rect class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" x="${cx - radius}" y="${cy - radius}" width="${2 * radius}" height="${2 * radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         case "triangle":
           if (pointInset > 0) {
-            return `<polygon points="${cx},${cy - radius} ${cx - radius},${cy + radius} ${cx + radius},${cy + radius}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx - innerR},${cy + innerR} ${cx + innerR},${cy + innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<polygon class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" points="${cx},${cy - radius} ${cx - radius},${cy + radius} ${cx + radius},${cy + radius}" fill="transparent" ${stroke}/><polygon class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" points="${cx},${cy - innerR} ${cx - innerR},${cy + innerR} ${cx + innerR},${cy + innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<polygon points="${cx},${cy - radius} ${cx - radius},${cy + radius} ${cx + radius},${cy + radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<polygon class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" points="${cx},${cy - radius} ${cx - radius},${cy + radius} ${cx + radius},${cy + radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         case "diamond":
           if (pointInset > 0) {
-            return `<polygon points="${cx},${cy - radius} ${cx + radius},${cy} ${cx},${cy + radius} ${cx - radius},${cy}" fill="transparent" ${stroke}/><polygon points="${cx},${cy - innerR} ${cx + innerR},${cy} ${cx},${cy + innerR} ${cx - innerR},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<polygon class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" points="${cx},${cy - radius} ${cx + radius},${cy} ${cx},${cy + radius} ${cx - radius},${cy}" fill="transparent" ${stroke}/><polygon class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" points="${cx},${cy - innerR} ${cx + innerR},${cy} ${cx},${cy + innerR} ${cx - innerR},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<polygon points="${cx},${cy - radius} ${cx + radius},${cy} ${cx},${cy + radius} ${cx - radius},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<polygon class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" points="${cx},${cy - radius} ${cx + radius},${cy} ${cx},${cy + radius} ${cx - radius},${cy}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
         default:
           if (pointInset > 0) {
-            return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="transparent" ${stroke}/><circle cx="${cx}" cy="${cy}" r="${innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
+            return `<circle class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" cx="${cx}" cy="${cy}" r="${radius}" fill="transparent" ${stroke}/><circle class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" cx="${cx}" cy="${cy}" r="${innerR}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${innerStroke}/>`;
           }
-          return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
+          return `<circle class="preview-dot-animatable preview-dot-point" data-animation-index="${animationIndex}" cx="${cx}" cy="${cy}" r="${radius}" fill="${fillColor}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
       }
     };
 
@@ -701,12 +701,12 @@
           const cx = toValueX(value);
           const cy = centerPrimary;
           linePoints.push({ position: cx, color: fillColor });
-          dots.push(drawShape(cx, cy, pointSize, fillColor, borderColor));
+          dots.push(drawShape(cx, cy, pointSize, fillColor, borderColor, seriesIndex));
         } else {
           const cx = centerPrimary;
           const cy = toValueY(value);
           linePoints.push({ position: cy, color: fillColor });
-          dots.push(drawShape(cx, cy, pointSize, fillColor, borderColor));
+          dots.push(drawShape(cx, cy, pointSize, fillColor, borderColor, seriesIndex));
         }
       });
 
@@ -716,9 +716,9 @@
         const gradientId = `dot-range-${categoryIndex}`;
         const strokeValue = buildGradientStroke(gradientId, minPos, maxPos, linePoints, centerPrimary);
         if (isHorizontal) {
-          rangeLines.push(`<line x1="${minPos}" y1="${centerPrimary}" x2="${maxPos}" y2="${centerPrimary}" stroke="${strokeValue}" stroke-width="${lineWidth}" stroke-linecap="round" stroke-opacity="${opts.strokeOpacity}"/>`);
+          rangeLines.push(`<line class="preview-dot-animatable preview-dot-range" data-animation-index="${categoryIndex}" x1="${minPos}" y1="${centerPrimary}" x2="${maxPos}" y2="${centerPrimary}" stroke="${strokeValue}" stroke-width="${lineWidth}" stroke-linecap="round" stroke-opacity="${opts.strokeOpacity}"/>`);
         } else {
-          rangeLines.push(`<line x1="${centerPrimary}" y1="${minPos}" x2="${centerPrimary}" y2="${maxPos}" stroke="${strokeValue}" stroke-width="${lineWidth}" stroke-linecap="round" stroke-opacity="${opts.strokeOpacity}"/>`);
+          rangeLines.push(`<line class="preview-dot-animatable preview-dot-range" data-animation-index="${categoryIndex}" x1="${centerPrimary}" y1="${minPos}" x2="${centerPrimary}" y2="${maxPos}" stroke="${strokeValue}" stroke-width="${lineWidth}" stroke-linecap="round" stroke-opacity="${opts.strokeOpacity}"/>`);
         }
       }
     });
@@ -789,19 +789,19 @@
     const borderColor = colors.border || getBorderColor(colors.bins);
     const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
 
-    const drawBar = (x, y, w, h, fill) => {
+    const drawBar = (x, y, w, h, fill, animationIndex) => {
       if (hasPadding) {
-        const outerBar = `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="transparent" ${strokeAttrs}/>`;
+        const outerBar = `<rect class="preview-histogram-bar" data-animation-index="${animationIndex}" x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="transparent" ${strokeAttrs}/>`;
         const innerX = x + padding;
         const innerY = y + padding;
         const innerW = Math.max(0, w - padding * 2);
         const innerH = Math.max(0, h - padding * 2);
         const innerRx = Math.max(0, rx - padding);
-        const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
+        const innerBar = `<rect class="preview-histogram-bar" data-animation-index="${animationIndex}" x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
         return outerBar + innerBar;
       }
 
-      return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
+      return `<rect class="preview-histogram-bar" data-animation-index="${animationIndex}" x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
     };
 
     const bars = countsOrDensity
@@ -811,7 +811,7 @@
         const h = y0 - y;
         const w = band - 4;
         const fill = colors.bins;
-        return drawBar(x, y, w, h, fill);
+        return drawBar(x, y, w, h, fill, i);
       })
       .join("");
 

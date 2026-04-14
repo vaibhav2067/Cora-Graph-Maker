@@ -11,6 +11,7 @@ ${__uiFiles__.main}
 
 function normalizeAnimationSettings(animation, chartType) {
   const preset = (animation && animation.preset) || 'load-in';
+  const exportPreset = (animation && animation.exportPreset) || preset;
   const stateMap = {
     'load-in': ['Start', 'Loaded'],
     'hover-value': ['Default', 'Hover'],
@@ -21,12 +22,13 @@ function normalizeAnimationSettings(animation, chartType) {
   return {
     chartType: (animation && animation.chartType) || chartType || 'chart',
     preset,
-    trigger: (animation && animation.trigger) || (preset === 'load-in' ? 'after-delay' : preset === 'hover-value' ? 'on-hover' : 'on-click'),
+    exportPreset,
+    trigger: (animation && animation.trigger) || (exportPreset === 'load-in' ? 'after-delay' : exportPreset === 'hover-value' ? 'on-hover' : 'on-click'),
     transition: 'smart-animate',
     durationMs: Math.max(100, Math.min(1400, Number(animation && animation.durationMs) || 450)),
     easing: (animation && animation.easing) || 'ease-out',
     direction: (animation && animation.direction) || 'smart',
-    states: Array.isArray(animation && animation.states) && animation.states.length >= 2 ? animation.states.slice(0, 2) : stateMap[preset] || ['Start', 'Loaded'],
+    states: Array.isArray(animation && animation.states) && animation.states.length >= 2 ? animation.states.slice(0, 2) : stateMap[exportPreset] || ['Start', 'Loaded'],
     source: (animation && animation.source) || 'animation-studio',
     version: (animation && animation.version) || 1,
     savedAt: animation && animation.savedAt ? animation.savedAt : new Date().toISOString(),
@@ -121,24 +123,26 @@ function decorateVariant(component, graphNode, animation, stateName, stateIndex)
   compareBar.x = 16;
   compareBar.y = Math.max(10, bounds.height - compareBar.height - 16);
 
-  if (animation.preset === 'load-in') {
+  const exportPreset = animation.exportPreset || animation.preset;
+
+  if (exportPreset === 'load-in') {
     graphNode.opacity = stateIndex === 0 ? 0.06 : 1;
     graphNode.x = stateIndex === 0 ? directionOffset.x : 0;
     graphNode.y = stateIndex === 0 ? directionOffset.y : 0;
   }
 
-  if (animation.preset === 'hover-value') {
+  if (exportPreset === 'hover-value') {
     tooltip.opacity = stateIndex === 0 ? 0 : 1;
     graphNode.opacity = stateIndex === 0 ? 0.98 : 1;
   }
 
-  if (animation.preset === 'drill-down') {
+  if (exportPreset === 'drill-down') {
     focusPanel.opacity = stateIndex === 0 ? 0 : 0.92;
     graphNode.x = stateIndex === 0 ? 0 : -18;
     graphNode.y = stateIndex === 0 ? 0 : -10;
   }
 
-  if (animation.preset === 'compare') {
+  if (exportPreset === 'compare') {
     compareBar.opacity = stateIndex === 0 ? 0.16 : 0.96;
     compareBar.resize(stateIndex === 0 ? Math.max(90, bounds.width * 0.24) : Math.max(120, bounds.width * 0.52), compareBar.height);
   }
@@ -147,13 +151,13 @@ function decorateVariant(component, graphNode, animation, stateName, stateIndex)
   component.appendChild(focusPanel);
   component.appendChild(compareBar);
 
-  if (animation.preset !== 'hover-value') {
+  if (exportPreset !== 'hover-value') {
     tooltip.opacity = 0;
   }
-  if (animation.preset !== 'drill-down') {
+  if (exportPreset !== 'drill-down') {
     focusPanel.opacity = 0;
   }
-  if (animation.preset !== 'compare') {
+  if (exportPreset !== 'compare') {
     compareBar.opacity = 0;
   }
 
@@ -183,6 +187,7 @@ async function wirePrototypeLinks(variants, animation) {
 
   const transition = createTransition(animation);
   const primaryTrigger = createTrigger(animation.trigger);
+  const exportPreset = animation.exportPreset || animation.preset;
   const changeToSecond = {
     type: 'NODE',
     destinationId: variants[1].component.id,
@@ -198,7 +203,7 @@ async function wirePrototypeLinks(variants, animation) {
 
   await variants[0].hotspot.setReactionsAsync([{ trigger: primaryTrigger, actions: [changeToSecond] }]);
 
-  if (animation.preset === 'drill-down' || animation.preset === 'compare') {
+  if (exportPreset === 'drill-down' || exportPreset === 'compare') {
     await variants[1].hotspot.setReactionsAsync([{ trigger: createTrigger('on-click'), actions: [changeToFirst] }]);
   }
 }

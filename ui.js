@@ -34,6 +34,7 @@
     const animationDurationValue = document.getElementById("animation-duration-value");
     const animationPresetCopy = document.getElementById("animation-preset-copy");
     const animationStateSummary = document.getElementById("animation-state-summary");
+    const animationChartTypeLabel = document.getElementById("animation-chart-type-label");
     const settingsHomeBtn = document.getElementById("settings-home-btn");
     const settingsResetBtn = document.getElementById("settings-reset-btn");
     const settingsSaveBtn = document.getElementById("settings-save-btn");
@@ -268,7 +269,9 @@
       createDefaultAnimationSettings,
       enterAnimationStudioMode: openAnimationStudio,
       exitAnimationStudioMode: closeAnimationStudio,
+      getPresetConfig: getAnimationPresetConfig,
       saveAnimationSettings,
+      syncAnimationStudioForChart,
     } = window.UiAnimation;
     const {
       renderPie,
@@ -463,8 +466,8 @@
       const animationHost = document.getElementById("animation-svg-host");
       if (!animationHost) return;
 
-      animationHost.querySelectorAll(".preview-bar-animatable").forEach((bar) => {
-        bar.classList.remove(
+      animationHost.querySelectorAll(".is-preview-playing").forEach((node) => {
+        node.classList.remove(
           "is-preview-playing",
           "axis-vertical",
           "axis-horizontal",
@@ -472,26 +475,84 @@
           "flow-right",
           "flow-down",
           "flow-left",
-          "flow-smart"
+          "flow-smart",
+          "effect-grow",
+          "effect-draw",
+          "effect-pop",
+          "effect-pulse",
+          "effect-sweep",
+          "effect-bloom",
+          "effect-rise",
+          "effect-radial",
+          "effect-spin"
         );
-        bar.style.removeProperty("--bar-grow-duration");
-        bar.style.removeProperty("--bar-grow-delay");
-        bar.style.removeProperty("--bar-grow-easing");
+        node.style.removeProperty("--preview-duration");
+        node.style.removeProperty("--preview-delay");
+        node.style.removeProperty("--preview-easing");
+        node.style.removeProperty("--preview-stroke-length");
+        node.style.removeProperty("--bar-grow-duration");
+        node.style.removeProperty("--bar-grow-delay");
+        node.style.removeProperty("--bar-grow-easing");
+        if (node.dataset.previewStrokeDasharray) {
+          node.style.strokeDasharray = node.dataset.previewStrokeDasharray;
+        } else {
+          node.style.removeProperty("stroke-dasharray");
+        }
+        if (node.dataset.previewStrokeDashoffset) {
+          node.style.strokeDashoffset = node.dataset.previewStrokeDashoffset;
+        } else {
+          node.style.removeProperty("stroke-dashoffset");
+        }
       });
     }
 
     function syncAnimationPreviewButton() {
       if (!animationPreviewBtn) return;
-      const isReady = state.chartType === "bar" && !!state.currentData;
+      const isReady = !!state.currentData;
       animationPreviewBtn.disabled = !isReady;
-      animationPreviewBtn.textContent = isReady ? "See Animation" : "Bar Preview Only";
+      animationPreviewBtn.textContent = isReady ? "See Animation" : "No Preview Data";
       animationPreviewBtn.title = isReady
-        ? "Play the current bar animation preset in the preview"
-        : "Animation preview is currently available for bar graphs with data";
+        ? "Play the current animation preset in the preview"
+        : "Animation preview is available once the current graph has data";
+    }
+
+    function getAnimationPreviewTargets() {
+      switch (state.chartType) {
+        case "pie":
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-pie-slice"));
+        case "line":
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-line-animatable"));
+        case "radar":
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-radar-animatable"));
+        case "scatter":
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-scatter-point"));
+        case "dot":
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-dot-animatable"));
+        case "histogram":
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-histogram-bar"));
+        case "bar":
+        default:
+          return Array.from(document.querySelectorAll("#animation-svg-host .preview-bar-animatable"));
+      }
+    }
+
+    function prepareDrawPreviewTarget(node) {
+      if (typeof node.getTotalLength !== "function") return;
+      try {
+        const totalLength = node.getTotalLength();
+        if (!Number.isFinite(totalLength) || totalLength <= 0) return;
+        node.dataset.previewStrokeDasharray = node.style.strokeDasharray || "";
+        node.dataset.previewStrokeDashoffset = node.style.strokeDashoffset || "";
+        node.style.setProperty("--preview-stroke-length", `${totalLength}`);
+        node.style.strokeDasharray = `${totalLength}`;
+        node.style.strokeDashoffset = `${totalLength}`;
+      } catch (error) {
+        // Some SVG nodes do not support path length calculations.
+      }
     }
 
     function playAnimationPreview() {
-      if (!animationApp || animationApp.hidden || state.chartType !== "bar") {
+      if (!animationApp || animationApp.hidden) {
         syncAnimationPreviewButton();
         return;
       }
@@ -499,8 +560,8 @@
       const animationHost = document.getElementById("animation-svg-host");
       if (!animationHost) return;
 
-      const bars = Array.from(animationHost.querySelectorAll(".preview-bar-animatable"));
-      if (!bars.length) return;
+      const targets = getAnimationPreviewTargets();
+      if (!targets.length) return;
 
       resetAnimationPreviewPlayback();
 
@@ -512,22 +573,32 @@
       const axisClass = isHorizontal ? "axis-horizontal" : "axis-vertical";
       const easing = getPreviewAnimationEasing(state.animationSettings.easing);
       const duration = Math.max(100, parseInt(state.animationSettings.durationMs, 10) || 450);
-      const uniqueBarCount = new Set(
-        bars.map((bar) => String(bar.dataset.barIndex || "0"))
+      const effectName = String(state.animationSettings.previewEffect || "grow");
+      const uniqueTargetCount = new Set(
+        targets.map((target) => String(target.dataset.animationIndex || target.dataset.barIndex || "0"))
       ).size || 1;
-      const staggerStep = Math.min(80, Math.round(duration / Math.max(4, uniqueBarCount * 1.5)));
+      const staggerStep = Math.min(80, Math.round(duration / Math.max(4, uniqueTargetCount * 1.5)));
 
-      bars.forEach((bar, index) => {
-        const animationIndex = parseInt(bar.dataset.barIndex || String(index), 10) || 0;
-        bar.style.setProperty("--bar-grow-duration", `${duration}ms`);
-        bar.style.setProperty("--bar-grow-delay", `${animationIndex * staggerStep}ms`);
-        bar.style.setProperty("--bar-grow-easing", easing);
-        bar.classList.add("is-preview-playing", axisClass, `flow-${flowDirection}`);
+      targets.forEach((target, index) => {
+        const animationIndex = parseInt(target.dataset.animationIndex || target.dataset.barIndex || String(index), 10) || 0;
+        target.style.setProperty("--preview-duration", `${duration}ms`);
+        target.style.setProperty("--preview-delay", `${animationIndex * staggerStep}ms`);
+        target.style.setProperty("--preview-easing", easing);
+        target.style.setProperty("--bar-grow-duration", `${duration}ms`);
+        target.style.setProperty("--bar-grow-delay", `${animationIndex * staggerStep}ms`);
+        target.style.setProperty("--bar-grow-easing", easing);
+        if (effectName === "draw") {
+          prepareDrawPreviewTarget(target);
+        }
+        target.classList.add("is-preview-playing", `effect-${effectName}`);
+        if (effectName === "grow") {
+          target.classList.add(axisClass, `flow-${flowDirection}`);
+        }
       });
 
       animationPreviewResetTimer = window.setTimeout(() => {
         resetAnimationPreviewPlayback();
-      }, duration + ((uniqueBarCount - 1) * staggerStep) + 120);
+      }, duration + ((uniqueTargetCount - 1) * staggerStep) + 160);
     }
 
     // Update chart preview
@@ -1942,6 +2013,17 @@
       updateChartDataModalMeta();
       updateToolbarForChartType();
       updateColorPresetSelection(state.selectedColorPreset);
+      syncAnimationStudioForChart(state, {
+        animationPresetSelect,
+        animationTriggerSelect,
+        animationEasingSelect,
+        animationDirectionSelect,
+        animationDurationRange,
+        animationDurationValue,
+        animationPresetCopy,
+        animationStateSummary,
+        animationChartTypeLabel,
+      }, chartType);
       updatePreview();
     }
 
@@ -3077,6 +3159,17 @@
     }
 
     function enterAnimationStudioMode() {
+      syncAnimationStudioForChart(state, {
+        animationPresetSelect,
+        animationTriggerSelect,
+        animationEasingSelect,
+        animationDirectionSelect,
+        animationDurationRange,
+        animationDurationValue,
+        animationPresetCopy,
+        animationStateSummary,
+        animationChartTypeLabel,
+      }, state.chartType);
       openAnimationStudio(
         { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
         { closeAllDropdowns, updatePreview }
@@ -3338,6 +3431,7 @@
         animationDurationValue,
         animationPresetCopy,
         animationStateSummary,
+        animationChartTypeLabel,
       });
       [animationPresetSelect, animationEasingSelect, animationDirectionSelect, animationDurationRange]
         .filter(Boolean)

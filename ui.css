@@ -760,6 +760,15 @@ body {
   transform-box: fill-box;
 }
 
+.preview-pie-slice,
+.preview-line-animatable,
+.preview-radar-animatable,
+.preview-scatter-point,
+.preview-dot-animatable,
+.preview-histogram-bar {
+  transform-box: fill-box;
+}
+
 .preview-bar-animatable.is-preview-playing.axis-vertical.flow-up,
 .preview-bar-animatable.is-preview-playing.axis-vertical.flow-smart {
   transform-origin: center bottom;
@@ -801,6 +810,145 @@ body {
   }
   to {
     transform: scaleX(1);
+  }
+}
+
+.is-preview-playing.effect-draw {
+  animation: preview-draw var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-pop {
+  transform-origin: center center;
+  animation: preview-pop var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-pulse {
+  transform-origin: center center;
+  animation: preview-pulse var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-sweep {
+  transform-origin: center center;
+  animation: preview-sweep var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-bloom {
+  transform-origin: center center;
+  animation: preview-bloom var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-rise {
+  transform-origin: center center;
+  animation: preview-rise var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-radial {
+  transform-origin: center center;
+  animation: preview-radial var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+.is-preview-playing.effect-spin {
+  transform-origin: center center;
+  animation: preview-spin var(--preview-duration, 450ms) var(--preview-easing, ease-out) both;
+  animation-delay: var(--preview-delay, 0ms);
+}
+
+@keyframes preview-draw {
+  from {
+    opacity: 0.25;
+    stroke-dashoffset: var(--preview-stroke-length, 0);
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes preview-pop {
+  from {
+    opacity: 0.2;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes preview-pulse {
+  0% {
+    opacity: 0.45;
+    transform: scale(0.92);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes preview-sweep {
+  from {
+    opacity: 0.2;
+    transform: translate3d(14px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes preview-bloom {
+  from {
+    opacity: 0.12;
+    transform: scale(0.25);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes preview-rise {
+  from {
+    opacity: 0.15;
+    transform: translate3d(0, 16px, 0) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes preview-radial {
+  from {
+    opacity: 0.2;
+    transform: scale(0.6) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes preview-spin {
+  from {
+    opacity: 0.22;
+    transform: scale(0.78) rotate(-16deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
   }
 }
 
