@@ -7,7 +7,7 @@ ${__uiFiles__.main}
 <script>${__uiFiles__.animation}</script>
 <script>${__uiFiles__.uihelpers}</script>
 <script>${__uiFiles__.renderers}</script>
-<script>${__uiFiles__.script}</script>`, { width: 980, height: 640 })
+<script>${__uiFiles__.script}</script>`, { width: 860, height: 560 })
 
 function normalizeAnimationSettings(animation, chartType) {
   const preset = (animation && animation.preset) || 'load-in';

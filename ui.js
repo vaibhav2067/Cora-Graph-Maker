@@ -3,7 +3,9 @@
     const defaultApp = document.getElementById("default-app");
     const aiApp = document.getElementById("ai-app");
     const animationApp = document.getElementById("animation-app");
-    const settingsApp = document.getElementById("settings-app");
+    const settingsOverlay = document.getElementById("settings-overlay");
+    const settingsBackdrop = document.getElementById("settings-backdrop");
+    const settingsDrawer = document.getElementById("settings-drawer");
     const hamburgerMenu = document.getElementById("hamburger-menu");
     const dropdownMenu = document.getElementById("dropdown-menu");
     const headerLayoutBtn = document.getElementById("header-layout-btn");
@@ -36,12 +38,13 @@
     const animationStateSummary = document.getElementById("animation-state-summary");
     const animationChartTypeLabel = document.getElementById("animation-chart-type-label");
     const settingsHomeBtn = document.getElementById("settings-home-btn");
+    const settingsCancelBtn = document.getElementById("settings-cancel-btn");
     const settingsResetBtn = document.getElementById("settings-reset-btn");
     const settingsSaveBtn = document.getElementById("settings-save-btn");
-    const settingsNavItems = Array.from(document.querySelectorAll(".settings-nav-item"));
-    const settingsDetailPanels = Array.from(document.querySelectorAll(".settings-detail-panel"));
     const settingsThemeToggle = document.getElementById("settings-theme-toggle");
     const settingsThemeToggleLabel = document.getElementById("settings-theme-toggle-label");
+    const settingsThemeModeSelect = document.getElementById("settings-theme-mode-select");
+    const settingsLanguageSelect = document.getElementById("settings-language-select");
     const settingsPreviewFillToggle = document.getElementById("settings-preview-fill-toggle");
     const settingsPreviewFillToggleLabel = document.getElementById("settings-preview-fill-toggle-label");
     const settingsProfileName = document.getElementById("settings-profile-name");
@@ -68,6 +71,7 @@
     const btnApplyData = document.getElementById("btn-apply-data");
     const btnAddManualRow = document.getElementById("btn-add-manual-row");
     const btnAddManualSeries = document.getElementById("btn-add-manual-series");
+    const btnResetManualData = document.getElementById("btn-reset-manual-data");
     const btnResetDefaultData = document.getElementById("btn-reset-default-data");
     const manualInputSubtitle = document.getElementById("manual-input-subtitle");
     const manualFormHead = document.getElementById("manual-form-head");
@@ -165,14 +169,14 @@
     const aiBtnExportPng = document.getElementById("ai-btn-export-png");
     const aiBtnExportFigma = document.getElementById("ai-btn-export-figma");
     let aiSelectedExportType = "figma";
-    let jsonInputMode = "upload";
+    let jsonInputMode = "editor";
     const PLUGIN_COMMUNITY_URL = "https://www.figma.com/community/plugin/1544686878314493439";
     const EXPERIENCE_REMIND_KEY = "graph_generator_experience_remind_until";
-    let settingsReturnView = "default";
     let pendingTheme = "light";
-    let activeSettingsPanel = "general";
     let pendingGlobalSettings = null;
     let latestUserData = null;
+    let settingsOpenInvoker = null;
+    let settingsDrawerHideTimeout = null;
 
     // Pie chart controls
     const pieGapToggle = document.getElementById('pie-gap-toggle');
@@ -307,6 +311,7 @@
         profileSyncEnabled: true,
         dotLineUseGradient: true,
         defaultLayoutMode: "layout-option-1",
+        language: "en",
       },
       selectedElement: null,
       currentData: null,
@@ -363,6 +368,7 @@
         profileSyncEnabled: true,
         dotLineUseGradient: true,
         defaultLayoutMode: "layout-option-1",
+        language: "en",
       };
     }
 
@@ -2098,10 +2104,15 @@
 
     function setJsonInputMode(mode) {
       jsonInputMode = mode === "editor" ? "editor" : "upload";
+      const jsonInputCard = jsonEditorPanel ? jsonEditorPanel.closest(".json-input-card") : null;
       if (jsonModeUploadBtn) jsonModeUploadBtn.classList.toggle("active", jsonInputMode === "upload");
       if (jsonModeEditorBtn) jsonModeEditorBtn.classList.toggle("active", jsonInputMode === "editor");
-      if (jsonUploadPanel) jsonUploadPanel.style.display = jsonInputMode === "upload" ? "block" : "none";
-      if (jsonEditorPanel) jsonEditorPanel.style.display = jsonInputMode === "editor" ? "block" : "none";
+      if (jsonUploadPanel) jsonUploadPanel.style.display = jsonInputMode === "upload" ? "flex" : "none";
+      if (jsonEditorPanel) jsonEditorPanel.style.display = jsonInputMode === "editor" ? "flex" : "none";
+      if (jsonInputCard) {
+        jsonInputCard.classList.toggle("upload-mode", jsonInputMode === "upload");
+        jsonInputCard.classList.toggle("editor-mode", jsonInputMode === "editor");
+      }
       if (state.dataRegistry) {
         state.dataRegistry.jsonInputMode = jsonInputMode;
         saveDataRegistry();
@@ -2377,6 +2388,13 @@
         return next;
       });
       state.currentData = convertTableDataToChartData(expandedRows, state.chartType);
+      persistSourceData("manual", state.chartType, state.currentData, { updateDraft: false });
+      renderManualDataForm();
+    }
+
+    function resetManualDataForCurrentChart() {
+      const defaultData = getDefaultData(state.chartType);
+      state.currentData = deepClone(defaultData);
       persistSourceData("manual", state.chartType, state.currentData, { updateDraft: false });
       renderManualDataForm();
     }
@@ -2815,6 +2833,7 @@
         profileSyncEnabled: typeof value.profileSyncEnabled === "boolean" ? value.profileSyncEnabled : fallback.profileSyncEnabled,
         dotLineUseGradient: typeof value.dotLineUseGradient === "boolean" ? value.dotLineUseGradient : fallback.dotLineUseGradient,
         defaultLayoutMode: normalizeDefaultLayoutMode(value.defaultLayoutMode),
+        language: ["en", "hi", "zh"].includes(value.language) ? value.language : fallback.language,
       };
     }
 
@@ -2856,18 +2875,59 @@
       }
     }
 
+    function normalizeThemeMode(theme) {
+      return ["dark", "light", "dark-contrast", "light-contrast"].includes(theme) ? theme : "light";
+    }
+
+    function getThemeBase(theme) {
+      return String(theme || "").startsWith("dark") ? "dark" : "light";
+    }
+
+    function applyThemeModeOverrides(theme) {
+      const root = document.documentElement;
+      if (theme === "dark-contrast") {
+        root.style.setProperty("--bg", "#000000");
+        root.style.setProperty("--panel", "#050505");
+        root.style.setProperty("--panel-2", "#101010");
+        root.style.setProperty("--ink", "#ffffff");
+        root.style.setProperty("--ink-2", "#e6e6e6");
+        root.style.setProperty("--muted", "#b8b8b8");
+        root.style.setProperty("--line", "#555555");
+        root.style.setProperty("--brand", "#ffffff");
+        root.style.setProperty("--brand-2", "#dcdcdc");
+        root.style.setProperty("--primary-ink", "#000000");
+        root.style.setProperty("--ring", "0 0 0 2px rgba(255, 255, 255, 0.54)");
+      } else if (theme === "light-contrast") {
+        root.style.setProperty("--bg", "#ffffff");
+        root.style.setProperty("--panel", "#ffffff");
+        root.style.setProperty("--panel-2", "#eeeeee");
+        root.style.setProperty("--ink", "#000000");
+        root.style.setProperty("--ink-2", "#1a1a1a");
+        root.style.setProperty("--muted", "#3f3f3f");
+        root.style.setProperty("--line", "#8a8a8a");
+        root.style.setProperty("--brand", "#000000");
+        root.style.setProperty("--brand-2", "#303030");
+        root.style.setProperty("--primary-ink", "#ffffff");
+        root.style.setProperty("--ring", "0 0 0 2px rgba(0, 0, 0, 0.42)");
+      }
+    }
+
     function updateThemeToggleLabel() {
-      const label = currentTheme === "dark" ? "Light Mode" : "Dark Mode";
+      const label = getThemeBase(currentTheme) === "dark" ? "Light Mode" : "Dark Mode";
       if (themeToggleState) themeToggleState.textContent = label;
       if (aiThemeToggleState) aiThemeToggleState.textContent = label;
     }
 
     function syncSettingsThemeSelection() {
       if (settingsThemeToggle) {
-        settingsThemeToggle.checked = pendingTheme === "dark";
+        settingsThemeToggle.checked = getThemeBase(pendingTheme) === "dark";
       }
       if (settingsThemeToggleLabel) {
-        settingsThemeToggleLabel.textContent = pendingTheme === "dark" ? "On" : "Off";
+        settingsThemeToggleLabel.textContent = getThemeBase(pendingTheme) === "dark" ? "On" : "Off";
+      }
+      if (settingsThemeModeSelect) {
+        settingsThemeModeSelect.value = normalizeThemeMode(pendingTheme);
+        refreshCustomStyledSelect(settingsThemeModeSelect);
       }
     }
 
@@ -2903,6 +2963,14 @@
       if (settingsLayoutSelect) {
         settingsLayoutSelect.value = activeLayoutMode;
         refreshCustomStyledSelect(settingsLayoutSelect);
+      }
+    }
+
+    function syncSettingsLanguageSelection() {
+      const draft = getSettingsDraft();
+      if (settingsLanguageSelect) {
+        settingsLanguageSelect.value = ["en", "hi", "zh"].includes(draft.language) ? draft.language : "en";
+        refreshCustomStyledSelect(settingsLanguageSelect);
       }
     }
 
@@ -2963,6 +3031,46 @@
       if (settingsProfileToggle) settingsProfileToggle.checked = draft.profileSyncEnabled !== false;
       if (settingsProfileToggleLabel) settingsProfileToggleLabel.textContent = draft.profileSyncEnabled !== false ? "On" : "Off";
       syncSettingsLayoutSelection();
+      syncSettingsThemeSelection();
+      syncSettingsLanguageSelection();
+    }
+
+    function isSettingsDrawerOpen() {
+      return !!(settingsOverlay && !settingsOverlay.hidden);
+    }
+
+    function getSettingsFocusableElements() {
+      if (!settingsDrawer) return [];
+      return Array.from(
+        settingsDrawer.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => !element.hasAttribute("hidden") && element.offsetParent !== null);
+    }
+
+    function handleSettingsDrawerKeydown(event) {
+      if (!isSettingsDrawerOpen()) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeSettingsDrawer();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = getSettingsFocusableElements();
+      if (!focusable.length) {
+        event.preventDefault();
+        if (settingsDrawer) settingsDrawer.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     function getChartTypeLabel(chartType) {
@@ -2987,32 +3095,29 @@
       return labels[source] || source;
     }
 
-    function setActiveSettingsPanel(panelKey) {
-      activeSettingsPanel = panelKey;
-      settingsNavItems.forEach((item) => {
-        item.classList.toggle("active", item.dataset.settingsPanel === panelKey);
-      });
-      settingsDetailPanels.forEach((panel) => {
-        const isActive = panel.dataset.settingsPanelContent === panelKey;
-        panel.classList.toggle("active", isActive);
-        panel.hidden = !isActive;
-      });
-    }
-
     function setTheme(theme) {
-      currentTheme = theme === "dark" ? "dark" : "light";
-      if (currentTheme === "dark") {
+      currentTheme = normalizeThemeMode(theme);
+      if (getThemeBase(currentTheme) === "dark") {
         applyDarkTheme();
       } else {
         applyLightTheme();
       }
+      applyThemeModeOverrides(currentTheme);
       storeTheme(currentTheme);
       updateThemeToggleLabel();
       updatePreview();
     }
 
     function toggleTheme() {
-      setTheme(currentTheme === "dark" ? "light" : "dark");
+      if (currentTheme === "dark-contrast") {
+        setTheme("light-contrast");
+        return;
+      }
+      if (currentTheme === "light-contrast") {
+        setTheme("dark-contrast");
+        return;
+      }
+      setTheme(getThemeBase(currentTheme) === "dark" ? "light" : "dark");
     }
 
     function getExperienceRemindUntil() {
@@ -3187,52 +3292,44 @@
       );
     }
 
-    function enterSettingsMode(sourceView = "default", panelKey = "general") {
-      if (!settingsApp) return;
-      settingsReturnView = sourceView === "ai" ? "ai" : "default";
+    function openSettingsDrawer(triggerSource = null) {
+      if (!settingsOverlay || !settingsDrawer) return;
+      if (settingsDrawerHideTimeout) {
+        window.clearTimeout(settingsDrawerHideTimeout);
+        settingsDrawerHideTimeout = null;
+      }
+      settingsOpenInvoker = triggerSource || document.activeElement;
       pendingGlobalSettings = { ...state.globalSettings };
       pendingTheme = currentTheme;
       syncSettingsThemeSelection();
       syncGeneralSettingsSummary();
       syncSettingsControlValues();
-      setActiveSettingsPanel(panelKey);
-      if (defaultApp) {
-        defaultApp.hidden = true;
-        defaultApp.style.display = "none";
-      }
-      if (aiApp) {
-        aiApp.hidden = true;
-        aiApp.style.display = "none";
-      }
-      if (animationApp) {
-        animationApp.hidden = true;
-        animationApp.style.display = "none";
-      }
-      settingsApp.hidden = false;
-      settingsApp.style.display = "grid";
       if (dropdownMenu) dropdownMenu.classList.remove("visible");
       if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
       closeAllDropdowns();
+      settingsOverlay.hidden = false;
+      document.body.classList.add("settings-drawer-open");
+      window.requestAnimationFrame(() => {
+        settingsOverlay.classList.add("open");
+        settingsDrawer.focus();
+      });
     }
 
-    function exitSettingsMode() {
-      if (!settingsApp) return;
-      settingsApp.hidden = true;
-      settingsApp.style.display = "none";
+    function closeSettingsDrawer() {
+      if (!settingsOverlay || settingsOverlay.hidden) return;
+      settingsOverlay.classList.remove("open");
+      document.body.classList.remove("settings-drawer-open");
+      if (settingsDrawerHideTimeout) window.clearTimeout(settingsDrawerHideTimeout);
+      settingsDrawerHideTimeout = window.setTimeout(() => {
+        settingsOverlay.hidden = true;
+        settingsDrawerHideTimeout = null;
+      }, 240);
       pendingGlobalSettings = null;
       pendingTheme = currentTheme;
-      if (settingsReturnView === "ai" && aiApp) {
-        aiApp.hidden = false;
-        aiApp.style.display = "grid";
-        syncAiChatLayout();
-        return;
+      if (settingsOpenInvoker && typeof settingsOpenInvoker.focus === "function") {
+        settingsOpenInvoker.focus();
       }
-      if (defaultApp) {
-        defaultApp.hidden = false;
-        defaultApp.style.display = "grid";
-      }
-      updateToolbarForChartType();
-      updatePreview();
+      settingsOpenInvoker = null;
     }
     
 
@@ -3286,23 +3383,33 @@
       }
       if (settingsBtn) {
         settingsBtn.addEventListener("click", () => {
-          enterSettingsMode("default", activeSettingsPanel);
+          const trigger = hamburgerMenu ? hamburgerMenu.querySelector(".hamburger-btn") : settingsBtn;
+          openSettingsDrawer(trigger);
         });
       }
       if (aiSettingsBtn) {
         aiSettingsBtn.addEventListener("click", () => {
-          enterSettingsMode("ai", activeSettingsPanel);
+          const trigger = aiHamburgerMenu ? aiHamburgerMenu.querySelector(".hamburger-btn") : aiSettingsBtn;
+          openSettingsDrawer(trigger);
         });
       }
-      settingsNavItems.forEach((item) => {
-        item.addEventListener("click", () => {
-          setActiveSettingsPanel(item.dataset.settingsPanel);
-        });
-      });
       if (settingsThemeToggle) {
         settingsThemeToggle.addEventListener("change", () => {
           pendingTheme = settingsThemeToggle.checked ? "dark" : "light";
           syncSettingsThemeSelection();
+        });
+      }
+      if (settingsThemeModeSelect) {
+        settingsThemeModeSelect.addEventListener("change", () => {
+          pendingTheme = normalizeThemeMode(settingsThemeModeSelect.value);
+          syncSettingsThemeSelection();
+        });
+      }
+      if (settingsLanguageSelect) {
+        settingsLanguageSelect.addEventListener("change", () => {
+          if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
+          pendingGlobalSettings.language = ["en", "hi", "zh"].includes(settingsLanguageSelect.value) ? settingsLanguageSelect.value : "en";
+          syncSettingsControlValues();
         });
       }
       if (settingsPreviewFillToggle) {
@@ -3340,8 +3447,21 @@
       });
       if (settingsHomeBtn) {
         settingsHomeBtn.addEventListener("click", () => {
-          exitSettingsMode();
+          closeSettingsDrawer();
         });
+      }
+      if (settingsBackdrop) {
+        settingsBackdrop.addEventListener("click", () => {
+          closeSettingsDrawer();
+        });
+      }
+      if (settingsCancelBtn) {
+        settingsCancelBtn.addEventListener("click", () => {
+          closeSettingsDrawer();
+        });
+      }
+      if (settingsDrawer) {
+        settingsDrawer.addEventListener("keydown", handleSettingsDrawerKeydown);
       }
       if (settingsResetBtn) {
         settingsResetBtn.addEventListener("click", async () => {
@@ -3377,7 +3497,7 @@
           requestUserProfileIfEnabled();
           updateGlobalToolbarValues();
           syncGeneralSettingsSummary();
-          exitSettingsMode();
+          closeSettingsDrawer();
           showCustomAlert(
             themeChanged ? "Settings saved and theme updated." : "Settings saved.",
             "success",
@@ -3565,6 +3685,9 @@
       }
       if (btnAddManualSeries) {
         btnAddManualSeries.addEventListener("click", addManualFormSeries);
+      }
+      if (btnResetManualData) {
+        btnResetManualData.addEventListener("click", resetManualDataForCurrentChart);
       }
       if (manualFormRows) {
         manualFormRows.addEventListener("click", (e) => {
@@ -3766,6 +3889,7 @@
           previewPanelFill: true,
           dotLineUseGradient: true,
           defaultLayoutMode: state.globalSettings.defaultLayoutMode,
+          language: state.globalSettings.language,
         };
         applyPreviewPanelFill(state.globalSettings.previewPanelFill);
         updateGlobalToolbarValues();
@@ -4304,8 +4428,8 @@
       if (aiApp) aiApp.style.display = "none";
       if (animationApp) animationApp.hidden = true;
       if (animationApp) animationApp.style.display = "none";
-      if (settingsApp) settingsApp.hidden = true;
-      if (settingsApp) settingsApp.style.display = "none";
+      if (settingsOverlay) settingsOverlay.hidden = true;
+      if (settingsOverlay) settingsOverlay.classList.remove("open");
       state.dataRegistry = loadDataRegistry();
       state.dataSource = state.dataRegistry.activeSource || "default";
       jsonInputMode = state.dataRegistry.jsonInputMode === "upload" ? "upload" : "editor";
@@ -4325,11 +4449,12 @@
       applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
       syncHeaderLayoutSelection();
       syncSettingsThemeSelection();
-      setActiveSettingsPanel(activeSettingsPanel);
       initCustomStyledSelect(bgColorFormat, bgColorFormat && bgColorFormat.parentElement);
       initCustomStyledSelect(fontFamilySelect, fontFamilySelect && fontFamilySelect.parentElement);
       initCustomStyledSelect(fontWeightSelect, fontWeightSelect && fontWeightSelect.parentElement);
       initCustomStyledSelect(settingsLayoutSelect, settingsLayoutSelect && settingsLayoutSelect.parentElement);
+      initCustomStyledSelect(settingsThemeModeSelect, settingsThemeModeSelect && settingsThemeModeSelect.parentElement);
+      initCustomStyledSelect(settingsLanguageSelect, settingsLanguageSelect && settingsLanguageSelect.parentElement);
       setupEventListeners();
       initChartTypeSelector();
       initDataSourceSelector();
