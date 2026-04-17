@@ -317,36 +317,7 @@
       currentData: null,
       animationSettings: createDefaultAnimationSettings(),
       aiPreviewReady: false,
-      opts: {
-        pie: defaultOpts(),
-        bar: defaultOpts(),
-        line: {
-          ...defaultOpts(),
-          areaFill: false,
-          smooth: false, 
-          lineWidth: 2,
-          pointShape: 'circle',
-          showPoints: true
-        },
-        radar: {
-          ...defaultOpts(),
-          areaFill: false,
-          lineWidth: 2,
-          pointShape: 'circle',
-          gridShape: 'polygon',
-          startAngle: -90,
-        },
-        scatter: {
-          ...defaultOpts(),
-          pointShape: 'circle'
-        },
-        dot: {
-          ...defaultOpts(),
-          pointShape: 'circle',
-          horizontal: true,
-        },
-        histogram: defaultOpts(),
-      },
+      opts: createDefaultChartOptions(),
       dataRegistry: null,
     };
     let animationPreviewResetTimer = null;
@@ -370,6 +341,223 @@
         defaultLayoutMode: "layout-option-1",
         language: "en",
       };
+    }
+
+    const SUPPORTED_LANGUAGES = ["en", "hi", "zh"];
+    const LANGUAGE_TRANSLATIONS = {
+      hi: {
+        "Graph Generator - Interactive Editor": "ग्राफ जनरेटर - इंटरैक्टिव एडिटर",
+        "Bar Chart": "बार चार्ट",
+        "Pie Chart": "पाई चार्ट",
+        "Line Chart": "लाइन चार्ट",
+        "Radar Chart": "रडार चार्ट",
+        "Scatter Plot": "स्कैटर प्लॉट",
+        "Dot Plot": "डॉट प्लॉट",
+        "Histogram": "हिस्टोग्राम",
+        "Layout": "लेआउट",
+        "Settings": "सेटिंग्स",
+        "Animation Studio": "एनीमेशन स्टूडियो",
+        "Default Random Data": "डिफॉल्ट रैंडम डेटा",
+        "Generate new random data": "नया रैंडम डेटा बनाएं",
+        "Upload CSV File": "CSV फाइल अपलोड करें",
+        "Enter Data Manually": "डेटा मैन्युअल रूप से दर्ज करें",
+        "Paste JSON": "JSON पेस्ट करें",
+        "Editor preferences": "एडिटर प्राथमिकताएं",
+        "Workspace": "वर्कस्पेस",
+        "Default Editor Layout": "डिफॉल्ट एडिटर लेआउट",
+        "Sidebar left, toolbar top": "साइडबार बाएं, टूलबार ऊपर",
+        "Sidebar right, toolbar top": "साइडबार दाएं, टूलबार ऊपर",
+        "Sidebar left, toolbar bottom": "साइडबार बाएं, टूलबार नीचे",
+        "Sidebar right, toolbar bottom": "साइडबार दाएं, टूलबार नीचे",
+        "Theme": "थीम",
+        "Theme mode": "थीम मोड",
+        "Dark": "डार्क",
+        "Light": "लाइट",
+        "Dark with contrast": "कॉन्ट्रास्ट के साथ डार्क",
+        "Light with high contrast": "हाई कॉन्ट्रास्ट लाइट",
+        "Language": "भाषा",
+        "English": "अंग्रेजी",
+        "Hindi": "हिंदी",
+        "Chinese": "चीनी",
+        "Preview Panel Fill": "प्रीव्यू पैनल भरें",
+        "Profile": "प्रोफाइल",
+        "Identity": "पहचान",
+        "Profile visibility": "प्रोफाइल दृश्यता",
+        "Current Profile": "वर्तमान प्रोफाइल",
+        "Loading...": "लोड हो रहा है...",
+        "Disabled": "अक्षम",
+        "Show Figma Profile": "Figma प्रोफाइल दिखाएं",
+        "Profile Hidden": "प्रोफाइल छिपा है",
+        "On": "चालू",
+        "Off": "बंद",
+        "Reset To Default": "डिफॉल्ट पर रीसेट करें",
+        "Cancel": "रद्द करें",
+        "Save": "सेव करें",
+        "Close settings": "सेटिंग्स बंद करें",
+        "Settings saved.": "सेटिंग्स सेव हो गईं।",
+        "Settings saved and theme updated.": "सेटिंग्स सेव हो गईं और थीम अपडेट हो गई।",
+        "Settings Saved": "सेटिंग्स सेव हुईं",
+        "Stored settings were cleared and defaults were restored.": "सेव की गई सेटिंग्स हटाई गईं और डिफॉल्ट बहाल किए गए।",
+        "Settings Reset": "सेटिंग्स रीसेट",
+        "Light Mode": "लाइट मोड",
+        "Dark Mode": "डार्क मोड",
+        "Default": "डिफॉल्ट",
+        "Manual": "मैन्युअल",
+        "JSON": "JSON",
+        "Chart": "चार्ट",
+        "Color": "रंग",
+        "Colors": "रंग",
+        "Data Workspace": "डेटा वर्कस्पेस",
+        "No File Selected": "कोई फाइल चयनित नहीं",
+        "No JSON Content": "JSON सामग्री नहीं",
+        "Data Updated": "डेटा अपडेट हुआ",
+        "JSON data applied successfully.": "JSON डेटा सफलतापूर्वक लागू हुआ।",
+        "Please choose a JSON file first.": "कृपया पहले JSON फाइल चुनें।",
+        "Please enter JSON in the editor.": "कृपया एडिटर में JSON दर्ज करें।",
+        "Animation settings saved. Figma export will include animation metadata.": "एनीमेशन सेटिंग्स सेव हो गईं। Figma एक्सपोर्ट में एनीमेशन मेटाडेटा शामिल होगा।",
+        "Animation Saved": "एनीमेशन सेव हुआ",
+        "See Animation": "एनीमेशन देखें",
+      },
+      zh: {
+        "Graph Generator - Interactive Editor": "图表生成器 - 交互式编辑器",
+        "Bar Chart": "条形图",
+        "Pie Chart": "饼图",
+        "Line Chart": "折线图",
+        "Radar Chart": "雷达图",
+        "Scatter Plot": "散点图",
+        "Dot Plot": "点图",
+        "Histogram": "直方图",
+        "Layout": "布局",
+        "Settings": "设置",
+        "Animation Studio": "动画工作室",
+        "Default Random Data": "默认随机数据",
+        "Generate new random data": "生成新的随机数据",
+        "Upload CSV File": "上传 CSV 文件",
+        "Enter Data Manually": "手动输入数据",
+        "Paste JSON": "粘贴 JSON",
+        "Editor preferences": "编辑器偏好",
+        "Workspace": "工作区",
+        "Default Editor Layout": "默认编辑器布局",
+        "Sidebar left, toolbar top": "侧边栏在左，工具栏在上",
+        "Sidebar right, toolbar top": "侧边栏在右，工具栏在上",
+        "Sidebar left, toolbar bottom": "侧边栏在左，工具栏在下",
+        "Sidebar right, toolbar bottom": "侧边栏在右，工具栏在下",
+        "Theme": "主题",
+        "Theme mode": "主题模式",
+        "Dark": "深色",
+        "Light": "浅色",
+        "Dark with contrast": "高对比深色",
+        "Light with high contrast": "高对比浅色",
+        "Language": "语言",
+        "English": "英语",
+        "Hindi": "印地语",
+        "Chinese": "中文",
+        "Preview Panel Fill": "填充预览面板",
+        "Profile": "个人资料",
+        "Identity": "身份",
+        "Profile visibility": "个人资料可见性",
+        "Current Profile": "当前个人资料",
+        "Loading...": "正在加载...",
+        "Disabled": "已禁用",
+        "Show Figma Profile": "显示 Figma 个人资料",
+        "Profile Hidden": "个人资料已隐藏",
+        "On": "开",
+        "Off": "关",
+        "Reset To Default": "重置为默认",
+        "Cancel": "取消",
+        "Save": "保存",
+        "Close settings": "关闭设置",
+        "Settings saved.": "设置已保存。",
+        "Settings saved and theme updated.": "设置已保存，主题已更新。",
+        "Settings Saved": "设置已保存",
+        "Stored settings were cleared and defaults were restored.": "已清除保存的设置并恢复默认值。",
+        "Settings Reset": "设置已重置",
+        "Light Mode": "浅色模式",
+        "Dark Mode": "深色模式",
+        "Default": "默认",
+        "Manual": "手动",
+        "JSON": "JSON",
+        "Chart": "图表",
+        "Color": "颜色",
+        "Colors": "颜色",
+        "Data Workspace": "数据工作区",
+        "No File Selected": "未选择文件",
+        "No JSON Content": "没有 JSON 内容",
+        "Data Updated": "数据已更新",
+        "JSON data applied successfully.": "JSON 数据已成功应用。",
+        "Please choose a JSON file first.": "请先选择 JSON 文件。",
+        "Please enter JSON in the editor.": "请在编辑器中输入 JSON。",
+        "Animation settings saved. Figma export will include animation metadata.": "动画设置已保存。Figma 导出将包含动画元数据。",
+        "Animation Saved": "动画已保存",
+        "See Animation": "查看动画",
+      },
+    };
+    const i18nTextOriginals = new WeakMap();
+    const i18nAttributeOriginals = new WeakMap();
+
+    function normalizeLanguage(value) {
+      return SUPPORTED_LANGUAGES.includes(value) ? value : "en";
+    }
+
+    function translateText(text, language = state.globalSettings.language) {
+      const normalizedLanguage = normalizeLanguage(language);
+      if (normalizedLanguage === "en") return text;
+      return LANGUAGE_TRANSLATIONS[normalizedLanguage][text] || text;
+    }
+
+    function translateElementAttribute(element, attribute, language) {
+      if (!element.hasAttribute(attribute)) return;
+      let originals = i18nAttributeOriginals.get(element);
+      if (!originals) {
+        originals = {};
+        i18nAttributeOriginals.set(element, originals);
+      }
+      if (!Object.prototype.hasOwnProperty.call(originals, attribute)) {
+        originals[attribute] = element.getAttribute(attribute);
+      }
+      const original = originals[attribute];
+      element.setAttribute(attribute, translateText(original, language));
+    }
+
+    function applyLanguageToUi(language = state.globalSettings.language) {
+      const normalizedLanguage = normalizeLanguage(language);
+      document.documentElement.lang = normalizedLanguage === "zh" ? "zh-CN" : normalizedLanguage;
+      if (document.title) {
+        document.title = translateText("Graph Generator - Interactive Editor", normalizedLanguage);
+      }
+
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          const parent = node.parentElement;
+          if (!parent || ["SCRIPT", "STYLE", "SVG", "PATH"].includes(parent.tagName)) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        },
+      });
+      let node = walker.nextNode();
+      while (node) {
+        if (!i18nTextOriginals.has(node)) {
+          i18nTextOriginals.set(node, node.nodeValue);
+        }
+        const original = i18nTextOriginals.get(node);
+        const trimmed = original.trim();
+        const translated = translateText(trimmed, normalizedLanguage);
+        node.nodeValue = original.replace(trimmed, translated);
+        node = walker.nextNode();
+      }
+
+      document.querySelectorAll("[aria-label], [title], [placeholder]").forEach((element) => {
+        translateElementAttribute(element, "aria-label", normalizedLanguage);
+        translateElementAttribute(element, "title", normalizedLanguage);
+        translateElementAttribute(element, "placeholder", normalizedLanguage);
+      });
+
+      syncChartTypeSelectorUi(state.chartType);
+      syncDataSourceSelectorUi(state.dataSource);
+      updateChartDataModalMeta();
+      updateThemeToggleLabel();
+      syncSettingsControlValues();
     }
 
     // Multi-series support
@@ -428,6 +616,54 @@
         bins: 10,
         normalize: false,
         gridShape: "polygon",
+      };
+    }
+
+    function getDefaultChartOptions(chartType) {
+      switch (chartType) {
+        case "line":
+          return {
+            ...defaultOpts(),
+            areaFill: false,
+            smooth: false,
+            lineWidth: 2,
+            pointShape: "circle",
+            showPoints: true,
+          };
+        case "radar":
+          return {
+            ...defaultOpts(),
+            areaFill: false,
+            lineWidth: 2,
+            pointShape: "circle",
+            gridShape: "polygon",
+            startAngle: -90,
+          };
+        case "scatter":
+          return {
+            ...defaultOpts(),
+            pointShape: "circle",
+          };
+        case "dot":
+          return {
+            ...defaultOpts(),
+            pointShape: "circle",
+            horizontal: true,
+          };
+        default:
+          return defaultOpts();
+      }
+    }
+
+    function createDefaultChartOptions() {
+      return {
+        pie: getDefaultChartOptions("pie"),
+        bar: getDefaultChartOptions("bar"),
+        line: getDefaultChartOptions("line"),
+        radar: getDefaultChartOptions("radar"),
+        scatter: getDefaultChartOptions("scatter"),
+        dot: getDefaultChartOptions("dot"),
+        histogram: getDefaultChartOptions("histogram"),
       };
     }
 
@@ -941,7 +1177,7 @@
     function renderCustomColorsPanel() {
       if (!customColorsList || !customColorsTitle) return;
       const chartLabel = getChartTypeLabel(state.chartType);
-      customColorsTitle.textContent = `${chartLabel} Colors`;
+      customColorsTitle.textContent = `${chartLabel} ${translateText("Colors")}`;
       customColorsList.innerHTML = customColorDraft.map((entry, index) => `
         <div class="custom-colors-row">
           <div class="custom-colors-label">
@@ -1610,6 +1846,38 @@
       }
     }
 
+    function resetToolbarStateForCurrentChart() {
+      const defaults = getDefaultGlobalSettings();
+      const preservedSettings = {
+        previewPanelFill: state.globalSettings.previewPanelFill,
+        profileSyncEnabled: state.globalSettings.profileSyncEnabled,
+        dotLineUseGradient: defaults.dotLineUseGradient,
+        defaultLayoutMode: state.globalSettings.defaultLayoutMode,
+        language: state.globalSettings.language,
+      };
+
+      state.globalSettings = {
+        ...defaults,
+        ...preservedSettings,
+      };
+      state.opts[state.chartType] = getDefaultChartOptions(state.chartType);
+
+      if (!state.dataRegistry) {
+        state.dataRegistry = loadDataRegistry();
+      }
+      delete state.dataRegistry.chartColors[state.chartType];
+      delete state.dataRegistry.colorPresets[state.chartType];
+      saveDataRegistry();
+      loadChartColorState(state.chartType, state.currentData);
+
+      closeCustomColorsPanel();
+      applyPreviewPanelFill(state.globalSettings.previewPanelFill);
+      updateGlobalToolbarValues();
+      updateToolbarForChartType();
+      updateColorPresetSelection(state.selectedColorPreset);
+      updatePreview();
+    }
+
     // Update toolbar for chart type
     function updateToolbarForChartType() {
       const gridAxesControls = document.getElementById('grid-axes-controls');
@@ -1945,24 +2213,10 @@
 
     function updateChartDataModalMeta() {
       if (chartDataChartTypeBadge) {
-        const label = {
-          bar: "Bar Chart",
-          pie: "Pie Chart",
-          line: "Line Chart",
-          radar: "Radar Chart",
-          scatter: "Scatter Plot",
-          dot: "Dot Plot",
-          histogram: "Histogram",
-        }[state.chartType] || "Chart";
-        chartDataChartTypeBadge.textContent = label;
+        chartDataChartTypeBadge.textContent = getChartTypeLabel(state.chartType) || translateText("Chart");
       }
       if (chartDataSourceBadge) {
-        const sourceLabel = {
-          default: "Default",
-          manual: "Manual",
-          json: "JSON",
-        }[state.dataSource] || "Default";
-        chartDataSourceBadge.textContent = sourceLabel;
+        chartDataSourceBadge.textContent = getDataSourceLabel(state.dataSource) || translateText("Default");
       }
     }
 
@@ -2210,7 +2464,7 @@
       updateModernDataTableForChartType();
       updatePreview();
       chartDataModal.classList.remove("visible");
-      showCustomAlert("JSON data applied successfully.", "success", "Data Updated");
+      showCustomAlert(translateText("JSON data applied successfully."), "success", translateText("Data Updated"));
       return true;
     }
 
@@ -2833,7 +3087,7 @@
         profileSyncEnabled: typeof value.profileSyncEnabled === "boolean" ? value.profileSyncEnabled : fallback.profileSyncEnabled,
         dotLineUseGradient: typeof value.dotLineUseGradient === "boolean" ? value.dotLineUseGradient : fallback.dotLineUseGradient,
         defaultLayoutMode: normalizeDefaultLayoutMode(value.defaultLayoutMode),
-        language: ["en", "hi", "zh"].includes(value.language) ? value.language : fallback.language,
+        language: normalizeLanguage(value.language || fallback.language),
       };
     }
 
@@ -2913,7 +3167,7 @@
     }
 
     function updateThemeToggleLabel() {
-      const label = getThemeBase(currentTheme) === "dark" ? "Light Mode" : "Dark Mode";
+      const label = translateText(getThemeBase(currentTheme) === "dark" ? "Light Mode" : "Dark Mode");
       if (themeToggleState) themeToggleState.textContent = label;
       if (aiThemeToggleState) aiThemeToggleState.textContent = label;
     }
@@ -2923,7 +3177,7 @@
         settingsThemeToggle.checked = getThemeBase(pendingTheme) === "dark";
       }
       if (settingsThemeToggleLabel) {
-        settingsThemeToggleLabel.textContent = getThemeBase(pendingTheme) === "dark" ? "On" : "Off";
+        settingsThemeToggleLabel.textContent = translateText(getThemeBase(pendingTheme) === "dark" ? "On" : "Off");
       }
       if (settingsThemeModeSelect) {
         settingsThemeModeSelect.value = normalizeThemeMode(pendingTheme);
@@ -2969,7 +3223,7 @@
     function syncSettingsLanguageSelection() {
       const draft = getSettingsDraft();
       if (settingsLanguageSelect) {
-        settingsLanguageSelect.value = ["en", "hi", "zh"].includes(draft.language) ? draft.language : "en";
+        settingsLanguageSelect.value = normalizeLanguage(draft.language);
         refreshCustomStyledSelect(settingsLanguageSelect);
       }
     }
@@ -2982,15 +3236,15 @@
       const profileEnabled = state.globalSettings.profileSyncEnabled !== false;
       if (settingsProfileName) {
         if (!profileEnabled) {
-          settingsProfileName.textContent = "Disabled";
+          settingsProfileName.textContent = translateText("Disabled");
         } else if (latestUserData && latestUserData.name) {
           settingsProfileName.textContent = latestUserData.name;
         } else {
-          settingsProfileName.textContent = "Loading...";
+          settingsProfileName.textContent = translateText("Loading...");
         }
       }
       if (!profileEnabled) {
-        updateUserProfile({ name: "Profile Hidden", photoUrl: null });
+        updateUserProfile({ name: translateText("Profile Hidden"), photoUrl: null });
         return;
       }
       if (latestUserData) {
@@ -3015,11 +3269,11 @@
       const draft = getSettingsDraft();
       if (settingsProfileName) {
         if (draft.profileSyncEnabled === false) {
-          settingsProfileName.textContent = "Disabled";
+          settingsProfileName.textContent = translateText("Disabled");
         } else if (latestUserData && latestUserData.name) {
           settingsProfileName.textContent = latestUserData.name;
         } else {
-          settingsProfileName.textContent = "Loading...";
+          settingsProfileName.textContent = translateText("Loading...");
         }
       }
     }
@@ -3027,9 +3281,9 @@
     function syncSettingsControlValues() {
       const draft = getSettingsDraft();
       if (settingsPreviewFillToggle) settingsPreviewFillToggle.checked = !!draft.previewPanelFill;
-      if (settingsPreviewFillToggleLabel) settingsPreviewFillToggleLabel.textContent = draft.previewPanelFill ? "On" : "Off";
+      if (settingsPreviewFillToggleLabel) settingsPreviewFillToggleLabel.textContent = translateText(draft.previewPanelFill ? "On" : "Off");
       if (settingsProfileToggle) settingsProfileToggle.checked = draft.profileSyncEnabled !== false;
-      if (settingsProfileToggleLabel) settingsProfileToggleLabel.textContent = draft.profileSyncEnabled !== false ? "On" : "Off";
+      if (settingsProfileToggleLabel) settingsProfileToggleLabel.textContent = translateText(draft.profileSyncEnabled !== false ? "On" : "Off");
       syncSettingsLayoutSelection();
       syncSettingsThemeSelection();
       syncSettingsLanguageSelection();
@@ -3083,7 +3337,7 @@
         dot: "Dot Plot",
         histogram: "Histogram",
       };
-      return labels[chartType] || chartType;
+      return translateText(labels[chartType] || chartType);
     }
 
     function getDataSourceLabel(source) {
@@ -3092,7 +3346,7 @@
         manual: "Manual",
         json: "JSON",
       };
-      return labels[source] || source;
+      return translateText(labels[source] || source);
     }
 
     function setTheme(theme) {
@@ -3408,7 +3662,7 @@
       if (settingsLanguageSelect) {
         settingsLanguageSelect.addEventListener("change", () => {
           if (!pendingGlobalSettings) pendingGlobalSettings = { ...state.globalSettings };
-          pendingGlobalSettings.language = ["en", "hi", "zh"].includes(settingsLanguageSelect.value) ? settingsLanguageSelect.value : "en";
+          pendingGlobalSettings.language = normalizeLanguage(settingsLanguageSelect.value);
           syncSettingsControlValues();
         });
       }
@@ -3476,10 +3730,15 @@
           requestUserProfileIfEnabled();
           updateGlobalToolbarValues();
           updatePreview();
+          applyLanguageToUi(state.globalSettings.language);
           syncSettingsThemeSelection();
           syncGeneralSettingsSummary();
           syncSettingsControlValues();
-          showCustomAlert("Stored settings were cleared and defaults were restored.", "success", "Settings Reset");
+          showCustomAlert(
+            translateText("Stored settings were cleared and defaults were restored."),
+            "success",
+            translateText("Settings Reset")
+          );
         });
       }
       if (settingsSaveBtn) {
@@ -3496,12 +3755,13 @@
           applyStoredUserProfile();
           requestUserProfileIfEnabled();
           updateGlobalToolbarValues();
+          applyLanguageToUi(state.globalSettings.language);
           syncGeneralSettingsSummary();
           closeSettingsDrawer();
           showCustomAlert(
-            themeChanged ? "Settings saved and theme updated." : "Settings saved.",
+            translateText(themeChanged ? "Settings saved and theme updated." : "Settings saved."),
             "success",
-            "Settings Saved"
+            translateText("Settings Saved")
           );
         });
       }
@@ -3539,7 +3799,11 @@
         animationSaveBtn.addEventListener("click", () => {
           saveAnimationSettings(state, state.chartType);
           exitAnimationStudioMode();
-          showCustomAlert("Animation settings saved. Figma export will include animation metadata.", "success", "Animation Saved");
+          showCustomAlert(
+            translateText("Animation settings saved. Figma export will include animation metadata."),
+            "success",
+            translateText("Animation Saved")
+          );
         });
       }
       bindAnimationControls(state, {
@@ -3665,7 +3929,7 @@
           if (jsonInputMode === "upload") {
             const file = jsonFileInput && jsonFileInput.files && jsonFileInput.files[0];
             if (!file) {
-              showCustomAlert("Please choose a JSON file first.", "warning", "No File Selected");
+              showCustomAlert(translateText("Please choose a JSON file first."), "warning", translateText("No File Selected"));
               return;
             }
             const raw = await file.text();
@@ -3674,7 +3938,7 @@
           }
 
           if (!jsonEditor || !jsonEditor.value.trim()) {
-            showCustomAlert("Please enter JSON in the editor.", "warning", "No JSON Content");
+            showCustomAlert(translateText("Please enter JSON in the editor."), "warning", translateText("No JSON Content"));
             return;
           }
           applyJsonData(jsonEditor.value);
@@ -3874,26 +4138,7 @@
       }
 
       resetStylesBtn.addEventListener("click", () => {
-        state.globalSettings = {
-          backgroundColor: "#111318",
-          backgroundOpacity: 1,
-          showGrid: true,
-          showAxes: true,
-          showText: true,
-          fontFamily: "Segoe UI",
-          fontSize: 12,
-          fontWeight: "normal",
-          fontColor: "#9aa4b2",
-          padding: 0,
-          borderRadius: 6,
-          previewPanelFill: true,
-          dotLineUseGradient: true,
-          defaultLayoutMode: state.globalSettings.defaultLayoutMode,
-          language: state.globalSettings.language,
-        };
-        applyPreviewPanelFill(state.globalSettings.previewPanelFill);
-        updateGlobalToolbarValues();
-        updatePreview();
+        resetToolbarStateForCurrentChart();
       });
 
       // Close all dropdowns when clicking outside
@@ -4472,6 +4717,7 @@
       // Request user data from Figma
       applyStoredUserProfile();
       requestUserProfileIfEnabled();
+      applyLanguageToUi(state.globalSettings.language);
     }
 
     // Initialize reliably in both browser and Figma UI runtimes.

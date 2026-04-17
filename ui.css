@@ -1176,8 +1176,7 @@ body.settings-drawer-open {
 
 .export-split-btn:hover {
   transform: translateY(-1px);
-  border-color: var(--brand-2);
-  box-shadow: var(--shadow);
+  border-color: var(--brand-2);  box-shadow: var(--shadow);
 }
 
 .export-split-btn .footer-btn.primary.export-primary-btn,
