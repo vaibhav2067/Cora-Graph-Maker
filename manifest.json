@@ -22,6 +22,7 @@
       "https://api.example.com",
       "https://cdn.jsdelivr.net",
       "https://raw.githubusercontent.com",
+      "https://discord.gg",
       "https://www.figma.com",
       "https://*.figma.com",
       "https://*.figmausercontent.com"

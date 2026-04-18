@@ -6,6 +6,9 @@
     const settingsOverlay = document.getElementById("settings-overlay");
     const settingsBackdrop = document.getElementById("settings-backdrop");
     const settingsDrawer = document.getElementById("settings-drawer");
+    const versionOverlay = document.getElementById("version-overlay");
+    const versionBackdrop = document.getElementById("version-backdrop");
+    const versionDrawer = document.getElementById("version-drawer");
     const hamburgerMenu = document.getElementById("hamburger-menu");
     const dropdownMenu = document.getElementById("dropdown-menu");
     const headerLayoutBtn = document.getElementById("header-layout-btn");
@@ -23,8 +26,14 @@
     const infoBtn = document.getElementById("info-btn");
     const settingsBtn = document.getElementById("settings-btn");
     const aiSettingsBtn = document.getElementById("ai-settings-btn");
-    const animationStudioBtn = document.getElementById("animation-studio-btn");
-    const aiAnimationStudioBtn = document.getElementById("ai-animation-studio-btn");
+    const joinUsBtn = document.getElementById("join-us-btn");
+    const aiJoinUsBtn = document.getElementById("ai-join-us-btn");
+    const communityBtn = document.getElementById("community-btn");
+    const aiCommunityBtn = document.getElementById("ai-community-btn");
+    const versionNoteBtn = document.getElementById("version-note-btn");
+    const aiVersionNoteBtn = document.getElementById("ai-version-note-btn");
+    const footerAnimationStudioBtn = document.getElementById("footer-animation-studio-btn");
+    const aiFooterAnimationStudioBtn = document.getElementById("ai-footer-animation-studio-btn");
     const animationHomeBtn = document.getElementById("animation-home-btn");
     const animationPreviewBtn = document.getElementById("animation-preview-btn");
     const animationSaveBtn = document.getElementById("animation-save-btn");
@@ -51,6 +60,8 @@
     const settingsProfileToggle = document.getElementById("settings-profile-toggle");
     const settingsProfileToggleLabel = document.getElementById("settings-profile-toggle-label");
     const settingsLayoutSelect = document.getElementById("settings-layout-select");
+    const versionHomeBtn = document.getElementById("version-home-btn");
+    const versionCloseBtn = document.getElementById("version-close-btn");
     const infoModal = document.getElementById("info-modal");
     const modalClose = document.getElementById("modal-close");
     const experienceModal = document.getElementById("experience-modal");
@@ -105,6 +116,7 @@
     const aiChatForm = document.getElementById("ai-chat-form");
     const aiChatInput = document.getElementById("ai-chat-input");
     const aiBtnOpenDataModal = document.getElementById("ai-btn-open-data-modal");
+    const ANIMATION_STUDIO_ENABLED = false;
 
     // Global toolbar elements
     const colorPresetBtn = document.getElementById("color-preset-btn");
@@ -170,13 +182,16 @@
     const aiBtnExportFigma = document.getElementById("ai-btn-export-figma");
     let aiSelectedExportType = "figma";
     let jsonInputMode = "editor";
-    const PLUGIN_COMMUNITY_URL = "https://www.figma.com/community/plugin/1544686878314493439";
+    const PLUGIN_COMMUNITY_URL = "https://www.figma.com/@dimastudio";
+    const DISCORD_COMMUNITY_URL = "https://discord.gg/Y6aMPdx4mX";
     const EXPERIENCE_REMIND_KEY = "graph_generator_experience_remind_until";
     let pendingTheme = "light";
     let pendingGlobalSettings = null;
     let latestUserData = null;
     let settingsOpenInvoker = null;
     let settingsDrawerHideTimeout = null;
+    let versionOpenInvoker = null;
+    let versionDrawerHideTimeout = null;
 
     // Pie chart controls
     const pieGapToggle = document.getElementById('pie-gap-toggle');
@@ -193,6 +208,7 @@
     const toolbarValueDisplay = document.getElementById("toolbar-value-display");
     const toolbarBarVerticalOption = document.getElementById("toolbar-bar-vertical-option");
     const toolbarBarHorizontalOption = document.getElementById("toolbar-bar-horizontal-option");
+    const histogramNormalizeToggle = document.getElementById("histogram-normalize-toggle");
 
     // Pie chart elements
     const toolbarSlicePadding = document.getElementById("toolbar-slice-padding");
@@ -213,6 +229,8 @@
     const lineWidthPopup = document.getElementById('line-width-popup');
     const popupLineWidth = document.getElementById('popup-line-width');
     const lineWidthValue = document.getElementById('line-width-value');
+    const lineStyleBtn = document.getElementById('line-style-btn');
+    const lineStyleDropdown = document.getElementById('line-style-dropdown');
     const pointShapesBtn = document.getElementById('point-shapes-btn');
     const pointShapesPopup = document.getElementById('point-shapes-popup');
     const radarAreaToggle = document.getElementById('radar-area-toggle');
@@ -324,6 +342,7 @@
 
     function getDefaultGlobalSettings() {
       return {
+        theme: "light",
         backgroundColor: "#ffffff",
         backgroundOpacity: 1,
         showGrid: true,
@@ -1387,7 +1406,8 @@
       btnExportToggle.setAttribute("aria-expanded", "false");
       if (aiExportDropdown) aiExportDropdown.classList.remove("visible");
       if (aiBtnExportToggle) aiBtnExportToggle.setAttribute("aria-expanded", "false");
-      lineWidthPopup.classList.remove("visible"); 
+      lineWidthPopup.classList.remove("visible");
+      if (lineStyleDropdown) lineStyleDropdown.classList.remove("visible");
       if (radarLineWidthPopup) radarLineWidthPopup.classList.remove("visible");
       if (radarStartAnglePopup) radarStartAnglePopup.classList.remove("visible");
       if (dotLineWidthPopup) dotLineWidthPopup.classList.remove("visible");
@@ -1496,6 +1516,12 @@
       exportLabel.textContent = "Add to Figma";
     }
 
+    function getFigmaExportStyle() {
+      return {
+        borderRadius: Math.max(12, Number(state.globalSettings.borderRadius) || 0),
+      };
+    }
+
     function runSelectedExport() {
       if (selectedExportType === "svg") {
         exportSVG(state.chartType);
@@ -1507,7 +1533,7 @@
         maybeShowExperienceModal();
         return;
       }
-      exportToFigma({ animation: state.animationSettings }, () => {
+      exportToFigma({ animation: state.animationSettings, exportStyle: getFigmaExportStyle() }, () => {
         showCustomAlert(
           "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
           'success',
@@ -1550,7 +1576,7 @@
         maybeShowExperienceModal();
         return;
       }
-      exportToFigma({ animation: state.animationSettings }, () => {
+      exportToFigma({ animation: state.animationSettings, exportStyle: getFigmaExportStyle() }, () => {
         showCustomAlert(
           "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
           "success",
@@ -1825,6 +1851,9 @@
       paddingValue.textContent = state.globalSettings.padding + "%";
       popupBorderRadius.value = state.globalSettings.borderRadius;
       borderRadiusValue.textContent = state.globalSettings.borderRadius + "px";
+      if (popupLineWidth) popupLineWidth.value = String(state.opts.line.lineWidth || 2);
+      if (lineWidthValue) lineWidthValue.textContent = `${state.opts.line.lineWidth || 2}px`;
+      updateLineStyleButton(state.opts.line.lineStyle || "solid");
       if (popupRadarLineWidth) popupRadarLineWidth.value = String(state.opts.radar.lineWidth || 2);
       if (radarLineWidthValue) radarLineWidthValue.textContent = `${state.opts.radar.lineWidth || 2}px`;
       if (popupRadarStartAngle) popupRadarStartAngle.value = String(state.opts.radar.startAngle ?? -90);
@@ -1885,6 +1914,7 @@
       const lineControls = document.getElementById('line-controls');
       const radarControls = document.getElementById('radar-controls');
       const scatterControls = document.getElementById('scatter-controls');
+      const histogramControls = document.getElementById('histogram-controls');
       const paddingBtn = document.getElementById('padding-btn').closest('.toolbar-item');
       const borderRadiusBtn = document.getElementById('border-radius-btn').closest('.toolbar-item');
       const gridToggle = document.getElementById('global-grid-toggle').closest('.toolbar-item');
@@ -1896,6 +1926,7 @@
       lineControls.style.display = 'none';
       if (radarControls) radarControls.style.display = 'none';
       scatterControls.style.display = 'none';
+      if (histogramControls) histogramControls.classList.add('hidden');
       if (dotLineWidthControl) dotLineWidthControl.classList.add('hidden');
       paddingBtn.classList.remove('hidden');
       borderRadiusBtn.classList.remove('hidden');
@@ -1910,6 +1941,9 @@
         borderRadiusBtn.classList.add('hidden');
         document.getElementById('line-area-toggle').classList.toggle('active', state.opts.line.areaFill);
         document.getElementById('line-curve-toggle').classList.toggle('active', state.opts.line.smooth);
+        if (popupLineWidth) popupLineWidth.value = String(state.opts.line.lineWidth || 2);
+        if (lineWidthValue) lineWidthValue.textContent = `${state.opts.line.lineWidth || 2}px`;
+        updateLineStyleButton(state.opts.line.lineStyle || 'solid');
         updatePointShapeIcon(state.opts.line.pointShape);
         syncShapePopupSelection('#point-shapes-popup', state.opts.line.pointShape);
         document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
@@ -1968,6 +2002,12 @@
         if (barOrientationControl) barOrientationControl.classList.remove('hidden');
         if (toolbarBarVerticalOption) toolbarBarVerticalOption.classList.toggle('active', !state.opts.bar.horizontal);
         if (toolbarBarHorizontalOption) toolbarBarHorizontalOption.classList.toggle('active', !!state.opts.bar.horizontal);
+        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
+        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
+      } else if (state.chartType === 'histogram') {
+        gridAxesControls.style.display = 'flex';
+        if (histogramControls) histogramControls.classList.remove('hidden');
+        if (histogramNormalizeToggle) histogramNormalizeToggle.classList.toggle('active', !!state.opts.histogram.normalize);
         document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
         document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
       } else {
@@ -2034,6 +2074,30 @@
           iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/></svg>`;
       }
       scatterPointShapesBtn.innerHTML = iconHTML;
+    }
+
+    function getLineStyleIconMarkup(style) {
+      switch (style) {
+        case 'dashed':
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M4 12H8M10 12H14M16 12H20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+        case 'dotted':
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>`;
+        default:
+          return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M4 12H20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+      }
+    }
+
+    function syncLineStyleSelection(style) {
+      document.querySelectorAll('#line-style-dropdown [data-line-style]').forEach((option) => {
+        option.classList.toggle('active', option.dataset.lineStyle === style);
+      });
+    }
+
+    function updateLineStyleButton(style) {
+      if (!lineStyleBtn) return;
+      const normalizedStyle = ['solid', 'dashed', 'dotted'].includes(style) ? style : 'solid';
+      lineStyleBtn.innerHTML = getLineStyleIconMarkup(normalizedStyle);
+      syncLineStyleSelection(normalizedStyle);
     }
 
     function syncShapePopupSelection(popupSelector, shape) {
@@ -3030,64 +3094,27 @@
     });
 
     // ===== THEME MANAGEMENT =====
-    const THEME_STORAGE_KEY = "graph_generator_theme";
     const GLOBAL_SETTINGS_STORAGE_KEY = "graph_generator_global_settings_v1";
     let currentTheme = "light";
 
-    function getStoredTheme() {
-      try {
-        return localStorage.getItem(THEME_STORAGE_KEY);
-      } catch (error) {
-        return null;
-      }
-    }
-
-    function storeTheme(theme) {
-      try {
-        localStorage.setItem(THEME_STORAGE_KEY, theme);
-      } catch (error) {
-        // Ignore storage failures in restricted environments.
-      }
+    function extractPersistedGlobalSettings(value, fallback = getDefaultGlobalSettings()) {
+      const source = value && typeof value === "object" ? value : {};
+      return {
+        theme: normalizeThemeMode(source.theme || fallback.theme),
+        language: normalizeLanguage(source.language || fallback.language),
+        defaultLayoutMode: normalizeDefaultLayoutMode(source.defaultLayoutMode || fallback.defaultLayoutMode),
+        previewPanelFill: typeof source.previewPanelFill === "boolean" ? source.previewPanelFill : fallback.previewPanelFill,
+        profileSyncEnabled: typeof source.profileSyncEnabled === "boolean" ? source.profileSyncEnabled : fallback.profileSyncEnabled,
+      };
     }
 
     function normalizeStoredGlobalSettings(value) {
       const fallback = { ...state.globalSettings };
       if (!value || typeof value !== "object") return fallback;
-      const normalizedBackgroundColor = normalizeColorValue(value.backgroundColor);
-      const normalizedFontColor = normalizeColorValue(value.fontColor);
-      const normalizedFontFamily = typeof value.fontFamily === "string" && value.fontFamily.trim()
-        ? value.fontFamily.trim()
-        : fallback.fontFamily;
-      const normalizedFontWeight = typeof value.fontWeight === "string" && value.fontWeight.trim()
-        ? value.fontWeight.trim()
-        : fallback.fontWeight;
+      const persisted = extractPersistedGlobalSettings(value, fallback);
       return {
         ...fallback,
-        ...value,
-        backgroundColor: normalizedBackgroundColor || fallback.backgroundColor,
-        backgroundOpacity: Number.isFinite(Number(value.backgroundOpacity))
-          ? Math.max(0, Math.min(1, Number(value.backgroundOpacity)))
-          : fallback.backgroundOpacity,
-        showGrid: typeof value.showGrid === "boolean" ? value.showGrid : fallback.showGrid,
-        showAxes: typeof value.showAxes === "boolean" ? value.showAxes : fallback.showAxes,
-        showText: typeof value.showText === "boolean" ? value.showText : fallback.showText,
-        fontFamily: normalizedFontFamily,
-        fontSize: Number.isFinite(Number(value.fontSize))
-          ? Math.max(8, Math.min(48, parseInt(value.fontSize, 10)))
-          : fallback.fontSize,
-        fontWeight: normalizedFontWeight,
-        fontColor: normalizedFontColor || fallback.fontColor,
-        padding: Number.isFinite(Number(value.padding))
-          ? Math.max(0, Math.min(24, parseInt(value.padding, 10)))
-          : fallback.padding,
-        borderRadius: Number.isFinite(Number(value.borderRadius))
-          ? Math.max(0, Math.min(28, parseInt(value.borderRadius, 10)))
-          : fallback.borderRadius,
-        previewPanelFill: typeof value.previewPanelFill === "boolean" ? value.previewPanelFill : fallback.previewPanelFill,
-        profileSyncEnabled: typeof value.profileSyncEnabled === "boolean" ? value.profileSyncEnabled : fallback.profileSyncEnabled,
-        dotLineUseGradient: typeof value.dotLineUseGradient === "boolean" ? value.dotLineUseGradient : fallback.dotLineUseGradient,
-        defaultLayoutMode: normalizeDefaultLayoutMode(value.defaultLayoutMode),
-        language: normalizeLanguage(value.language || fallback.language),
+        ...persisted,
       };
     }
 
@@ -3106,7 +3133,7 @@
     }
 
     async function storeGlobalSettings(settings) {
-      const normalized = normalizeStoredGlobalSettings(settings);
+      const normalized = extractPersistedGlobalSettings(settings, getDefaultGlobalSettings());
       const savedInPlugin = await savePluginGlobalSettings(normalized);
       try {
         localStorage.setItem(
@@ -3123,7 +3150,7 @@
       await savePluginGlobalSettings(null);
       try {
         localStorage.removeItem(GLOBAL_SETTINGS_STORAGE_KEY);
-        localStorage.removeItem(THEME_STORAGE_KEY);
+        localStorage.removeItem("graph_generator_theme");
       } catch (error) {
         // Ignore storage failures in restricted environments.
       }
@@ -3327,6 +3354,44 @@
       }
     }
 
+    function isVersionDrawerOpen() {
+      return !!(versionOverlay && !versionOverlay.hidden);
+    }
+
+    function getVersionFocusableElements() {
+      if (!versionDrawer) return [];
+      return Array.from(
+        versionDrawer.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => !element.hasAttribute("hidden") && element.offsetParent !== null);
+    }
+
+    function handleVersionDrawerKeydown(event) {
+      if (!isVersionDrawerOpen()) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeVersionDrawer();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = getVersionFocusableElements();
+      if (!focusable.length) {
+        event.preventDefault();
+        if (versionDrawer) versionDrawer.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
     function getChartTypeLabel(chartType) {
       const labels = {
         bar: "Bar Chart",
@@ -3349,15 +3414,19 @@
       return translateText(labels[source] || source);
     }
 
-    function setTheme(theme) {
+    function setTheme(theme, options = {}) {
+      const { persist = true } = options;
       currentTheme = normalizeThemeMode(theme);
+      state.globalSettings.theme = currentTheme;
       if (getThemeBase(currentTheme) === "dark") {
         applyDarkTheme();
       } else {
         applyLightTheme();
       }
       applyThemeModeOverrides(currentTheme);
-      storeTheme(currentTheme);
+      if (persist) {
+        void storeGlobalSettings({ ...state.globalSettings, theme: currentTheme });
+      }
       updateThemeToggleLabel();
       updatePreview();
     }
@@ -3518,6 +3587,7 @@
     }
 
     function enterAnimationStudioMode() {
+      if (!ANIMATION_STUDIO_ENABLED) return;
       syncAnimationStudioForChart(state, {
         animationPresetSelect,
         animationTriggerSelect,
@@ -3548,6 +3618,7 @@
 
     function openSettingsDrawer(triggerSource = null) {
       if (!settingsOverlay || !settingsDrawer) return;
+      closeVersionDrawer();
       if (settingsDrawerHideTimeout) {
         window.clearTimeout(settingsDrawerHideTimeout);
         settingsDrawerHideTimeout = null;
@@ -3584,6 +3655,45 @@
         settingsOpenInvoker.focus();
       }
       settingsOpenInvoker = null;
+    }
+
+    function openVersionDrawer(triggerSource = null) {
+      if (!versionOverlay || !versionDrawer) return;
+      closeSettingsDrawer();
+      if (versionDrawerHideTimeout) {
+        window.clearTimeout(versionDrawerHideTimeout);
+        versionDrawerHideTimeout = null;
+      }
+      versionOpenInvoker = triggerSource || document.activeElement;
+      if (dropdownMenu) dropdownMenu.classList.remove("visible");
+      if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
+      closeAllDropdowns();
+      versionOverlay.hidden = false;
+      document.body.classList.add("settings-drawer-open");
+      window.requestAnimationFrame(() => {
+        versionOverlay.classList.add("open");
+        versionDrawer.focus();
+      });
+    }
+
+    function closeVersionDrawer() {
+      if (!versionOverlay || versionOverlay.hidden) return;
+      versionOverlay.classList.remove("open");
+      document.body.classList.remove("settings-drawer-open");
+      if (versionDrawerHideTimeout) window.clearTimeout(versionDrawerHideTimeout);
+      versionDrawerHideTimeout = window.setTimeout(() => {
+        versionOverlay.hidden = true;
+        versionDrawerHideTimeout = null;
+      }, 240);
+      if (versionOpenInvoker && typeof versionOpenInvoker.focus === "function") {
+        versionOpenInvoker.focus();
+      }
+      versionOpenInvoker = null;
+    }
+
+    function openExternalLink(url) {
+      if (!url || typeof window === "undefined" || typeof window.open !== "function") return;
+      window.open(url, "_blank", "noopener,noreferrer");
     }
     
 
@@ -3645,6 +3755,42 @@
         aiSettingsBtn.addEventListener("click", () => {
           const trigger = aiHamburgerMenu ? aiHamburgerMenu.querySelector(".hamburger-btn") : aiSettingsBtn;
           openSettingsDrawer(trigger);
+        });
+      }
+      if (joinUsBtn) {
+        joinUsBtn.addEventListener("click", () => {
+          openExternalLink(DISCORD_COMMUNITY_URL);
+          if (dropdownMenu) dropdownMenu.classList.remove("visible");
+        });
+      }
+      if (aiJoinUsBtn) {
+        aiJoinUsBtn.addEventListener("click", () => {
+          openExternalLink(DISCORD_COMMUNITY_URL);
+          if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
+        });
+      }
+      if (communityBtn) {
+        communityBtn.addEventListener("click", () => {
+          openExternalLink(PLUGIN_COMMUNITY_URL);
+          if (dropdownMenu) dropdownMenu.classList.remove("visible");
+        });
+      }
+      if (aiCommunityBtn) {
+        aiCommunityBtn.addEventListener("click", () => {
+          openExternalLink(PLUGIN_COMMUNITY_URL);
+          if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
+        });
+      }
+      if (versionNoteBtn) {
+        versionNoteBtn.addEventListener("click", () => {
+          const trigger = hamburgerMenu ? hamburgerMenu.querySelector(".hamburger-btn") : versionNoteBtn;
+          openVersionDrawer(trigger);
+        });
+      }
+      if (aiVersionNoteBtn) {
+        aiVersionNoteBtn.addEventListener("click", () => {
+          const trigger = aiHamburgerMenu ? aiHamburgerMenu.querySelector(".hamburger-btn") : aiVersionNoteBtn;
+          openVersionDrawer(trigger);
         });
       }
       if (settingsThemeToggle) {
@@ -3717,13 +3863,35 @@
       if (settingsDrawer) {
         settingsDrawer.addEventListener("keydown", handleSettingsDrawerKeydown);
       }
+      if (settingsOverlay) {
+        settingsOverlay.addEventListener("scroll", closeCustomSelectPanels, true);
+      }
+      window.addEventListener("resize", closeCustomSelectPanels);
+      if (versionHomeBtn) {
+        versionHomeBtn.addEventListener("click", () => {
+          closeVersionDrawer();
+        });
+      }
+      if (versionBackdrop) {
+        versionBackdrop.addEventListener("click", () => {
+          closeVersionDrawer();
+        });
+      }
+      if (versionCloseBtn) {
+        versionCloseBtn.addEventListener("click", () => {
+          closeVersionDrawer();
+        });
+      }
+      if (versionDrawer) {
+        versionDrawer.addEventListener("keydown", handleVersionDrawerKeydown);
+      }
       if (settingsResetBtn) {
         settingsResetBtn.addEventListener("click", async () => {
           await clearStoredGlobalSettings();
           state.globalSettings = getDefaultGlobalSettings();
           pendingGlobalSettings = { ...state.globalSettings };
           pendingTheme = "light";
-          setTheme("light");
+          setTheme("light", { persist: false });
           applyPreviewPanelFill(state.globalSettings.previewPanelFill);
           applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
           applyStoredUserProfile();
@@ -3748,8 +3916,9 @@
             state.globalSettings = { ...pendingGlobalSettings };
           }
           state.globalSettings = normalizeStoredGlobalSettings(state.globalSettings);
+          state.globalSettings.theme = pendingTheme;
           await storeGlobalSettings(state.globalSettings);
-          setTheme(pendingTheme);
+          setTheme(pendingTheme, { persist: false });
           applyPreviewPanelFill(state.globalSettings.previewPanelFill);
           applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
           applyStoredUserProfile();
@@ -3773,15 +3942,17 @@
           aiChatInput.focus();
         });
       }
-      if (animationStudioBtn) {
-        animationStudioBtn.addEventListener("click", () => {
-          if (animationStudioBtn.disabled || animationStudioBtn.getAttribute("aria-disabled") === "true") return;
+      if (footerAnimationStudioBtn) {
+        footerAnimationStudioBtn.addEventListener("click", () => {
+          if (!ANIMATION_STUDIO_ENABLED) return;
+          if (footerAnimationStudioBtn.disabled || footerAnimationStudioBtn.getAttribute("aria-disabled") === "true") return;
           enterAnimationStudioMode();
         });
       }
-      if (aiAnimationStudioBtn) {
-        aiAnimationStudioBtn.addEventListener("click", () => {
-          if (aiAnimationStudioBtn.disabled || aiAnimationStudioBtn.getAttribute("aria-disabled") === "true") return;
+      if (aiFooterAnimationStudioBtn) {
+        aiFooterAnimationStudioBtn.addEventListener("click", () => {
+          if (!ANIMATION_STUDIO_ENABLED) return;
+          if (aiFooterAnimationStudioBtn.disabled || aiFooterAnimationStudioBtn.getAttribute("aria-disabled") === "true") return;
           enterAnimationStudioMode();
         });
       }
@@ -3863,9 +4034,7 @@
       if (experienceBookmarkBtn) {
         experienceBookmarkBtn.addEventListener("click", () => {
           hideExperienceModal();
-          if (typeof window !== "undefined" && typeof window.open === "function") {
-            window.open(PLUGIN_COMMUNITY_URL, "_blank", "noopener,noreferrer");
-          }
+          openExternalLink(PLUGIN_COMMUNITY_URL);
         });
       }
       if (experienceRemindBtn) {
@@ -4136,6 +4305,14 @@
           updatePreview();
         });
       }
+      if (histogramNormalizeToggle) {
+        histogramNormalizeToggle.addEventListener("click", () => {
+          if (state.chartType !== "histogram") return;
+          state.opts.histogram.normalize = !state.opts.histogram.normalize;
+          histogramNormalizeToggle.classList.toggle("active", state.opts.histogram.normalize);
+          updatePreview();
+        });
+      }
 
       resetStylesBtn.addEventListener("click", () => {
         resetToolbarStateForCurrentChart();
@@ -4247,9 +4424,21 @@
       lineWidthBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAllDropdowns();
+        if (popupLineWidth) popupLineWidth.value = String(state.opts.line.lineWidth || 2);
+        if (lineWidthValue) lineWidthValue.textContent = `${state.opts.line.lineWidth || 2}px`;
         positionDropdown(lineWidthBtn, lineWidthPopup);
         lineWidthPopup.classList.toggle('visible');
       });
+
+      if (lineStyleBtn && lineStyleDropdown) {
+        lineStyleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllDropdowns();
+          updateLineStyleButton(state.opts.line.lineStyle || 'solid');
+          positionDropdown(lineStyleBtn, lineStyleDropdown);
+          lineStyleDropdown.classList.toggle('visible');
+        });
+      }
 
       if (radarLineWidthBtn && radarLineWidthPopup) {
         radarLineWidthBtn.addEventListener('click', (e) => {
@@ -4264,6 +4453,16 @@
         state.opts.line.lineWidth = parseInt(e.target.value);
         lineWidthValue.textContent = e.target.value + 'px';
         updatePreview();
+      });
+
+      document.querySelectorAll('#line-style-dropdown [data-line-style]').forEach((option) => {
+        option.addEventListener('click', (e) => {
+          const style = e.currentTarget.dataset.lineStyle || 'solid';
+          state.opts.line.lineStyle = style;
+          updateLineStyleButton(style);
+          updatePreview();
+          if (lineStyleDropdown) lineStyleDropdown.classList.remove('visible');
+        });
       });
 
       if (popupRadarLineWidth) {
@@ -4675,6 +4874,8 @@
       if (animationApp) animationApp.style.display = "none";
       if (settingsOverlay) settingsOverlay.hidden = true;
       if (settingsOverlay) settingsOverlay.classList.remove("open");
+      if (versionOverlay) versionOverlay.hidden = true;
+      if (versionOverlay) versionOverlay.classList.remove("open");
       state.dataRegistry = loadDataRegistry();
       state.dataSource = state.dataRegistry.activeSource || "default";
       jsonInputMode = state.dataRegistry.jsonInputMode === "upload" ? "upload" : "editor";
@@ -4685,11 +4886,13 @@
       state.currentData = getSourceData(state.dataSource, state.chartType);
       loadChartColorState(state.chartType, state.currentData);
       syncCurrentSeriesFromData(state.currentData);
-      const savedTheme = getStoredTheme();
       const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(savedTheme || (prefersDark ? "dark" : "light"));
+      const initialTheme = normalizeThemeMode(state.globalSettings.theme || (prefersDark ? "dark" : "light"));
+      setTheme(initialTheme, { persist: false });
       pendingTheme = currentTheme;
       state.globalSettings = normalizeStoredGlobalSettings(state.globalSettings);
+      state.globalSettings.theme = currentTheme;
+      void storeGlobalSettings(state.globalSettings);
       applyPreviewPanelFill(state.globalSettings.previewPanelFill);
       applyDefaultLayoutMode(state.globalSettings.defaultLayoutMode);
       syncHeaderLayoutSelection();

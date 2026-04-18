@@ -180,14 +180,23 @@
               </span>
               <span class="menu-item-label">Settings</span>
             </button>
-            <button class="dropdown-item" id="animation-studio-btn" type="button" aria-disabled="false">
+            <button class="dropdown-item" id="join-us-btn" type="button">
               <span class="menu-item-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="currentColor"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M9 3q-2.5.5-5 2q-3 5-3 12q2 2.5 6 4q1-1.5 1.5-3.5M7 17q5 2 10 0m-1.5.5q.5 2 1.5 3.5q4-1.5 6-4q0-7-3-12q-2.5-1.5-5-2l-1 2q-2-.5-4 0L9 3"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></g></svg>
               </span>
-              <span class="menu-item-label">Animation Studio</span>
+              <span class="menu-item-label">Join Us</span>
+            </button>
+            <button class="dropdown-item" id="community-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8.667H8.667m3.333 0V2H8.667a3.333 3.333 0 0 0 0 6.667m3.333 0v6.666H8.667M12 8.667h3.333m-6.666 0a3.333 3.333 0 0 0 0 6.666m0 0A3.333 3.333 0 1 0 12 18.667m3.333-10a3.333 3.333 0 1 0 0 6.666a3.333 3.333 0 0 0 0-6.666m0 0a3.333 3.333 0 0 0 0-6.667"/></svg>
+              </span>
+              <span class="menu-item-label">Community</span>
+            </button>
+            <button class="dropdown-item" id="version-note-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="currentColor" d="M18.586 15.414L16 12.834l-2.588 2.582L12 14l4-4l4 4zm0 6L16 18.834l-2.588 2.582L12 20l4-4l4 4z"/><path fill="currentColor" d="M1.586 17.414C1.196 17.024 1 16.512 1 16s.195-1.024.586-1.414l13-13C14.976 1.196 15.488 1 16 1s1.024.195 1.414.586l13 13c.39.39.586.902.586 1.414s-.195 1.024-.586 1.414l-13 13c-.39.39-.902.586-1.414.586s-1.024-.195-1.414-.586zM16 3L3 16l13 13l13-13z"/></svg>
+              </span>
+              <span class="menu-item-label">Version Note</span>
             </button>
           </div>
         </div>
@@ -389,6 +398,14 @@
             </div>
           </div>
 
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="line-style-btn" title="Line Style">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M4 12H20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
           <!-- Point Shapes Popup -->
           <div class="toolbar-item has-dropdown">
             <div class="tool-icon active" id="point-shapes-btn" title="Point Shapes">
@@ -493,6 +510,19 @@
               <path d="M4 5.5H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
               <path d="M4 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
               <path d="M4 18.5H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Histogram Specific Controls -->
+        <div class="toolbar-item hidden" id="histogram-controls">
+          <div class="tool-icon" id="histogram-normalize-toggle" title="Normalize Histogram">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 19V11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M11 19V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M17 19V14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M3.5 19H20.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M14.5 6.5L17 4L19.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
         </div>
@@ -639,6 +669,18 @@
         <div class="slider-value" id="line-width-value">2px</div>
       </div>
 
+      <div class="more-dropdown export-dropdown line-style-dropdown" id="line-style-dropdown">
+        <button class="dropdown-item active" type="button" data-line-style="solid">
+          <span>Solid</span>
+        </button>
+        <button class="dropdown-item" type="button" data-line-style="dashed">
+          <span>Dashed</span>
+        </button>
+        <button class="dropdown-item" type="button" data-line-style="dotted">
+          <span>Dotted</span>
+        </button>
+      </div>
+
       <div class="slider-popup" id="radar-line-width-popup">
         <input type="range" class="popup-slider" id="popup-radar-line-width" min="1" max="10" value="2" />
         <div class="slider-value" id="radar-line-width-value">2px</div>
@@ -754,6 +796,15 @@
 <footer class="footer">
       <div class="footer-left-actions">
         <button id="btn-open-data-modal" class="footer-btn" type="button">Chart Data</button>
+        <button id="footer-animation-studio-btn" class="footer-btn" type="button" style="display: none;">
+          <span class="footer-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>Animation Studio</span>
+        </button>
       </div>
 
       <!-- Background Color Panel -->
@@ -878,14 +929,23 @@
               </span>
               <span class="menu-item-label">Settings</span>
             </button>
-            <button class="dropdown-item" id="ai-animation-studio-btn" type="button" aria-disabled="false">
+            <button class="dropdown-item" id="ai-join-us-btn" type="button">
               <span class="menu-item-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
-                  <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="currentColor"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M9 3q-2.5.5-5 2q-3 5-3 12q2 2.5 6 4q1-1.5 1.5-3.5M7 17q5 2 10 0m-1.5.5q.5 2 1.5 3.5q4-1.5 6-4q0-7-3-12q-2.5-1.5-5-2l-1 2q-2-.5-4 0L9 3"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></g></svg>
               </span>
-              <span class="menu-item-label">Animation Studio</span>
+              <span class="menu-item-label">Join Us</span>
+            </button>
+            <button class="dropdown-item" id="ai-community-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8.667H8.667m3.333 0V2H8.667a3.333 3.333 0 0 0 0 6.667m3.333 0v6.666H8.667M12 8.667h3.333m-6.666 0a3.333 3.333 0 0 0 0 6.666m0 0A3.333 3.333 0 1 0 12 18.667m3.333-10a3.333 3.333 0 1 0 0 6.666a3.333 3.333 0 0 0 0-6.666m0 0a3.333 3.333 0 0 0 0-6.667"/></svg>>
+              </span>
+              <span class="menu-item-label">Community</span>
+            </button>
+            <button class="dropdown-item" id="ai-version-note-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="currentColor" d="M18.586 15.414L16 12.834l-2.588 2.582L12 14l4-4l4 4zm0 6L16 18.834l-2.588 2.582L12 20l4-4l4 4z"/><path fill="currentColor" d="M1.586 17.414C1.196 17.024 1 16.512 1 16s.195-1.024.586-1.414l13-13C14.976 1.196 15.488 1 16 1s1.024.195 1.414.586l13 13c.39.39.586.902.586 1.414s-.195 1.024-.586 1.414l-13 13c-.39.39-.902.586-1.414.586s-1.024-.195-1.414-.586zM16 3L3 16l13 13l13-13z"/></svg>
+              </span>
+              <span class="menu-item-label">Version Note</span>
             </button>
           </div>
         </div>
@@ -916,9 +976,18 @@
       <div class="preview-canvas" id="ai-svg-host"></div>
     </main>
 
-    <footer class="footer">
+<footer class="footer">
       <div class="footer-left-actions">
         <button id="ai-btn-open-data-modal" class="footer-btn" type="button">Chart Data</button>
+        <button id="ai-footer-animation-studio-btn" class="footer-btn" type="button" style="display: none;">
+          <span class="footer-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>Animation Studio</span>
+        </button>
       </div>
       <div class="export-dropdown-wrapper has-dropdown">
         <div class="export-split-btn">
@@ -1187,6 +1256,64 @@
         <div class="settings-drawer-actions">
           <button class="footer-btn" id="settings-cancel-btn" type="button">Cancel</button>
           <button class="footer-btn primary" id="settings-save-btn" type="button">Save</button>
+        </div>
+      </footer>
+    </aside>
+  </div>
+  <div class="settings-overlay version-overlay" id="version-overlay" hidden>
+    <button class="settings-backdrop" id="version-backdrop" type="button" aria-label="Close version note"></button>
+    <aside class="settings-drawer version-drawer" id="version-drawer" role="dialog" aria-modal="true" aria-labelledby="version-drawer-title" tabindex="-1">
+      <header class="settings-drawer-header">
+        <div class="settings-drawer-title-wrap">
+          <h2 class="settings-drawer-title" id="version-drawer-title">Version Note</h2>
+          <p class="settings-drawer-subtitle">Current product updates</p>
+        </div>
+        <button class="settings-close-btn" id="version-home-btn" type="button" aria-label="Close version note">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="settings-drawer-body version-drawer-body">
+        <section class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-eyebrow">Current Release</span>
+            <h3 class="settings-detail-title">Version 3</h3>
+          </div>
+          <article class="version-entry-card">
+            <div class="version-entry-head">
+              <strong>April 18, 2026</strong>
+              <span class="version-entry-chip">Latest</span>
+            </div>
+            <ul class="version-entry-list">
+              <strong>Enhancements</strong>
+              <li>New Chart added : Radar $ Dot Plot.</li>
+              <li>JSON Data option is available now.</li>
+              <li>Themes are added.</li>
+              <li>Added layout feature.</li>
+              <li>Language support.</li>
+              <li>Custom color option added.</li>
+              <li>Font option now has its dedicated panel for color, type, weight, size and toggle.</li>
+              <li>Bar chart has now horizontal orientation.</li>
+              <li>Scatter chart now support multi series.</li>
+              <li>Line chart now support line type.</li>
+              <li>Histogram has normalisation option.</li>
+              <strong>Fixes</strong>
+              <li>Line chart multi series fix.</li>
+              <li>Bar chart auto bar width fix.</li>
+              <li>Border radius fix.</li>
+              <li>Reset button fix.</li>
+            </ul>
+          </article>
+        </section>
+      </div>
+
+      <footer class="settings-drawer-footer">
+        <span class="version-footer-copy">Version notes are grouped by major visible updates.</span>
+        <div class="settings-drawer-actions">
+          <button class="footer-btn primary" id="version-close-btn" type="button">Close</button>
         </div>
       </footer>
     </aside>

@@ -105,7 +105,72 @@ function createOverlayNode(name, width, height) {
   return overlay;
 }
 
-function decorateVariant(component, graphNode, animation, stateName, stateIndex) {
+function getExportShadowEffect() {
+  return {
+    type: 'DROP_SHADOW',
+    visible: true,
+    blendMode: 'NORMAL',
+    color: { r: 0, g: 0, b: 0, a: 0.18 },
+    offset: { x: 0, y: 10 },
+    radius: 24,
+    spread: 0,
+    showShadowBehindNode: false,
+  };
+}
+
+function normalizeExportRadius(exportStyle) {
+  const value = Number(exportStyle && exportStyle.borderRadius);
+  if (!Number.isFinite(value)) return 12;
+  return Math.max(12, Math.min(64, value));
+}
+
+function applyExportSurfaceStyle(node, exportStyle) {
+  const radius = normalizeExportRadius(exportStyle);
+
+  if ('cornerRadius' in node) {
+    node.cornerRadius = radius;
+  } else if ('topLeftRadius' in node) {
+    node.topLeftRadius = radius;
+    node.topRightRadius = radius;
+    node.bottomLeftRadius = radius;
+    node.bottomRightRadius = radius;
+  }
+
+  if ('clipsContent' in node) {
+    node.clipsContent = true;
+  }
+
+  if ('effects' in node) {
+    node.effects = [getExportShadowEffect()];
+  }
+
+  return node;
+}
+
+function wrapExportSurface(node, exportStyle) {
+  const frame = figma.createFrame();
+  frame.name = node.name || 'Chart Export';
+  frame.resizeWithoutConstraints(Math.max(1, node.width), Math.max(1, node.height));
+  frame.clipsContent = true;
+  frame.cornerRadius = normalizeExportRadius(exportStyle);
+  frame.fills = [];
+  frame.strokes = [];
+  frame.effects = [getExportShadowEffect()];
+  node.x = 0;
+  node.y = 0;
+  frame.appendChild(node);
+  return frame;
+}
+
+function prepareExportSurface(node, exportStyle) {
+  if ('cornerRadius' in node && 'effects' in node && 'clipsContent' in node) {
+    return applyExportSurfaceStyle(node, exportStyle);
+  }
+
+  return wrapExportSurface(node, exportStyle);
+}
+
+function decorateVariant(component, graphNode, animation, stateName, stateIndex, exportStyle) {
   const bounds = {
     width: Math.max(1, graphNode.width),
     height: Math.max(1, graphNode.height),
@@ -163,10 +228,11 @@ function decorateVariant(component, graphNode, animation, stateName, stateIndex)
 
   const hotspot = createTransparentHotspot(component.width, component.height);
   component.appendChild(hotspot);
+  applyExportSurfaceStyle(component, exportStyle);
   return hotspot;
 }
 
-function createAnimationVariant(svg, stateName, stateIndex, animation) {
+function createAnimationVariant(svg, stateName, stateIndex, animation, exportStyle) {
   const graphNode = figma.createNodeFromSvg(svg);
   graphNode.name = 'Graph Artwork';
   graphNode.x = 0;
@@ -178,7 +244,7 @@ function createAnimationVariant(svg, stateName, stateIndex, animation) {
   component.resizeWithoutConstraints(Math.max(1, graphNode.width), Math.max(1, graphNode.height));
   component.appendChild(graphNode);
 
-  const hotspot = decorateVariant(component, graphNode, animation, stateName, stateIndex);
+  const hotspot = decorateVariant(component, graphNode, animation, stateName, stateIndex, exportStyle);
   return { component, hotspot };
 }
 
@@ -208,9 +274,9 @@ async function wirePrototypeLinks(variants, animation) {
   }
 }
 
-async function exportAnimatedGraph(svg, animation) {
+async function exportAnimatedGraph(svg, animation, exportStyle) {
   const { x: cx, y: cy } = figma.viewport.center;
-  const variants = animation.states.map((stateName, index) => createAnimationVariant(svg, stateName, index, animation));
+  const variants = animation.states.map((stateName, index) => createAnimationVariant(svg, stateName, index, animation, exportStyle));
   const variantSet = figma.combineAsVariants(variants.map((entry) => entry.component), figma.currentPage);
 
   variantSet.name = `Graph Animation / ${String(animation.chartType)} / ${String(animation.preset)}`;
@@ -279,17 +345,18 @@ figma.ui.onmessage = async (msg) => {
     try {
       const { x: cx, y: cy } = figma.viewport.center;
       const animation = msg.animation && typeof msg.animation === 'object' ? msg.animation : null;
+      const exportStyle = msg.exportStyle && typeof msg.exportStyle === 'object' ? msg.exportStyle : null;
 
       if (animation && animation.enabled) {
         const normalizedAnimation = normalizeAnimationSettings(animation, 'chart');
-        await exportAnimatedGraph(msg.svg, normalizedAnimation);
+        await exportAnimatedGraph(msg.svg, normalizedAnimation, exportStyle);
       } else {
-        const node = figma.createNodeFromSvg(msg.svg);
-        node.x = cx - node.width / 2;
-        node.y = cy - node.height / 2;
-        figma.currentPage.appendChild(node);
-        figma.currentPage.selection = [node];
-        figma.viewport.scrollAndZoomIntoView([node]);
+        const exportNode = prepareExportSurface(figma.createNodeFromSvg(msg.svg), exportStyle);
+        exportNode.x = cx - exportNode.width / 2;
+        exportNode.y = cy - exportNode.height / 2;
+        figma.currentPage.appendChild(exportNode);
+        figma.currentPage.selection = [exportNode];
+        figma.viewport.scrollAndZoomIntoView([exportNode]);
         figma.notify('Graph exported to canvas');
       }
     } catch (e) {

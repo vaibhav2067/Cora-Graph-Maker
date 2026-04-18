@@ -52,7 +52,10 @@
         const categories = Array.from({ length: dotCount }, (_, i) => `Category ${String.fromCharCode(65 + i)}`);
         return {
           categories,
-          series: [{ label: "Series 1", y: Array.from({ length: dotCount }, () => getRandomValue()) }],
+          series: [
+            { label: "Series 1", y: Array.from({ length: dotCount }, () => getRandomValue()) },
+            { label: "Series 2", y: Array.from({ length: dotCount }, () => getRandomValue()) },
+          ],
         };
       }
       case "histogram": {

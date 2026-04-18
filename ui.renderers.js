@@ -168,13 +168,33 @@
     const y1 = pad;
     const toY = scaleLinear([0, maxY], [y0, y1]);
     const toX = scaleLinear([0, maxY], [x0, x1]);
-    const band = (x1 - x0) / cats.length;
-    const hBand = (y0 - y1) / cats.length;
+    const categoryCount = Math.max(1, cats.length);
+    const plotWidth = x1 - x0;
+    const plotHeight = y0 - y1;
+    const rawBand = plotWidth / categoryCount;
+    const rawHBand = plotHeight / categoryCount;
+    const maxCategoryPitch = Math.min(120, Math.max(42, W * 0.14));
+    const maxCategoryRowPitch = Math.min(88, Math.max(28, H * 0.12));
+    const band = Math.min(rawBand, maxCategoryPitch);
+    const hBand = Math.min(rawHBand, maxCategoryRowPitch);
+    const categoryStartX = x0 + Math.max(0, (plotWidth - band * categoryCount) / 2);
+    const categoryStartY = y1 + Math.max(0, (plotHeight - hBand * categoryCount) / 2);
     const gap = 6;
-    const barW = multi ? (band - 10) / data.series.length : band - 10;
-    const barH = multi ? (hBand - 10) / data.series.length : hBand - 10;
-    const rx = Math.min(opts.borderRadius, 20 - data.series.length * 2, barW / 2 - gap);
-    const hrx = Math.min(opts.borderRadius, 20 - data.series.length * 2, barH / 2 - gap);
+    const groupCount = Math.max(1, data.series.length);
+    const maxCategoryClusterWidth = Math.min(84, Math.max(34, W * 0.09));
+    const maxCategoryClusterHeight = Math.min(60, Math.max(20, H * 0.08));
+    const usableBand = Math.max(12, band - 10);
+    const usableHBand = Math.max(12, hBand - 10);
+    const clusterWidth = Math.min(usableBand, maxCategoryClusterWidth);
+    const clusterHeight = Math.min(usableHBand, maxCategoryClusterHeight);
+    const clusterOffsetX = (band - clusterWidth) / 2;
+    const clusterOffsetY = (hBand - clusterHeight) / 2;
+    const barW = multi ? clusterWidth / groupCount : clusterWidth;
+    const barH = multi ? clusterHeight / groupCount : clusterHeight;
+    const visibleBarW = Math.max(4, barW - gap);
+    const visibleBarH = Math.max(4, barH - gap);
+    const rx = Math.min(opts.borderRadius, 20 - data.series.length * 2, visibleBarW / 2);
+    const hrx = Math.min(opts.borderRadius, 20 - data.series.length * 2, visibleBarH / 2);
     const padding = globalPadding || 0;
     const hasPadding = padding > 0;
     let bars = "";
@@ -204,19 +224,19 @@
         if (multi) {
           data.series.forEach((s, si) => {
             const v = s.y[ci];
-            const y = y1 + ci * hBand + 5 + si * barH;
+            const y = categoryStartY + ci * hBand + clusterOffsetY + si * barH;
             const x = x0;
             const w = toX(v) - x0;
-            const h = barH - gap;
+            const h = visibleBarH;
             const fill = colors.series && colors.series[si];
             bars += drawBar(x, y, w, h, fill, si, ci * data.series.length + si);
           });
         } else {
           const v = data.series[0].y[ci];
           const x = x0;
-          const y = y1 + ci * hBand + 5;
+          const y = categoryStartY + ci * hBand + clusterOffsetY;
           const w = toX(v) - x0;
-          const h = barH - gap;
+          const h = visibleBarH;
           const fill = colors.bars && colors.bars[ci];
           bars += drawBar(x, y, w, h, fill, ci, ci);
         }
@@ -226,19 +246,19 @@
         if (multi) {
           data.series.forEach((s, si) => {
             const v = s.y[ci];
-            const x = x0 + ci * band + 5 + si * barW;
+            const x = categoryStartX + ci * band + clusterOffsetX + si * barW;
             const y = toY(v);
             const h = y0 - y;
             const fill = colors.series && colors.series[si];
-            bars += drawBar(x, y, barW - gap, h, fill, si, ci * data.series.length + si);
+            bars += drawBar(x, y, visibleBarW, h, fill, si, ci * data.series.length + si);
           });
         } else {
           const v = data.series[0].y[ci];
-          const x = x0 + ci * band + 5;
+          const x = categoryStartX + ci * band + clusterOffsetX;
           const y = toY(v);
           const h = y0 - y;
           const fill = colors.bars && colors.bars[ci];
-          bars += drawBar(x, y, barW - gap, h, fill, ci, ci);
+          bars += drawBar(x, y, visibleBarW, h, fill, ci, ci);
         }
       });
     }
@@ -247,10 +267,10 @@
       ? cats
           .map((c, ci) => {
             if (isHorizontal) {
-              const y = y1 + ci * hBand + hBand / 2;
+              const y = categoryStartY + ci * hBand + hBand / 2;
               return `<text x="${x0 - 10}" y="${y}" text-anchor="end" dominant-baseline="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${c}</text>`;
             }
-            const x = x0 + ci * band + band / 2;
+            const x = categoryStartX + ci * band + band / 2;
             return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${c}</text>`;
           })
           .join("")

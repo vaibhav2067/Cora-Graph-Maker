@@ -66,7 +66,14 @@
     const successCallback = typeof optionsOrCallback === "function" ? optionsOrCallback : onSuccess;
 
     if (typeof parent !== "undefined" && parent.postMessage) {
-      parent.postMessage({ pluginMessage: { type: "EXPORT_SVG", svg: svg.outerHTML, animation: options.animation || null } }, "*");
+      parent.postMessage({
+        pluginMessage: {
+          type: "EXPORT_SVG",
+          svg: svg.outerHTML,
+          animation: options.animation || null,
+          exportStyle: options.exportStyle || null,
+        }
+      }, "*");
       if (typeof successCallback === "function") {
         successCallback();
       }

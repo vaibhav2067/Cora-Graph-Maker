@@ -501,7 +501,7 @@ body.settings-drawer-open {
   flex-direction: column;
   background: var(--panel);
   border-left: 1px solid var(--line);
-  box-shadow: -14px 0 32px rgba(0, 0, 0, 0.22);
+  box-shadow: none;
   transform: translateX(100%);
   transition: transform 0.24s ease;
 }
@@ -604,6 +604,63 @@ body.settings-drawer-open {
 .settings-drawer-footer #settings-reset-btn {
   color: var(--muted);
   background: transparent;
+}
+
+.version-overlay {
+  z-index: 3210;
+}
+
+.version-drawer-body {
+  display: grid;
+  gap: 14px;
+}
+
+.version-entry-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 92%, transparent), color-mix(in srgb, var(--panel-2) 84%, transparent));
+}
+
+.version-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.version-entry-chip,
+.version-entry-date {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.version-entry-chip {
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--brand-2) 45%, var(--line) 55%);
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.version-entry-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.version-footer-copy {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .settings-eyebrow {
