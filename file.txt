@@ -1,0 +1,13 @@
+normalisation in histogram 
+
+font label (value) position
+
+remove the stroke in line graph 
+
+stroke color 
+
+for bubble chart
+see bubble chart can be implemented same as the scatter chart the only difference it has that will not allow that change in point size from the global toolbar and it will have the size defined
+
+for radial bar chart
+we have to implement in the pie chart category 

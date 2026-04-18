@@ -9,27 +9,9 @@
 </head>
 
 <body>
-  <div class="app">
-    <header class="header">
+  <div class="app" id="default-app">
+<header class="header">
       <div class="header-left">
-        <div class="hamburger-menu" id="hamburger-menu">
-          <button class="hamburger-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/>
-            </svg>
-          </button>
-          <div class="dropdown-menu" id="dropdown-menu">
-            <button class="dropdown-item" id="theme-toggle">
-              <span>🌙</span>
-              <span>Dark Mode - coming soon</span>
-            </button>
-            <button class="dropdown-item" id="info-btn">
-              <span>ℹ️</span>
-              <span>Info & Roadmap</span>
-            </button>
-          </div>
-        </div>
-
         <div class="chart-type-select" id="chart-type-select">
           <div class="selected-option">
             <div class="chart-icon">
@@ -80,6 +62,17 @@
               <span>Line Chart</span>
             </div>
 
+            <div class="chart-option" data-value="radar">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 2.5L16.5 6.25V13.75L10 17.5L3.5 13.75V6.25L10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                  <path d="M10 5.5L13.9 7.75V12.25L10 14.5L6.1 12.25V7.75L10 5.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                  <path d="M10 10L16.5 6.25M10 10L16.5 13.75M10 10L10 2.5M10 10L3.5 6.25M10 10L3.5 13.75" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span>Radar Chart</span>
+            </div>
+
             <div class="chart-option" data-value="scatter">
               <div class="chart-icon">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -92,6 +85,18 @@
                 </svg>
               </div>
               <span>Scatter Plot</span>
+            </div>
+
+            <div class="chart-option" data-value="dot">
+              <div class="chart-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 3V15.8571C3 16.4255 3.21852 16.9705 3.60748 17.3724C3.99645 17.7742 4.524 18 5.07407 18H17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="6.5" cy="12.5" r="1.4" fill="currentColor" />
+                  <circle cx="10.5" cy="8.5" r="1.4" fill="currentColor" />
+                  <circle cx="14.5" cy="10.5" r="1.4" fill="currentColor" />
+                </svg>
+              </div>
+              <span>Dot Plot</span>
             </div>
 
             <div class="chart-option" data-value="histogram">
@@ -109,37 +114,109 @@
             </div>
           </div>
         </div>
+
       </div>
       <div class="header-right">
-        <div class="user-profile" id="user-profile">
-          <!-- Status indicator first -->
-          <div class="user-status" id="user-status"></div>
-          
-          <!-- User info in the middle -->
-          <div class="user-info">
-            <span class="user-greeting">Hi!</span>
-            <span class="user-name" id="user-name">User</span>
-          </div>
-          
-          <!-- Avatar last -->
-          <div class="user-avatar" id="user-avatar">
-            <!-- Default avatar fallback -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+        <div class="hamburger-menu" id="hamburger-menu">
+          <button class="hamburger-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/>
             </svg>
+          </button>
+          <div class="dropdown-menu" id="dropdown-menu">
+            <div class="menu-profile-wrap">
+              <div class="user-profile" id="user-profile" data-user-profile>
+                <div class="user-status" id="user-status" data-user-status></div>
+                <div class="user-info">
+                  <span class="user-greeting">Hi!</span>
+                  <span class="user-name" id="user-name" data-user-name>User</span>
+                </div>
+                <div class="user-avatar" id="user-avatar" data-user-avatar>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="menu-section">
+              <div class="menu-section-label">Layout</div>
+              <div class="header-layout-menu menu-layout-grid" id="header-layout-menu" role="group" aria-label="Layout options">
+                <button class="header-layout-option" type="button" data-layout-option="layout-option-1" aria-pressed="true" title="Option 1">
+                  <span class="layout-option-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2.9 6C2.9 6.05523 2.94477 6.1 3 6.1C3.05523 6.1 3.1 6.05523 3.1 6H3H2.9ZM2 2.5H1.9V6H2H2.1V2.5H2ZM3 7V7.1H6V7V6.9H3V7ZM7 6H7.1V5H7H6.9V6H7ZM6 4V3.9H5V4V4.1H6V4ZM4 5H3.9V7H4H4.1V5H4ZM3 2.5H2.9V6H3H3.1V2.5H3ZM4.5 3V3.1H6.5V3V2.9H4.5V3ZM6.5 2V1.9H4.5V2V2.1H6.5V2ZM6.5 3V3.1C6.83137 3.1 7.1 2.83137 7.1 2.5H7H6.9C6.9 2.72091 6.72091 2.9 6.5 2.9V3ZM4 2.5H3.9C3.9 2.83137 4.16863 3.1 4.5 3.1V3V2.9C4.27909 2.9 4.1 2.72091 4.1 2.5H4ZM4 2.5H4.1C4.1 2.27909 4.27909 2.1 4.5 2.1V2V1.9C4.16863 1.9 3.9 2.16863 3.9 2.5H4ZM2.5 2V2.1C2.72091 2.1 2.9 2.27909 2.9 2.5H3H3.1C3.1 2.16863 2.83137 1.9 2.5 1.9V2ZM5 4V3.9C4.39249 3.9 3.9 4.39249 3.9 5H4H4.1C4.1 4.50294 4.50294 4.1 5 4.1V4ZM7 5H7.1C7.1 4.39249 6.60751 3.9 6 3.9V4V4.1C6.49706 4.1 6.9 4.50294 6.9 5H7ZM6 7V7.1C6.60751 7.1 7.1 6.60751 7.1 6H7H6.9C6.9 6.49706 6.49706 6.9 6 6.9V7ZM2 6H1.9C1.9 6.60751 2.39249 7.1 3 7.1V7V6.9C2.50294 6.9 2.1 6.49706 2.1 6H2ZM7 2.5H7.1C7.1 2.16863 6.83137 1.9 6.5 1.9V2V2.1C6.72091 2.1 6.9 2.27909 6.9 2.5H7ZM2 2.5H2.1C2.1 2.27909 2.27909 2.1 2.5 2.1V2V1.9C2.16863 1.9 1.9 2.16863 1.9 2.5H2Z" fill="currentColor"/>
+                    </svg>
+                  </span>
+                </button>
+                <button class="header-layout-option" type="button" data-layout-option="layout-option-2" aria-pressed="false" title="Option 2">
+                  <span class="layout-option-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 6V2.5C6 2.22386 6.22386 2 6.5 2C6.77614 2 7 2.22386 7 2.5V6C7 6.55228 6.55228 7 6 7H5M5 7H3C2.44772 7 2 6.55228 2 6V5C2 4.44772 2.44772 4 3 4H4C4.55228 4 5 4.44772 5 5V7ZM5 2.5C5 2.22386 4.77614 2 4.5 2H2.5C2.22386 2 2 2.22386 2 2.5C2 2.77614 2.22386 3 2.5 3H4.5C4.77614 3 5 2.77614 5 2.5Z" stroke="currentColor" stroke-width="0.2"/>
+                    </svg>
+                  </span>
+                </button>
+                <button class="header-layout-option" type="button" data-layout-option="layout-option-3" aria-pressed="false" title="Option 3">
+                  <span class="layout-option-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 3V6.5C3 6.77614 2.77614 7 2.5 7C2.22386 7 2 6.77614 2 6.5V3C2 2.44772 2.44772 2 3 2H4M4 2H6C6.55228 2 7 2.44772 7 3V4C7 4.55228 6.55228 5 6 5H5C4.44772 5 4 4.55228 4 4V2ZM6.5 7H4.5C4.22386 7 4 6.77614 4 6.5C4 6.22386 4.22386 6 4.5 6H6.5C6.77614 6 7 6.22386 7 6.5C7 6.77614 6.77614 7 6.5 7Z" stroke="currentColor" stroke-width="0.2"/>
+                    </svg>
+                  </span>
+                </button>
+                <button class="header-layout-option" type="button" data-layout-option="layout-option-4" aria-pressed="false" title="Option 4">
+                  <span class="layout-option-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 3V6.5C6 6.77614 6.22386 7 6.5 7C6.77614 7 7 6.77614 7 6.5V3C7 2.44772 6.55228 2 6 2H5M5 2H3C2.44772 2 2 2.44772 2 3V4C2 4.55228 2.44772 5 3 5H4C4.55228 5 5 4.55228 5 4V2ZM5 6.5C5 6.22386 4.77614 6 4.5 6H2.5C2.22386 6 2 6.22386 2 6.5C2 6.77614 2.22386 7 2.5 7H4.5C4.77614 7 5 6.77614 5 6.5Z" stroke="currentColor" stroke-width="0.2"/>
+                    </svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <button class="dropdown-item" id="settings-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 8.75A3.25 3.25 0 1 0 12 15.25A3.25 3.25 0 1 0 12 8.75Z" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M19 12A7 7 0 0 0 18.9 10.82L21 9.2L19.2 6.1L16.68 7.05A7.06 7.06 0 0 0 14.64 5.88L14.25 3H9.75L9.36 5.88A7.06 7.06 0 0 0 7.32 7.05L4.8 6.1L3 9.2L5.1 10.82A7 7 0 0 0 5 12C5 12.4 5.03 12.8 5.1 13.18L3 14.8L4.8 17.9L7.32 16.95C7.94 17.42 8.64 17.78 9.36 18.12L9.75 21H14.25L14.64 18.12C15.36 17.78 16.06 17.42 16.68 16.95L19.2 17.9L21 14.8L18.9 13.18C18.97 12.8 19 12.4 19 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="menu-item-label">Settings</span>
+            </button>
+            <button class="dropdown-item" id="join-us-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M9 3q-2.5.5-5 2q-3 5-3 12q2 2.5 6 4q1-1.5 1.5-3.5M7 17q5 2 10 0m-1.5.5q.5 2 1.5 3.5q4-1.5 6-4q0-7-3-12q-2.5-1.5-5-2l-1 2q-2-.5-4 0L9 3"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></g></svg>
+              </span>
+              <span class="menu-item-label">Join Us</span>
+            </button>
+            <button class="dropdown-item" id="community-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8.667H8.667m3.333 0V2H8.667a3.333 3.333 0 0 0 0 6.667m3.333 0v6.666H8.667M12 8.667h3.333m-6.666 0a3.333 3.333 0 0 0 0 6.666m0 0A3.333 3.333 0 1 0 12 18.667m3.333-10a3.333 3.333 0 1 0 0 6.666a3.333 3.333 0 0 0 0-6.666m0 0a3.333 3.333 0 0 0 0-6.667"/></svg>
+              </span>
+              <span class="menu-item-label">Community</span>
+            </button>
+            <button class="dropdown-item" id="version-note-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="currentColor" d="M18.586 15.414L16 12.834l-2.588 2.582L12 14l4-4l4 4zm0 6L16 18.834l-2.588 2.582L12 20l4-4l4 4z"/><path fill="currentColor" d="M1.586 17.414C1.196 17.024 1 16.512 1 16s.195-1.024.586-1.414l13-13C14.976 1.196 15.488 1 16 1s1.024.195 1.414.586l13 13c.39.39.586.902.586 1.414s-.195 1.024-.586 1.414l-13 13c-.39.39-.902.586-1.414.586s-1.024-.195-1.414-.586zM16 3L3 16l13 13l13-13z"/></svg>
+              </span>
+              <span class="menu-item-label">Version Note</span>
+            </button>
           </div>
         </div>
       </div>
     </header>
-    
 
     <aside class="left-panel">
-
       <div class="form-section">
         <div class="data-source-select" id="data-source-select">
           <div class="selected-option">
             <span class="source-name">Default Random Data</span>
-            <div class="dropdown-arrow">▼</div>
+            <div class="source-selector-actions">
+              <button class="source-refresh-btn" id="source-refresh-btn" type="button" title="Generate new random data">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 12A8 8 0 1 1 17.66 6.34" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M20 4V9H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="dropdown-arrow">&#9662;</div>
+            </div>
           </div>
 
           <div class="source-options">
@@ -163,9 +240,9 @@
               <div class="source-status">Coming Soon</div>
             </div>
 
-            <div class="source-option disabled" data-value="json">
+            <div class="source-option" data-value="json">
               <span>JSON Data</span>
-              <div class="source-status">Coming Soon</div>
+              <div class="source-status"></div>
             </div>
 
             <div class="source-option" data-value="manual">
@@ -174,71 +251,41 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-section" id="default-data-section">
-        <div class="data-section-modern">
-          <div class="data-section-header">
-            <h3 class="data-section-title">Chart Data</h3>
-            <div class="data-controls-modern">
-              <button class="btn-modern" id="btn-add-row-modern">
-                <span class="btn-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                    <path fill="currentColor" d="M8 15c-3.86 0-7-3.14-7-7s3.14-7 7-7s7 3.14 7 7s-3.14 7-7 7M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6"/>
-                    <path fill="currentColor" d="M8 11.5c-.28 0-.5-.22-.5-.5V5c0-.28.22-.5.5-.5s.5.22.5.5v6c0 .28-.22.5-.5.5"/>
-                    <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
-                  </svg>
-                </span>
-                Row
-              </button>
-              <button class="btn-modern" id="btn-add-series-modern" style="display: none">
-                <span class="btn-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                    <path fill="currentColor" d="M8 15c-3.86 0-7-3.14-7-7s3.14-7 7-7s7 3.14 7 7s-3.14 7-7 7M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6"/>
-                    <path fill="currentColor" d="M8 11.5c-.28 0-.5-.22-.5-.5V5c0-.28.22-.5.5-.5s.5.22.5.5v6c0 .28-.22.5-.5.5"/>
-                    <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
-                  </svg>
-                </span>
-                Series
-              </button>
+        <section class="left-panel-card custom-colors-panel" id="custom-colors-panel" hidden>
+          <div class="left-panel-card-head">
+            <div>
+              <h3 class="left-panel-card-title" id="custom-colors-title">Custom Colors</h3>
             </div>
+            <button id="custom-colors-close" class="custom-colors-close" type="button" aria-label="Close custom colors panel">&times;</button>
           </div>
 
-          <div class="modern-data-table-container">
-            <table class="modern-data-table" id="modern-data-table">
-              <thead id="modern-data-table-headers">
-                <!-- Dynamic headers will be inserted here -->
-              </thead>
-              <tbody id="modern-data-table-body">
-                <!-- Dynamic rows will be inserted here -->
-              </tbody>
-            </table>
-          </div>
+          <div class="custom-colors-list" id="custom-colors-list"></div>
 
-          <div class="data-info-modern">
-            <div class="data-stats">
-              <span id="modern-row-count">4 rows</span>
-              <span id="modern-series-count" style="display: none">1 series</span>
-            </div>
-            <span class="data-limit" id="modern-data-limits">Max: 15 rows</span>
+          <div class="custom-colors-actions">
+            <button id="custom-colors-cancel" class="btn" type="button">Cancel</button>
+            <button id="custom-colors-apply" class="btn primary" type="button">Apply Colors</button>
           </div>
-        </div>
+        </section>
       </div>
 
-      <div class="form-section" id="manual-data-section" style="display: none">
-        <h3 class="section-title">Manual Data Input</h3>
-        <textarea id="data-input" class="mono"
-          placeholder='Format for Bar Chart:&#10;{&#10;  "categories": ["A", "B", "C"],&#10;  "series": [{"label": "Series 1", "y": [10, 20, 15]}]&#10;}'></textarea>
-        <button id="btn-apply-data" class="btn primary">Apply Data</button>
-      </div>
     </aside>
 
-    <main class="preview-area">
+<main class="preview-area">
       <!-- OPTIMIZED GLOBAL TOOLBAR -->
       <div class="global-toolbar">
         <!-- Background Color -->
-        <div class="toolbar-item">
-          <input type="color" class="compact-color" id="global-bg-color" value="#111318" title="Background Color" />
+        <div class="toolbar-item toolbar-color-item has-dropdown">
+          <button class="figma-color-control" id="global-bg-control" type="button" title="Background Color">
+            <span class="figma-color-swatch-wrap">
+              <span class="figma-color-swatch" id="global-bg-swatch" style="background:#111318"></span>
+            </span>
+            <span class="figma-color-meta">
+              <span class="figma-color-label">BG</span>
+              <span class="figma-color-value" id="global-bg-value">#111318</span>
+            </span>
+          </button>
+          <input type="color" class="compact-color figma-native-color-input" id="global-bg-color" value="#111318" title="Background Color" />
         </div>
 
         <!-- Color Preset -->
@@ -259,7 +306,7 @@
         <div class="toolbar-item has-dropdown">
           <div class="tool-icon active" id="font-size-btn" title="Font Size">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-              <path fill="#000"
+              <path fill="currentColor"
                 d="M4.877 2.017c.31 0 .588.19.7.48l1.561 4.048l-.804 2.07l-.035-.077l-.303-.788H3.758l-.304.788a.75.75 0 1 1-1.4-.54l2.123-5.501a.75.75 0 0 1 .7-.48m-.54 4.233h1.08l-.54-1.4zM10.2 4.486a.75.75 0 0 0-1.401 0L5.733 12.5a.75.75 0 0 0 .018 1.5h.454a1 1 0 0 0 .092 0l.955-.003a.75.75 0 0 0 .087-1.495l.383-1h3.555l.386 1.008a.75.75 0 0 0 .088 1.495L13.252 14a.75.75 0 0 0 .013-1.5l-.748-1.955a1 1 0 0 0-.047-.123zM10.703 10H8.295L9.5 6.853z" />
             </svg>
           </div>
@@ -311,7 +358,7 @@
           <!-- Donut Toggle -->
           <div class="toolbar-item">
             <div class="tool-icon" id="pie-donut-toggle" title="Donut Hole">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
                 <path fill="currentColor"
                   d="M12.91 3.05q3.223.313 5.488 2.555t2.577 5.472h-6.42q-.224-.573-.648-.993t-.997-.624zm1 1.204v4.554q.39.244.717.561t.552.708h4.592q-.523-2.173-2.105-3.756q-1.583-1.582-3.756-2.067M11.14 3.05v6.401q-.823.293-1.315.998t-.492 1.555t.502 1.526t1.305.969v6.451q-3.465-.356-5.79-2.908t-2.325-6.044T5.35 5.936t5.79-2.886m-1 1.204q-2.698.606-4.406 2.785Q4.025 9.217 4.025 12t1.709 4.962t4.407 2.796v-4.642q-.797-.552-1.302-1.36t-.506-1.766t.496-1.775t1.312-1.369zm4.416 8.63h6.419q-.315 3.222-2.58 5.487q-2.264 2.264-5.485 2.579v-6.454q.586-.203 1.004-.62q.417-.418.642-.991m.623 1q-.258.37-.568.688q-.311.318-.702.543v4.63q2.193-.504 3.766-2.086q1.573-1.583 2.096-3.775zm0 0" />
               </svg>
@@ -351,6 +398,14 @@
             </div>
           </div>
 
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="line-style-btn" title="Line Style">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M4 12H20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
           <!-- Point Shapes Popup -->
           <div class="toolbar-item has-dropdown">
             <div class="tool-icon active" id="point-shapes-btn" title="Point Shapes">
@@ -362,8 +417,51 @@
           </div>
         </div>
 
+        <!-- Radar Chart Specific Controls -->
+        <div class="toolbar-item" id="radar-controls" style="display: none">
+          <div class="toolbar-item">
+            <div class="tool-icon" id="radar-area-toggle" title="Fill Area">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12 3L20 8v8l-8 5l-8-5V8zm0 2.1L6 8.58v6.84l6 3.48l6-3.48V8.58z" opacity=".35"/>
+                <path fill="currentColor" d="M12 6.8l4.4 2.55v5.3L12 17.2l-4.4-2.55v-5.3z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-line-width-btn" title="Line Width">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20">
+                <path fill="currentColor" d="M2 14.5h16v2H2zm2-5h12v2H4zm2-5h8v2H6z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-point-shapes-btn" title="Point Shape">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-grid-shape-btn" title="Grid Shape">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3L19 7v10l-7 4l-7-4V7z"/>
+                <path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M12 7l3.5 2v6L12 17l-3.5-2V9z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="toolbar-item has-dropdown">
+            <div class="tool-icon active" id="radar-start-angle-btn" title="Start Angle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M12 4a8 8 0 1 1-8 8"/>
+                <path fill="currentColor" d="M11 2h2v7h-2z"/>
+                <path fill="currentColor" d="M12 10l4 2l-1 1.7l-4-2.4z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
         <!-- Scatter Chart Specific Controls -->
-      <div class="toolbar-item" id="scatter-controls" style="display: none">
+        <div class="toolbar-item" id="scatter-controls" style="display: none">
         <!-- Point Shapes Popup -->
         <div class="toolbar-item has-dropdown">
           <div class="tool-icon active" id="scatter-point-shapes-btn" title="Point Shapes">
@@ -373,7 +471,61 @@
             </svg>
           </div>
         </div>
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="scatter-point-size-btn" title="Point Size">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4.5" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+        <div class="toolbar-item has-dropdown">
+          <div class="tool-icon active" id="scatter-point-padding-btn" title="Point Padding">
+            <svg viewBox="0 0 15 15" width="16" height="16">
+              <path fill="currentColor"
+                d="M12.333 1.01A1.86 1.86 0 0 1 14 2.857v9.286l-.01.19a1.86 1.86 0 0 1-1.657 1.657l-.19.01H2.857l-.19-.01a1.86 1.86 0 0 1-1.657-1.657l-.01-.19V2.857c0-.961.73-1.752 1.667-1.847l.19-.01h9.286zM2.857 2A.86.86 0 0 0 2 2.857v9.286c0 .473.384.857.857.857h9.286a.86.86 0 0 0 .857-.857V2.857A.86.86 0 0 0 12.143 2zM4.5 10a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m-6-3a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m6 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m-6-3a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1m3 0a.5.5 0 1 1 0 1a.5.5 0 0 1 0-1" />
+            </svg>
+          </div>
+        </div>
       </div>
+
+        <div class="toolbar-item hidden" id="dot-line-width-control">
+          <div class="tool-icon active" id="dot-line-width-btn" title="Dot Range Width">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20">
+              <path fill="currentColor" d="m15.503 15.003l-.735.71a.75.75 0 1 0 1.042 1.078l1.886-1.82a1 1 0 0 0 0-1.44l-1.886-1.82a.75.75 0 0 0-1.042 1.079l.739.713H12.75a.75.75 0 0 0 0 1.5zM15 3a2 2 0 0 1 2 2v4.25a.75.75 0 0 1-1.5 0V5a.5.5 0 0 0-.5-.5H5a.5.5 0 0 0-.5.5v4.25a.75.75 0 0 1-1.5 0V5a2 2 0 0 1 2-2zM5.234 15.712l-.735-.71h2.752a.75.75 0 1 0 0-1.5H4.495l.739-.713a.75.75 0 0 0-1.042-1.078l-1.886 1.82a1 1 0 0 0 0 1.44l1.886 1.82a.75.75 0 0 0 1.042-1.079"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Bar Orientation Options -->
+        <div class="toolbar-item hidden" id="bar-orientation-control">
+          <div class="tool-icon active" id="toolbar-bar-vertical-option" title="Vertical Bars">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.5 20V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M12 20V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M18.5 20V13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="tool-icon" id="toolbar-bar-horizontal-option" title="Horizontal Bars">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 5.5H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M4 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M4 18.5H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Histogram Specific Controls -->
+        <div class="toolbar-item hidden" id="histogram-controls">
+          <div class="tool-icon" id="histogram-normalize-toggle" title="Normalize Histogram">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 19V11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M11 19V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M17 19V14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M3.5 19H20.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M14.5 6.5L17 4L19.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
 
         <!-- Padding with Popup -->
         <div class="toolbar-item has-dropdown">
@@ -406,42 +558,97 @@
           </div>
         </div>
 
-        <!-- More Options -->
-        <div class="toolbar-item has-dropdown">
-          <div class="tool-icon active" id="more-options-btn" title="More Options">
-            <svg viewBox="0 0 24 24" width="16" height="16">
-              <path fill="currentColor"
-                d="M12 8C13.1 8 14 7.1 14 6C14 4.9 13.1 4 12 4C10.9 4 10 4.9 10 6C10 7.1 10.9 8 12 8ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM12 16C10.9 16 10 16.9 10 18C10 19.1 10.9 20 12 20C13.1 20 14 19.1 14 18C14 16.9 13.1 16 12 16Z" />
-            </svg>
-          </div>
-        </div>
       </div>
 
       <!-- DROPDOWN CONTAINERS MOVED OUTSIDE GLOBAL TOOLBAR -->
       <!-- Color Preset Dropdown -->
-      <div class="color-preset-dropdown" id="color-preset-dropdown">
-        <button class="color-preset-option" data-preset="default">
-          <div class="color-swatch" style="background: linear-gradient(45deg, #6aa2ff, #a78bfa)"></div>
-          <span>Default</span>
-        </button>
-        <button class="color-preset-option" data-preset="vibrant">
-          <div class="color-swatch" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4)"></div>
-          <span>Vibrant</span>
-        </button>
-        <button class="color-preset-option" data-preset="pastel">
-          <div class="color-swatch" style="background: linear-gradient(45deg, #a8e6cf, #dcedc1)"></div>
-          <span>Pastel</span>
-        </button>
-        <button class="color-preset-option" data-preset="monochrome">
-          <div class="color-swatch" style="background: linear-gradient(45deg, #666, #999)"></div>
+        <div class="color-preset-dropdown" id="color-preset-dropdown">
+          <button class="color-preset-option" data-preset="default">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #2563eb, #10b981)"></div>
+            <span>Default</span>
+          </button>
+          <button class="color-preset-option" data-preset="vibrant">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #ef4444, #f59e0b, #8b5cf6)"></div>
+            <span>Vibrant</span>
+          </button>
+          <button class="color-preset-option" data-preset="pastel">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #f9a8d4, #93c5fd, #86efac)"></div>
+            <span>Pastel</span>
+          </button>
+          <button class="color-preset-option" data-preset="monochrome">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #111111, #7a7a7a, #e5e5e5)"></div>
           <span>Monochrome</span>
+        </button>
+          <button class="color-preset-option" data-preset="custom">
+          <div class="color-swatch" style="background: linear-gradient(135deg, #111318, #4b5563, #f8fafc)"></div>
+          <span>Custom</span>
         </button>
       </div>
 
-      <!-- Font Size Popup -->
-      <div class="slider-popup" id="font-size-popup">
-        <input type="range" class="popup-slider" id="popup-font-size" min="8" max="20" value="12" />
-        <div class="slider-value" id="font-size-value">12px</div>
+      <!-- Font Controls Popup -->
+      <div class="font-popup" id="font-size-popup">
+        <div class="font-popup-header">
+          <span class="font-popup-title">Text Style</span>
+          <button class="font-toggle active" id="font-toggle" type="button" aria-pressed="true">On</button>
+        </div>
+        <div class="font-popup-grid">
+          <label class="font-field">
+            <span class="font-field-label">Font</span>
+            <span class="font-select-wrap">
+              <select id="font-family-select">
+                <option value="Segoe UI">Segoe UI</option>
+                <option value="Inter">Inter</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Trebuchet MS">Trebuchet MS</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+          <label class="font-field">
+            <span class="font-field-label">Weight</span>
+            <span class="font-select-wrap">
+              <select id="font-weight-select">
+                <option value="normal">Regular</option>
+                <option value="500">Medium</option>
+                <option value="600">Semibold</option>
+                <option value="700">Bold</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+          <label class="font-field font-field-span">
+            <span class="font-field-label">Size</span>
+            <div class="font-range-row">
+              <input type="range" class="popup-slider" id="popup-font-size" min="8" max="24" value="12" />
+              <div class="slider-value" id="font-size-value">12px</div>
+            </div>
+          </label>
+          <label class="font-field">
+            <span class="font-field-label">Color</span>
+            <div class="font-color-row">
+              <button class="font-color-control" id="font-color-control" type="button">
+                <span class="font-color-swatch" id="font-color-swatch"></span>
+                <span class="font-color-code" id="font-color-code">#9AA4B2</span>
+              </button>
+              <input type="hidden" id="font-color-input" value="#9aa4b2" />
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="font-color-panel" id="font-color-panel">
+        <div class="bg-color-panel-title">Font Color</div>
+        <div class="bg-color-canvas" id="font-color-canvas">
+          <div class="bg-color-canvas-cursor" id="font-color-canvas-cursor"></div>
+        </div>
+        <div class="bg-color-slider-wrap">
+          <input type="range" id="font-color-hue" min="0" max="360" value="220" />
+        </div>
+        <div class="bg-color-input-row font-color-input-row">
+          <input type="text" id="font-color-value" value="#9AA4B2" maxlength="7" />
+        </div>
       </div>
 
       <!-- Padding Popup -->
@@ -460,6 +667,33 @@
       <div class="slider-popup" id="line-width-popup">
         <input type="range" class="popup-slider" id="popup-line-width" min="1" max="10" value="2" />
         <div class="slider-value" id="line-width-value">2px</div>
+      </div>
+
+      <div class="more-dropdown export-dropdown line-style-dropdown" id="line-style-dropdown">
+        <button class="dropdown-item active" type="button" data-line-style="solid">
+          <span>Solid</span>
+        </button>
+        <button class="dropdown-item" type="button" data-line-style="dashed">
+          <span>Dashed</span>
+        </button>
+        <button class="dropdown-item" type="button" data-line-style="dotted">
+          <span>Dotted</span>
+        </button>
+      </div>
+
+      <div class="slider-popup" id="radar-line-width-popup">
+        <input type="range" class="popup-slider" id="popup-radar-line-width" min="1" max="10" value="2" />
+        <div class="slider-value" id="radar-line-width-value">2px</div>
+      </div>
+
+      <div class="slider-popup" id="radar-start-angle-popup">
+        <input type="range" class="popup-slider" id="popup-radar-start-angle" min="-180" max="180" value="-90" />
+        <div class="slider-value" id="radar-start-angle-value">-90°</div>
+      </div>
+
+      <div class="slider-popup" id="dot-line-width-popup">
+        <input type="range" class="popup-slider" id="popup-dot-line-width" min="1" max="10" value="2" />
+        <div class="slider-value" id="dot-line-width-value">2px</div>
       </div>
 
       <!-- Point Shapes Popup -->
@@ -482,6 +716,21 @@
         <button class="shape-option" data-shape="triangle" title="Triangle Points">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="shape-popup" id="radar-grid-shape-popup">
+        <button class="shape-option active" data-grid-shape="polygon" title="Polygon Grid">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3L19 7v10l-7 4l-7-4V7z"/>
+            <path fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M12 7l3.5 2v6L12 17l-3.5-2V9z"/>
+          </svg>
+        </button>
+        <button class="shape-option" data-grid-shape="circle" title="Circle Grid">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
           </svg>
         </button>
       </div>
@@ -510,13 +759,20 @@
       </button>
     </div>
 
+    <div class="slider-popup" id="scatter-point-size-popup">
+      <input type="range" class="popup-slider" id="popup-scatter-point-size" min="2" max="18" value="6" />
+      <div class="slider-value" id="scatter-point-size-value">6px</div>
+    </div>
+
+    <div class="slider-popup" id="scatter-point-padding-popup">
+      <input type="range" class="popup-slider" id="popup-scatter-point-padding" min="0" max="8" value="0" />
+      <div class="slider-value" id="scatter-point-padding-value">0px</div>
+    </div>
+
       <!-- More Options Dropdown -->
       <div class="more-dropdown" id="more-dropdown">
         <button class="dropdown-item" id="border-styles-btn">
           <span>Border Styles</span>
-        </button>
-        <button class="dropdown-item" id="shadow-effects-btn">
-          <span>Shadow Effects</span>
         </button>
         <button class="dropdown-item" id="transparency-btn">
           <span>Transparency</span>
@@ -537,57 +793,674 @@
       </div>
     </main>
 
-    <footer class="footer">
-      <button id="btn-export-svg" class="footer-btn">
-        <div class="footer-btn-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.6153 4.20711C14.8028 4.39464 14.9082 4.649 14.9082 4.91421V14C14.9082 14.5304 14.6975 15.0391 14.3224 15.4142C14.0664 15.6703 13.748 15.8497 13.403 15.9378C13.1355 16.0062 12.9082 15.7761 12.9082 15.5C12.9082 15.2239 13.1453 15.01 13.3876 14.8776C13.4705 14.8323 13.5473 14.7751 13.6153 14.7071C13.8028 14.5196 13.9082 14.2652 13.9082 14V5.5C13.9082 4.94772 13.4605 4.5 12.9082 4.5H11.9082C11.5104 4.5 11.1288 4.34196 10.8475 4.06066C10.5662 3.77936 10.4082 3.39782 10.4082 3V2C10.4082 1.44772 9.96049 1 9.4082 1H4.9082C4.64299 1 4.38863 1.10536 4.2011 1.29289C4.01356 1.48043 3.9082 1.73478 3.9082 2V5V6.5C3.9082 6.77614 3.68435 7 3.4082 7C3.13206 7 2.9082 6.77614 2.9082 6.5V5V2C2.9082 1.46957 3.11892 0.960859 3.49399 0.585786C3.86906 0.210714 4.37777 0 4.9082 0L9.99399 0C10.2592 0 10.5136 0.105357 10.7011 0.292893L14.6153 4.20711Z" fill="currentColor"/>
-            <path d="M3.9082 8.5C3.9082 8.22386 3.68435 8 3.4082 8C3.13206 8 2.9082 8.22386 2.9082 8.5V9.5C2.9082 9.77614 3.13206 10 3.4082 10C3.68435 10 3.9082 9.77614 3.9082 9.5V8.5Z" fill="currentColor"/>
-            <path d="M2.11342 14.4426C2.04436 14.3008 2.00572 14.1462 2 13.9886H2.764C2.778 14.0667 2.80785 14.141 2.85171 14.2071C2.89557 14.2731 2.95251 14.3295 3.019 14.3726C3.09446 14.4249 3.17835 14.4638 3.267 14.4876C3.363 14.5143 3.46967 14.5276 3.587 14.5276C3.751 14.5276 3.88867 14.5043 4 14.4576C4.10232 14.4196 4.1913 14.3525 4.256 14.2646C4.31357 14.1791 4.34326 14.0778 4.341 13.9746C4.34358 13.912 4.33101 13.8497 4.30438 13.7929C4.27775 13.7362 4.23783 13.6867 4.188 13.6486C4.08667 13.5686 3.93267 13.5043 3.726 13.4556L3.108 13.3116C2.90067 13.265 2.72067 13.194 2.568 13.0986C2.416 13.002 2.299 12.8796 2.217 12.7316C2.135 12.5836 2.094 12.409 2.094 12.2076C2.094 11.9636 2.15733 11.7506 2.284 11.5686C2.41133 11.3873 2.58733 11.247 2.812 11.1476C3.036 11.0476 3.29467 10.9976 3.588 10.9976C3.85608 10.9896 4.12257 11.0415 4.368 11.1496C4.56904 11.238 4.74199 11.3798 4.868 11.5596C4.9855 11.7262 5.05439 11.9222 5.067 12.1256H4.317C4.29988 12.0307 4.25855 11.9419 4.197 11.8676C4.13226 11.7872 4.04788 11.7249 3.952 11.6866C3.848 11.6413 3.72467 11.6186 3.582 11.6186C3.36467 11.6186 3.19367 11.6693 3.069 11.7706C2.94633 11.8706 2.885 11.9986 2.885 12.1546C2.88395 12.2122 2.89632 12.2691 2.92115 12.321C2.94597 12.373 2.98256 12.4184 3.028 12.4536C3.1482 12.5418 3.28657 12.6019 3.433 12.6296L4.054 12.7736C4.25186 12.8147 4.44236 12.8855 4.619 12.9836C4.77317 13.0677 4.90251 13.1908 4.994 13.3406C5.084 13.49 5.129 13.6766 5.129 13.9006C5.13321 14.133 5.06811 14.3614 4.942 14.5566C4.81867 14.7446 4.63867 14.8913 4.402 14.9966C4.168 15.102 3.882 15.1546 3.544 15.1546C3.29067 15.1546 3.069 15.1243 2.879 15.0636C2.68967 15.0036 2.53033 14.9196 2.401 14.8116C2.28044 14.71 2.18248 14.5843 2.11342 14.4426Z" fill="currentColor"/>
-            <path d="M7.527 15.0786H6.575L5.236 11.0796H6.153L7.05 14.2176H7.088L7.975 11.0796H8.854L7.527 15.0786Z" fill="currentColor"/>
-            <path d="M12.198 12.2776C12.1807 12.1016 12.134 11.9376 12.058 11.7856C11.982 11.6316 11.8773 11.496 11.744 11.3786C11.612 11.262 11.452 11.1703 11.264 11.1036C11.0787 11.037 10.867 11.0036 10.629 11.0036C10.267 11.0036 9.95833 11.0796 9.703 11.2316C9.449 11.383 9.25467 11.594 9.12 11.8646C8.98733 12.1373 8.921 12.4536 8.921 12.8136V13.3206C8.91822 13.5729 8.95362 13.824 9.026 14.0656C9.09074 14.2791 9.1994 14.4767 9.345 14.6456C9.49198 14.8103 9.67463 14.9393 9.879 15.0226C10.1189 15.1145 10.3742 15.1593 10.631 15.1546C10.899 15.1546 11.1317 15.1176 11.329 15.0436C11.5143 14.9751 11.683 14.8681 11.824 14.7296C11.9527 14.5996 12.0526 14.4439 12.117 14.2726C12.181 14.0993 12.213 13.916 12.213 13.7226V12.9246H10.637V13.5146H11.46V13.7686C11.46 13.902 11.43 14.0233 11.37 14.1326C11.3062 14.2448 11.2114 14.3361 11.097 14.3956C10.9545 14.4636 10.7979 14.4968 10.64 14.4926C10.4562 14.4999 10.2749 14.4488 10.122 14.3466C9.98239 14.2415 9.87641 14.098 9.817 13.9336C9.75233 13.7576 9.72 13.5523 9.72 13.3176V12.8206C9.72 12.454 9.79833 12.1706 9.955 11.9706C10.113 11.7693 10.3343 11.6686 10.619 11.6686C10.7207 11.668 10.8218 11.6828 10.919 11.7126C11.0054 11.739 11.0859 11.7817 11.156 11.8386C11.2238 11.891 11.2814 11.9554 11.326 12.0286C11.3717 12.1057 11.4042 12.1899 11.422 12.2776H12.198Z" fill="currentColor"/>
-            <path d="M7.4082 9L5.9082 7.5M7.4082 9L8.9082 7.5M7.4082 9V6.375M7.4082 5V5.625" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+<footer class="footer">
+      <div class="footer-left-actions">
+        <button id="btn-open-data-modal" class="footer-btn" type="button">Chart Data</button>
+        <button id="footer-animation-studio-btn" class="footer-btn" type="button" style="display: none;">
+          <span class="footer-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>Animation Studio</span>
+        </button>
+      </div>
+
+      <!-- Background Color Panel -->
+      <div class="bg-color-panel" id="bg-color-panel">
+        <div class="bg-color-panel-title">Background Color</div>
+        <div class="bg-color-canvas" id="bg-color-canvas">
+          <div class="bg-color-canvas-cursor" id="bg-color-canvas-cursor"></div>
         </div>
-        Export SVG
-      </button>
-      
-      <button id="btn-export-png" class="footer-btn">
-        <div class="footer-btn-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.7071 4.20711C14.8946 4.39464 15 4.649 15 4.91421V14C15 14.5304 14.7893 15.0391 14.4142 15.4142C14.1582 15.6703 13.8398 15.8497 13.4948 15.9378C13.2273 16.0062 13 15.7761 13 15.5C13 15.2239 13.2371 15.01 13.4794 14.8776C13.5623 14.8323 13.6391 14.7751 13.7071 14.7071C13.8946 14.5196 14 14.2652 14 14V5.5C14 4.94772 13.5523 4.5 13 4.5H12C11.6022 4.5 11.2206 4.34196 10.9393 4.06066C10.658 3.77936 10.5 3.39782 10.5 3V2C10.5 1.44772 10.0523 1 9.5 1H5C4.73478 1 4.48043 1.10536 4.29289 1.29289C4.10536 1.48043 4 1.73478 4 2V5V6.5C4 6.77614 3.77614 7 3.5 7C3.22386 7 3 6.77614 3 6.5V5V2C3 1.46957 3.21071 0.960859 3.58579 0.585786C3.96086 0.210714 4.46957 0 5 0L10.0858 0C10.351 0 10.6054 0.105357 10.7929 0.292893L14.7071 4.20711Z" fill="currentColor"/>
-            <path d="M4 8.5C4 8.22386 3.77614 8 3.5 8C3.22386 8 3 8.22386 3 8.5V9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5V8.5Z" fill="currentColor"/>
-            <path d="M10.8105 11C11.0485 11 11.2613 11.0329 11.4473 11.0996C11.6345 11.1662 11.7941 11.2584 11.9268 11.375C12.0601 11.4923 12.1652 11.6282 12.2412 11.7822H12.2402C12.3162 11.9355 12.3626 12.0999 12.3799 12.2744H11.6035C11.5854 12.1866 11.5528 12.1023 11.5068 12.0254C11.4623 11.9522 11.4047 11.8874 11.3369 11.835C11.2668 11.7781 11.186 11.7353 11.0996 11.709C11.0029 11.6793 10.902 11.6645 10.8008 11.665C10.5162 11.6651 10.2944 11.7655 10.1357 11.9668C9.97974 12.1675 9.90234 12.4514 9.90234 12.8174V13.3154C9.90238 13.5491 9.93446 13.7539 9.99902 13.9297C10.0581 14.0938 10.1636 14.2375 10.3027 14.3428C10.4559 14.4452 10.6382 14.4968 10.8223 14.4893C10.9799 14.4937 11.1368 14.4602 11.2793 14.3926C11.3933 14.3326 11.4875 14.2411 11.5508 14.1289C11.6108 14.0196 11.6409 13.8983 11.6416 13.7656V13.5107H10.8203V12.9209H12.3965V13.7188C12.3965 13.912 12.3634 14.0953 12.2988 14.2686C12.2346 14.4401 12.1346 14.5963 12.0059 14.7266C11.8648 14.8646 11.696 14.9718 11.5107 15.04C11.3136 15.1139 11.0815 15.1513 10.8145 15.1514C10.5573 15.1562 10.3007 15.1106 10.0605 15.0186C9.85675 14.935 9.67489 14.806 9.52832 14.6416C9.38239 14.4727 9.27304 14.275 9.20801 14.0615C9.13575 13.8202 9.0998 13.5693 9.10254 13.3174V12.8105C9.10259 12.4489 9.16958 12.1325 9.30273 11.8613C9.43673 11.5907 9.63077 11.3789 9.88477 11.2275C10.1407 11.0756 10.4494 11.0001 10.8105 11ZM3.59961 11.0762C3.8876 11.0755 4.13204 11.1349 4.33203 11.2549C4.5271 11.3676 4.68647 11.5334 4.79199 11.7324C4.89721 11.9343 4.9502 12.16 4.9502 12.4092C4.95433 12.6447 4.8988 12.8775 4.78906 13.0859C4.68379 13.2845 4.52934 13.4426 4.32617 13.5605C4.12484 13.6752 3.88042 13.7334 3.59375 13.7334H2.79102V15.0762H2V11.0762H3.59961ZM7.77637 13.7363H7.80762V11.0762H8.55762V15.0752H7.90234L6.14062 12.4004H6.10938V15.0752L5.3623 15.0762V11.0762H6.02441L7.77637 13.7363ZM2.78809 13.1123H3.44727C3.577 13.1158 3.70583 13.0876 3.82227 13.0303C3.92402 12.9762 4.00731 12.8922 4.06055 12.79C4.11982 12.6721 4.14904 12.5411 4.14551 12.4092C4.14551 12.1825 4.08329 12.0084 3.95996 11.8877C3.83668 11.7666 3.66602 11.7061 3.44824 11.7061H2.78809V13.1123Z" fill="currentColor"/>
-            <path d="M7.5 9L6 7.5M7.5 9L9 7.5M7.5 9V6.375M7.5 5V5.625" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <div class="bg-color-slider-wrap">
+          <input type="range" id="bg-color-hue" min="0" max="360" value="220" />
         </div>
-        Export PNG
-      </button>
-      
-      <button id="btn-export-figma" class="footer-btn primary">
-        <div class="footer-btn-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.7071 4.20711C13.8946 4.39464 14 4.649 14 4.91421V14C14 14.5304 13.7893 15.0391 13.4142 15.4142C13.0391 15.7893 12.5304 16 12 16H10.5C10.2239 16 10 15.7761 10 15.5C10 15.2239 10.2239 15 10.5 15H12C12.2652 15 12.5196 14.8946 12.7071 14.7071C12.8946 14.5196 13 14.2652 13 14V5.5C13 4.94772 12.5523 4.5 12 4.5H11C10.6022 4.5 10.2206 4.34196 9.93934 4.06066C9.65804 3.77936 9.5 3.39782 9.5 3V2C9.5 1.44772 9.05228 1 8.5 1H4C3.73478 1 3.48043 1.10536 3.29289 1.29289C3.10536 1.48043 3 1.73478 3 2V4.5C3 4.77614 2.77614 5 2.5 5C2.22386 5 2 4.77614 2 4.5V2C2 1.46957 2.21071 0.960859 2.58579 0.585786C2.96086 0.210714 3.46957 0 4 0L9.08579 0C9.351 0 9.60536 0.105357 9.79289 0.292893L13.7071 4.20711Z" fill="currentColor"/>
-            <path d="M8 10.5C8 10.1022 7.84196 9.72064 7.56066 9.43934C7.27936 9.15804 6.89782 9 6.5 9C6.10218 9 5.72064 9.15804 5.43934 9.43934C5.15804 9.72064 5 10.1022 5 10.5C5 10.8978 5.15804 11.2794 5.43934 11.5607C5.72064 11.842 6.10218 12 6.5 12C6.89782 12 7.27936 11.842 7.56066 11.5607C7.84196 11.2794 8 10.8978 8 10.5Z" stroke="currentColor"/>
-            <path d="M5 6H3.5C3.10218 6 2.72064 6.15804 2.43934 6.43934C2.15804 6.72064 2 7.10218 2 7.5C2 7.89782 2.15804 8.27936 2.43934 8.56066C2.72064 8.84196 3.10218 9 3.5 9M5 6V9M5 6H6.5C6.89782 6 7.27936 6.15804 7.56066 6.43934C7.84196 6.72064 8 7.10218 8 7.5C8 7.89782 7.84196 8.27936 7.56066 8.56066C7.27936 8.84196 6.89782 9 6.5 9H5M5 9H3.5M5 9V12M3.5 9C3.10218 9 2.72064 9.15804 2.43934 9.43934C2.15804 9.72064 2 10.1022 2 10.5C2 10.8978 2.15804 11.2794 2.43934 11.5607C2.72064 11.842 3.10218 12 3.5 12M5 12H3.5M5 12V13.5C5 13.8978 4.84196 14.2794 4.56066 14.5607C4.27936 14.842 3.89782 15 3.5 15C3.10218 15 2.72064 14.842 2.43934 14.5607C2.15804 14.2794 2 13.8978 2 13.5C2 13.1022 2.15804 12.7206 2.43934 12.4393C2.72064 12.158 3.10218 12 3.5 12" stroke="currentColor"/>
-            <path d="M10.5 14L9 12.5M10.5 14L12 12.5M10.5 14V11.375M10.5 10V10.625" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <div class="bg-color-opacity-row">
+          <label for="bg-color-opacity">Opacity</label>
+          <input type="range" id="bg-color-opacity" min="0" max="100" value="100" />
+          <span id="bg-color-opacity-value">100%</span>
         </div>
-        Add to Figma
-      </button>
+        <div class="bg-color-input-row">
+          <div class="bg-format-select">
+            <select id="bg-color-format" title="Color Format">
+              <option value="hex">HEX</option>
+              <option value="rgb">RGB</option>
+              <option value="hsl">HSL</option>
+            </select>
+            <span class="bg-format-caret" aria-hidden="true">&#9662;</span>
+          </div>
+          <input type="text" id="bg-color-hex" placeholder="#111318" />
+        </div>
+      </div>
+
+      <div class="bg-color-panel custom-color-picker-panel" id="custom-color-picker-panel">
+        <div class="bg-color-panel-title" id="custom-color-picker-title">Color</div>
+        <div class="bg-color-canvas" id="custom-color-canvas">
+          <div class="bg-color-canvas-cursor" id="custom-color-canvas-cursor"></div>
+        </div>
+        <div class="bg-color-slider-wrap">
+          <input type="range" id="custom-color-hue" min="0" max="360" value="220" />
+        </div>
+        <div class="bg-color-input-row">
+          <div class="bg-format-select">
+            <select id="custom-color-format" title="Color Format">
+              <option value="hex">HEX</option>
+              <option value="rgb">RGB</option>
+              <option value="hsl">HSL</option>
+            </select>
+            <span class="bg-format-caret" aria-hidden="true">&#9662;</span>
+          </div>
+          <input type="text" id="custom-color-value" placeholder="#111318" />
+        </div>
+      </div>
+      <div class="export-dropdown-wrapper has-dropdown">
+        <div class="export-split-btn">
+          <button id="btn-export-primary" class="footer-btn primary export-primary-btn" type="button">
+            <span class="export-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8.5 11.5L12 15L15.5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 18.5H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="export-copy">
+              <span class="export-label">Add to Figma</span>
+            </span>
+          </button>
+          <button id="btn-export-toggle" class="footer-btn primary export-toggle-btn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="export-caret">&#9662;</span>
+          </button>
+        </div>
+        <div class="more-dropdown export-dropdown" id="export-dropdown">
+          <button class="dropdown-item" id="btn-export-svg" type="button">
+            <span>Export SVG</span>
+          </button>
+          <button class="dropdown-item" id="btn-export-png" type="button">
+            <span>Export PNG</span>
+          </button>
+          <button class="dropdown-item active" id="btn-export-figma" type="button">
+            <span>Add to Figma</span>
+          </button>
+        </div>
+      </div>
     </footer>
   </div>
 
-  <div class="modal" id="info-modal">
+  <div class="app ai-app" id="ai-app" hidden>
+    <header class="header">
+      <div class="header-left">
+        <button class="home-btn" id="ai-home-btn" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 18L4 12L10 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 12H5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Home</span>
+        </button>
+      </div>
+      <div class="header-right">
+        <div class="hamburger-menu" id="ai-hamburger-menu">
+          <button class="hamburger-btn" id="ai-hamburger-btn" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M4 18q-.425 0-.712-.288T3 17t.288-.712T4 16h16q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T3 12t.288-.712T4 11h16q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T3 7t.288-.712T4 6h16q.425 0 .713.288T21 7t-.288.713T20 8z"/>
+            </svg>
+          </button>
+          <div class="dropdown-menu" id="ai-dropdown-menu">
+            <div class="menu-profile-wrap">
+              <div class="user-profile" id="ai-user-profile" data-user-profile>
+                <div class="user-status" id="ai-user-status" data-user-status></div>
+                <div class="user-info">
+                  <span class="user-greeting">Hi!</span>
+                  <span class="user-name" id="ai-user-name" data-user-name>User</span>
+                </div>
+                <div class="user-avatar" id="ai-user-avatar" data-user-avatar>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <button class="dropdown-item" id="ai-settings-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 8.75A3.25 3.25 0 1 0 12 15.25A3.25 3.25 0 1 0 12 8.75Z" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M19 12A7 7 0 0 0 18.9 10.82L21 9.2L19.2 6.1L16.68 7.05A7.06 7.06 0 0 0 14.64 5.88L14.25 3H9.75L9.36 5.88A7.06 7.06 0 0 0 7.32 7.05L4.8 6.1L3 9.2L5.1 10.82A7 7 0 0 0 5 12C5 12.4 5.03 12.8 5.1 13.18L3 14.8L4.8 17.9L7.32 16.95C7.94 17.42 8.64 17.78 9.36 18.12L9.75 21H14.25L14.64 18.12C15.36 17.78 16.06 17.42 16.68 16.95L19.2 17.9L21 14.8L18.9 13.18C18.97 12.8 19 12.4 19 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="menu-item-label">Settings</span>
+            </button>
+            <button class="dropdown-item" id="ai-join-us-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M9 3q-2.5.5-5 2q-3 5-3 12q2 2.5 6 4q1-1.5 1.5-3.5M7 17q5 2 10 0m-1.5.5q.5 2 1.5 3.5q4-1.5 6-4q0-7-3-12q-2.5-1.5-5-2l-1 2q-2-.5-4 0L9 3"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></g></svg>
+              </span>
+              <span class="menu-item-label">Join Us</span>
+            </button>
+            <button class="dropdown-item" id="ai-community-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8.667H8.667m3.333 0V2H8.667a3.333 3.333 0 0 0 0 6.667m3.333 0v6.666H8.667M12 8.667h3.333m-6.666 0a3.333 3.333 0 0 0 0 6.666m0 0A3.333 3.333 0 1 0 12 18.667m3.333-10a3.333 3.333 0 1 0 0 6.666a3.333 3.333 0 0 0 0-6.666m0 0a3.333 3.333 0 0 0 0-6.667"/></svg>>
+              </span>
+              <span class="menu-item-label">Community</span>
+            </button>
+            <button class="dropdown-item" id="ai-version-note-btn" type="button">
+              <span class="menu-item-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="currentColor" d="M18.586 15.414L16 12.834l-2.588 2.582L12 14l4-4l4 4zm0 6L16 18.834l-2.588 2.582L12 20l4-4l4 4z"/><path fill="currentColor" d="M1.586 17.414C1.196 17.024 1 16.512 1 16s.195-1.024.586-1.414l13-13C14.976 1.196 15.488 1 16 1s1.024.195 1.414.586l13 13c.39.39.586.902.586 1.414s-.195 1.024-.586 1.414l-13 13c-.39.39-.902.586-1.414.586s-1.024-.195-1.414-.586zM16 3L3 16l13 13l13-13z"/></svg>
+              </span>
+              <span class="menu-item-label">Version Note</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <aside class="left-panel ai-left-panel">
+      <div class="ai-chat-shell" id="ai-chat-shell">
+        <div class="ai-suggestion-grid" id="ai-suggestion-grid">
+          <button class="ai-suggestion-card" type="button" data-prompt="Create a bar chart for monthly revenue with six months of data.">
+            <span class="ai-suggestion-label">Bar Chart</span>
+            <span class="ai-suggestion-copy">Monthly revenue for six months</span>
+          </button>
+          <button class="ai-suggestion-card" type="button" data-prompt="Create a pie chart for monthly expenses with rent, food, travel, and savings.">
+            <span class="ai-suggestion-label">Pie Chart</span>
+            <span class="ai-suggestion-copy">Monthly expenses by category</span>
+          </button>
+        </div>
+        <div class="ai-chat-messages" id="ai-chat-messages"></div>
+        <form class="ai-chat-composer" id="ai-chat-form">
+          <input id="ai-chat-input" class="ai-chat-input" type="text" placeholder="Describe the graph you want..." autocomplete="off" />
+          <button class="ai-chat-send" type="submit">Send</button>
+        </form>
+      </div>
+    </aside>
+
+    <main class="preview-area ai-preview-area">
+      <div class="preview-canvas" id="ai-svg-host"></div>
+    </main>
+
+<footer class="footer">
+      <div class="footer-left-actions">
+        <button id="ai-btn-open-data-modal" class="footer-btn" type="button">Chart Data</button>
+        <button id="ai-footer-animation-studio-btn" class="footer-btn" type="button" style="display: none;">
+          <span class="footer-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M10 9.5L15 12L10 14.5V9.5Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span>Animation Studio</span>
+        </button>
+      </div>
+      <div class="export-dropdown-wrapper has-dropdown">
+        <div class="export-split-btn">
+          <button id="ai-btn-export-primary" class="footer-btn primary export-primary-btn" type="button">
+            <span class="export-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8.5 11.5L12 15L15.5 11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 18.5H19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="export-copy">
+              <span class="export-label" id="ai-export-label">Add to Figma</span>
+            </span>
+          </button>
+          <button id="ai-btn-export-toggle" class="footer-btn primary export-toggle-btn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="export-caret">&#9662;</span>
+          </button>
+        </div>
+        <div class="more-dropdown export-dropdown" id="ai-export-dropdown">
+          <button class="dropdown-item" id="ai-btn-export-svg" type="button">
+            <span>Export SVG</span>
+          </button>
+          <button class="dropdown-item" id="ai-btn-export-png" type="button">
+            <span>Export PNG</span>
+          </button>
+          <button class="dropdown-item active" id="ai-btn-export-figma" type="button">
+            <span>Add to Figma</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <div class="app animation-app" id="animation-app" hidden>
+    <header class="header">
+      <div class="header-left">
+        <button class="home-btn" id="animation-home-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </div>
+      <div class="header-right animation-header-right">
+        <div class="animation-title-wrap">
+          <h2 class="app-title">Graph Animation Studio</h2>
+        </div>
+      </div>
+    </header>
+
+    <aside class="left-panel animation-left-panel">
+      <div class="form-section">
+        <h3 class="section-title">Animation Tools</h3>
+        <ol class="animation-flow-list">
+          <li>Choose a graph interaction preset.</li>
+          <li>Set trigger, timing, and easing for Smart Animate.</li>
+          <li>Export a Figma component set with prototype links.</li>
+          <li>Drop the result into your design and refine if needed.</li>
+        </ol>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Animation Scope</h3>
+        <div class="animation-chip-row">
+          <span class="animation-chip active">Step Builder</span>
+          <span class="animation-chip">Timeline</span>
+          <span class="animation-chip">Smart Animate Map</span>
+        </div>
+        <p class="animation-note">This studio is isolated from chart editing controls. It works on the current graph view and stores animation metadata for export.</p>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">V1 Preset</h3>
+        <p class="animation-note">Current graph: <span id="animation-chart-type-label">Bar Chart</span></p>
+        <div class="animation-control-grid">
+          <label class="animation-control" for="animation-preset-select">
+            <span class="font-field-label">Interaction</span>
+            <span class="font-select-wrap">
+              <select id="animation-preset-select">
+                <option value="bar-rise">Rise In</option>
+                <option value="bar-hover">Value Focus</option>
+                <option value="bar-compare">Compare Sweep</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+
+          <label class="animation-control" for="animation-trigger-select">
+            <span class="font-field-label">Trigger</span>
+            <span class="font-select-wrap">
+              <select id="animation-trigger-select">
+                <option value="after-delay">After delay</option>
+                <option value="on-click">On click</option>
+                <option value="on-hover">While hovering</option>
+                <option value="on-press">While pressing</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+
+          <label class="animation-control" for="animation-easing-select">
+            <span class="font-field-label">Easing</span>
+            <span class="font-select-wrap">
+              <select id="animation-easing-select">
+                <option value="ease-out">Ease Out</option>
+                <option value="ease-in">Ease In</option>
+                <option value="ease-in-out">Ease In &amp; Out</option>
+                <option value="linear">Linear</option>
+                <option value="gentle">Gentle</option>
+                <option value="quick">Quick</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+
+          <label class="animation-control" for="animation-direction-select">
+            <span class="font-field-label">Direction</span>
+            <span class="font-select-wrap">
+              <select id="animation-direction-select">
+                <option value="smart">Auto / Smart</option>
+                <option value="up">Up</option>
+                <option value="right">Right</option>
+                <option value="down">Down</option>
+                <option value="left">Left</option>
+              </select>
+              <span class="font-select-caret" aria-hidden="true">&#9662;</span>
+            </span>
+          </label>
+        </div>
+
+        <label class="settings-range-row" for="animation-duration-range">
+          <span class="settings-range-copy">
+            <strong>Duration</strong>
+            <small>Smart Animate timing used in the exported prototype.</small>
+          </span>
+          <span class="settings-range-value" id="animation-duration-value">450 ms</span>
+        </label>
+        <input class="settings-range-input" id="animation-duration-range" type="range" min="100" max="1400" step="50" value="450" />
+
+        <p class="animation-note" id="animation-preset-copy">Creates a two-state load-in flow with Smart Animate.</p>
+        <p class="animation-note">Export states: <span id="animation-state-summary">Start -> Loaded</span></p>
+      </div>
+    </aside>
+
+    <main class="preview-area animation-preview-area">
+      <div class="preview-canvas animation-preview-canvas">
+        <div id="animation-svg-host" class="animation-svg-host">
+          <div style="color: var(--muted); text-align: center">
+            <p>Graph preview will appear here</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-left-actions">
+        <span class="animation-note">Save to return to default graph window.</span>
+      </div>
+      <div class="footer-right-actions">
+        <button class="footer-btn" id="animation-preview-btn" type="button">See Animation</button>
+        <button class="footer-btn primary" id="animation-save-btn" type="button">Save</button>
+      </div>
+    </footer>
+  </div>
+  <div class="settings-overlay" id="settings-overlay" hidden>
+    <button class="settings-backdrop" id="settings-backdrop" type="button" aria-label="Close settings"></button>
+    <aside class="settings-drawer" id="settings-drawer" role="dialog" aria-modal="true" aria-labelledby="settings-drawer-title" tabindex="-1">
+      <header class="settings-drawer-header">
+        <div class="settings-drawer-title-wrap">
+          <h2 class="settings-drawer-title" id="settings-drawer-title">Settings</h2>
+          <p class="settings-drawer-subtitle">Editor preferences</p>
+        </div>
+        <button class="settings-close-btn" id="settings-home-btn" type="button" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="settings-drawer-body">
+        <section class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-eyebrow">Workspace</span>
+            <h3 class="settings-detail-title">Layout</h3>
+          </div>
+          <div class="settings-control-group settings-control-group-first">
+            <div class="settings-block-head">
+              <h4>Default Editor Layout</h4>
+            </div>
+            <div class="settings-layout-select">
+              <select id="settings-layout-select" aria-label="Default editor layout">
+                <option value="layout-option-1">Sidebar left, toolbar top</option>
+                <option value="layout-option-2">Sidebar right, toolbar top</option>
+                <option value="layout-option-3">Sidebar left, toolbar bottom</option>
+                <option value="layout-option-4">Sidebar right, toolbar bottom</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-control-group">
+            <div class="settings-block-head">
+              <h4>Theme</h4>
+            </div>
+            <div class="settings-layout-select">
+              <select id="settings-theme-mode-select" aria-label="Theme mode">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+                <option value="dark-contrast">Dark with contrast</option>
+                <option value="light-contrast">Light with high contrast</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-control-group">
+            <div class="settings-block-head">
+              <h4>Language</h4>
+            </div>
+            <div class="settings-layout-select">
+              <select id="settings-language-select" aria-label="Language">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="zh">Chinese</option>
+              </select>
+            </div>
+          </div>
+          <label class="settings-toggle-row" for="settings-preview-fill-toggle">
+            <span class="settings-toggle-copy">
+              <span class="settings-toggle-title">Preview Panel Fill</span>
+              <span class="settings-toggle-subtitle" id="settings-preview-fill-toggle-label">On</span>
+            </span>
+            <span class="settings-toggle-control">
+              <input id="settings-preview-fill-toggle" type="checkbox" />
+              <span class="settings-toggle-slider" aria-hidden="true"></span>
+            </span>
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-eyebrow">Profile</span>
+            <h3 class="settings-detail-title">Identity</h3>
+          </div>
+          <div class="settings-control-group">
+            <div class="settings-block-head">
+              <h4>Profile visibility</h4>
+            </div>
+            <div class="settings-status-card">
+              <span class="settings-status-label">Current Profile</span>
+              <strong id="settings-profile-name">Loading...</strong>
+            </div>
+            <label class="settings-toggle-row" for="settings-profile-toggle">
+              <span class="settings-toggle-copy">
+                <span class="settings-toggle-title">Show Figma Profile</span>
+                <span class="settings-toggle-subtitle" id="settings-profile-toggle-label">On</span>
+              </span>
+              <span class="settings-toggle-control">
+                <input id="settings-profile-toggle" type="checkbox" />
+                <span class="settings-toggle-slider" aria-hidden="true"></span>
+              </span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <footer class="settings-drawer-footer">
+        <button class="footer-btn" id="settings-reset-btn" type="button">Reset To Default</button>
+        <div class="settings-drawer-actions">
+          <button class="footer-btn" id="settings-cancel-btn" type="button">Cancel</button>
+          <button class="footer-btn primary" id="settings-save-btn" type="button">Save</button>
+        </div>
+      </footer>
+    </aside>
+  </div>
+  <div class="settings-overlay version-overlay" id="version-overlay" hidden>
+    <button class="settings-backdrop" id="version-backdrop" type="button" aria-label="Close version note"></button>
+    <aside class="settings-drawer version-drawer" id="version-drawer" role="dialog" aria-modal="true" aria-labelledby="version-drawer-title" tabindex="-1">
+      <header class="settings-drawer-header">
+        <div class="settings-drawer-title-wrap">
+          <h2 class="settings-drawer-title" id="version-drawer-title">Version Note</h2>
+          <p class="settings-drawer-subtitle">Current product updates</p>
+        </div>
+        <button class="settings-close-btn" id="version-home-btn" type="button" aria-label="Close version note">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6L18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="settings-drawer-body version-drawer-body">
+        <section class="settings-section">
+          <div class="settings-section-head">
+            <span class="settings-eyebrow">Current Release</span>
+            <h3 class="settings-detail-title">Version 3</h3>
+          </div>
+          <article class="version-entry-card">
+            <div class="version-entry-head">
+              <strong>April 18, 2026</strong>
+              <span class="version-entry-chip">Latest</span>
+            </div>
+            <ul class="version-entry-list">
+              <strong>Enhancements</strong>
+              <li>New Chart added : Radar $ Dot Plot.</li>
+              <li>JSON Data option is available now.</li>
+              <li>Themes are added.</li>
+              <li>Added layout feature.</li>
+              <li>Language support.</li>
+              <li>Custom color option added.</li>
+              <li>Font option now has its dedicated panel for color, type, weight, size and toggle.</li>
+              <li>Bar chart has now horizontal orientation.</li>
+              <li>Scatter chart now support multi series.</li>
+              <li>Line chart now support line type.</li>
+              <li>Histogram has normalisation option.</li>
+              <strong>Fixes</strong>
+              <li>Line chart multi series fix.</li>
+              <li>Bar chart auto bar width fix.</li>
+              <li>Border radius fix.</li>
+              <li>Reset button fix.</li>
+            </ul>
+          </article>
+        </section>
+      </div>
+
+      <footer class="settings-drawer-footer">
+        <span class="version-footer-copy">Version notes are grouped by major visible updates.</span>
+        <div class="settings-drawer-actions">
+          <button class="footer-btn primary" id="version-close-btn" type="button">Close</button>
+        </div>
+      </footer>
+    </aside>
+  </div>
+  <div class="modal" id="chart-data-modal">
+    <div class="modal-content chart-data-modal-content">
+      <div class="modal-header">
+        <div class="chart-data-modal-heading">
+          <span class="chart-data-modal-eyebrow">Data Workspace</span>
+        </div>
+        <button class="modal-close" id="chart-data-modal-close">&times;</button>
+      </div>
+      <div class="chart-data-modal-body">
+        <div class="chart-data-empty-state" id="chart-data-empty-state" style="display: none">
+          <h4 class="chart-data-empty-title">No chart generated yet</h4>
+          <p class="chart-data-empty-copy">Generate the graph first.</p>
+        </div>
+
+        <div class="form-section" id="default-data-section">
+        <div class="data-section-modern">
+          <div class="data-section-header">
+            <div>
+              <h3 class="data-section-title">Default Dataset</h3>
+            </div>
+            <div class="data-controls-modern">
+              <button class="btn-modern" id="btn-reset-default-data" type="button">
+                <span class="btn-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 5V2L7 6l5 4V7c3.31 0 6 2.69 6 6a6 6 0 0 1-10.24 4.24l-1.42 1.42A8 8 0 1 0 20 13c0-4.42-3.58-8-8-8"/>
+                  </svg>
+                </span>
+                Reset
+              </button>
+              <button class="btn-modern" id="btn-add-row-modern">
+                <span class="btn-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M8 15c-3.86 0-7-3.14-7-7s3.14-7 7-7s7 3.14 7 7s-3.14 7-7 7M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6"/>
+                    <path fill="currentColor" d="M8 11.5c-.28 0-.5-.22-.5-.5V5c0-.28.22-.5.5-.5s.5.22.5.5v6c0 .28-.22.5-.5.5"/>
+                    <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
+                  </svg>
+                </span>
+                Row
+              </button>
+              <button class="btn-modern" id="btn-add-series-modern" style="display: none">
+                <span class="btn-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M8 15c-3.86 0-7-3.14-7-7s3.14-7 7-7s7 3.14 7 7s-3.14 7-7 7M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6"/>
+                    <path fill="currentColor" d="M8 11.5c-.28 0-.5-.22-.5-.5V5c0-.28.22-.5.5-.5s.5.22.5.5v6c0 .28-.22.5-.5.5"/>
+                    <path fill="currentColor" d="M11 8.5H5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h6c.28 0 .5.22.5.5s-.22.5-.5.5"/>
+                  </svg>
+                </span>
+                Series
+              </button>
+            </div>
+          </div>
+
+          <div class="modern-data-table-container">
+            <table class="modern-data-table" id="modern-data-table">
+              <thead id="modern-data-table-headers">
+                <!-- Dynamic headers will be inserted here -->
+              </thead>
+              <tbody id="modern-data-table-body">
+                <!-- Dynamic rows will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <div class="data-info-modern">
+          <div class="data-stats">
+            <span id="modern-row-count">4 rows</span>
+            <span id="modern-series-count" style="display: none">1 series</span>
+          </div>
+          <span class="data-limit" id="modern-data-limits">Max: 15 rows</span>
+        </div>
+      </div>
+
+      <div class="form-section" id="manual-data-section" style="display: none">
+        <div class="manual-input-card">
+          <div class="manual-input-header">
+            <div>
+              <h3 class="manual-input-title">Manual Dataset</h3>
+            </div>
+            <span class="manual-input-chip">FORM</span>
+          </div>
+          <p class="manual-input-subtitle" id="manual-input-subtitle">Enter values directly in the form below, then apply to update the chart.</p>
+
+          <div class="manual-editor-wrap">
+            <div class="manual-editor-label-row">
+              <span class="manual-editor-label">Data Form</span>
+            </div>
+            <div class="manual-form-head" id="manual-form-head"></div>
+            <div class="manual-form-rows" id="manual-form-rows"></div>
+          </div>
+
+          <div class="manual-input-actions">
+            <div class="manual-action-group">
+              <button id="btn-reset-manual-data" class="btn" type="button">Reset</button>
+              <button id="btn-add-manual-row" class="btn" type="button">Add Row</button>
+              <button id="btn-add-manual-series" class="btn" type="button" style="display:none">Add Series</button>
+            </div>
+            <button id="btn-apply-data" class="btn primary manual-apply-btn">Apply Data</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="json-data-section" style="display: none">
+        <div class="manual-input-card json-input-card">
+          <div class="manual-input-header">
+            <div>
+              <h3 class="manual-input-title">JSON Dataset</h3>
+            </div>
+            <div class="json-input-mode-row" aria-label="JSON input mode">
+            <button class="btn-modern active" id="json-mode-editor" type="button">Write in Editor</button>
+            <button class="btn-modern" id="json-mode-upload" type="button">Upload JSON</button>
+          </div>
+          </div>
+          <p class="manual-input-subtitle">Choose upload or editor mode, then apply JSON data to update the chart.</p>
+
+
+          <div class="json-editor-panel" id="json-editor-panel">
+            <textarea id="json-editor" class="mono json-editor" placeholder='{"categories":["A","B"],"series":[{"label":"Series 1","y":[40,55]}]}'></textarea>
+          </div>
+
+          <div class="json-upload-panel" id="json-upload-panel" style="display:none">
+            <input id="json-file-input" type="file" accept=".json,application/json" />
+            <p class="json-file-name" id="json-file-name">No file selected</p>
+          </div>
+
+          <div class="manual-input-actions">
+            <button id="btn-apply-json" class="btn primary manual-apply-btn" type="button">Apply JSON</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+<div class="modal" id="info-modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title">Welcome User to Info section where updates is provided</h3>
-        <button class="modal-close" id="modal-close">×</button>
+        <button class="modal-close" id="modal-close">&times;</button>
       </div>
       <div>
         <h4>Current Features:</h4>
         <ul>
-          <li>5 chart types (Bar, Pie, Line, Scatter, Histogram)</li>
+          <li>7 chart types (Bar, Pie, Line, Radar, Scatter, Dot, Histogram)</li>
           <li>Default random data generation</li>
           <li>Global styling controls</li>
           <li>Export options (SVG, PNG, Figma)</li>
@@ -607,6 +1480,28 @@
           <li>Use global toolbar for overall styling</li>
           <li>Export your chart when ready</li>
         </ol>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="experience-modal">
+    <div class="modal-content experience-modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Love The Plugin? Bookmark It</h3>
+        <button class="modal-close" id="experience-modal-close">&times;</button>
+      </div>
+      <div class="experience-modal-body">
+        <p class="experience-copy">If this helped your workflow, bookmark it in the Figma Community so you can find it faster later.</p>
+        <div class="experience-actions">
+          <button class="footer-btn primary experience-bookmark-btn" id="experience-bookmark-btn" type="button">
+            <span class="menu-item-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 4.5C7 3.672 7.672 3 8.5 3h7C16.328 3 17 3.672 17 4.5V21l-5-3.5L7 21V4.5Z" fill="currentColor"/>
+              </svg>
+            </span>
+            <span>Bookmark</span>
+          </button>
+          <button class="footer-btn" id="experience-remind-btn" type="button">Remind me later</button>
+        </div>
       </div>
     </div>
   </div>
@@ -631,2175 +1526,19 @@
     </div>
   </div>
 
-  <script>
-    // ===== DOM ELEMENTS =====
-    // Main UI elements
-    const hamburgerMenu = document.getElementById("hamburger-menu");
-    const dropdownMenu = document.getElementById("dropdown-menu");
-    const themeToggle = document.getElementById("theme-toggle");
-    const infoBtn = document.getElementById("info-btn");
-    const infoModal = document.getElementById("info-modal");
-    const modalClose = document.getElementById("modal-close");
-    const defaultDataSection = document.getElementById("default-data-section");
-    const manualDataSection = document.getElementById("manual-data-section");
-    const btnApplyData = document.getElementById("btn-apply-data");
-    const dataInput = document.getElementById("data-input");
-
-    // Global toolbar elements
-    const colorPresetBtn = document.getElementById("color-preset-btn");
-    const colorPresetDropdown = document.getElementById("color-preset-dropdown");
-    const fontSizeBtn = document.getElementById("font-size-btn");
-    const fontSizePopup = document.getElementById("font-size-popup");
-    const popupFontSize = document.getElementById("popup-font-size");
-    const fontSizeValue = document.getElementById("font-size-value");
-    const paddingBtn = document.getElementById("padding-btn");
-    const paddingPopup = document.getElementById("padding-popup");
-    const popupPadding = document.getElementById("popup-padding");
-    const paddingValue = document.getElementById("padding-value");
-    const borderRadiusBtn = document.getElementById("border-radius-btn");
-    const borderRadiusPopup = document.getElementById("border-radius-popup");
-    const popupBorderRadius = document.getElementById("popup-border-radius");
-    const borderRadiusValue = document.getElementById("border-radius-value");
-    const globalBgColor = document.getElementById("global-bg-color");
-    const resetStylesBtn = document.getElementById("reset-styles-btn");
-    const moreOptionsBtn = document.getElementById("more-options-btn");
-    const moreDropdown = document.getElementById("more-dropdown");
-
-    // Chart control elements
-    const toolbarColor = document.getElementById("toolbar-color");
-    const toolbarOpacity = document.getElementById("toolbar-opacity");
-    const opacityValue = document.getElementById("opacity-value");
-    const btnExportSvg = document.getElementById("btn-export-svg");
-    const btnExportPng = document.getElementById("btn-export-png");
-    const btnExportFigma = document.getElementById("btn-export-figma");
-
-    // Pie chart controls
-    const pieGapToggle = document.getElementById('pie-gap-toggle');
-    const pieDonutToggle = document.getElementById('pie-donut-toggle');
-
-    // Bar chart elements
-    const toolbarBorderColor = document.getElementById("toolbar-border-color");
-    const toolbarBorderWidth = document.getElementById("toolbar-border-width");
-    const borderWidthValue = document.getElementById("border-width-value");
-    const toolbarBarWidth = document.getElementById("toolbar-bar-width");
-    const barWidthValue = document.getElementById("bar-width-value");
-    const toolbarCornerRadius = document.getElementById("toolbar-corner-radius");
-    const cornerRadiusValue = document.getElementById("corner-radius-value");
-    const toolbarValueDisplay = document.getElementById("toolbar-value-display");
-
-    // Pie chart elements
-    const toolbarSlicePadding = document.getElementById("toolbar-slice-padding");
-    const slicePaddingValue = document.getElementById("slice-padding-value");
-    const toolbarSliceBorderColor = document.getElementById("toolbar-slice-border-color");
-    const toolbarSliceBorderRadius = document.getElementById("toolbar-slice-border-radius");
-    const sliceBorderRadiusValue = document.getElementById("slice-border-radius-value");
-    const toolbarLabelDisplay = document.getElementById("toolbar-label-display");
-
-    // Action buttons
-    const toolbarReset = document.getElementById("toolbar-reset");
-    const toolbarApplyAll = document.getElementById("toolbar-apply-all");
-
-    // Line chart controls
-    const lineAreaToggle = document.getElementById('line-area-toggle');
-    const lineCurveToggle = document.getElementById('line-curve-toggle');
-    const lineWidthBtn = document.getElementById('line-width-btn');
-    const lineWidthPopup = document.getElementById('line-width-popup');
-    const popupLineWidth = document.getElementById('popup-line-width');
-    const lineWidthValue = document.getElementById('line-width-value');
-    const pointShapesBtn = document.getElementById('point-shapes-btn');
-    const pointShapesPopup = document.getElementById('point-shapes-popup');
-
-    // Scatter chart controls
-    const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
-    const scatterPointShapesPopup = document.getElementById('scatter-point-shapes-popup');
-
-    // ===== APPLICATION STATE =====
-    const state = {
-      chartType: "bar",
-      data: null,
-      colors: {},
-      globalSettings: {
-        backgroundColor: "#ffffff",
-        showGrid: true,
-        showAxes: true,
-        fontSize: 12,
-        padding: 0,
-        borderRadius: 0,
-      },
-      selectedElement: null,
-      currentData: getDefaultData("bar"),
-      opts: {
-        pie: defaultOpts(),
-        bar: defaultOpts(),
-        line: {
-          ...defaultOpts(),
-          areaFill: false,
-          smooth: false, 
-          lineWidth: 2,
-          pointShape: 'circle',
-          showPoints: true
-        },
-        scatter: {
-          ...defaultOpts(),
-          pointShape: 'circle'
-        },
-        histogram: defaultOpts(),
-      },
-    };
-
-    // Multi-series support
-    let currentSeries = 1;
-
-    // ===== UTILITY FUNCTIONS =====
-    // Math utilities
-    const sum = (arr) => arr.reduce((s, v) => s + v, 0);
-    const max = (arr) => arr.reduce((m, v) => (v > m ? v : m), -Infinity);
-    const min = (arr) => arr.reduce((m, v) => (v < m ? v : m), Infinity);
-
-    // Color utilities
-    const defaultColor = (i) => {
-      const base = [106, 162, 255];
-      const t = (i % 6) / 6;
-      const c = base.map((b, idx) => Math.max(0, Math.min(255, Math.round(b - t * 40 - idx * 5))));
-      const toHex = (x) => x.toString(16).padStart(2, "0");
-      return `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
-    };
-
-    // Generate border color from fill color
-    function getBorderColor(fillColor) {
-      if (!fillColor || !fillColor.startsWith('#')) return '#2b3345';
-      try {
-        if (fillColor.startsWith('hsl')) {
-          const hslMatch = fillColor.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
-          if (hslMatch) {
-            const h = parseInt(hslMatch[1]);
-            const s = parseInt(hslMatch[2]);
-            let l = parseInt(hslMatch[3]);
-            l = Math.max(0, l - 20);
-            return `hsl(${h}, ${s}%, ${l}%)`;
-          }
-          return '#2b3345';
-        }
-        const hex = fillColor.replace('#', '');
-        if (hex.length !== 6 && hex.length !== 3) return '#2b3345';
-        const fullHex = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex;
-        const r = parseInt(fullHex.substr(0, 2), 16);
-        const g = parseInt(fullHex.substr(2, 2), 16);
-        const b = parseInt(fullHex.substr(4, 2), 16);
-        const darkenFactor = 0.7;
-        const darkerR = Math.floor(r * darkenFactor);
-        const darkerG = Math.floor(g * darkenFactor);
-        const darkerB = Math.floor(b * darkenFactor);
-        const toHex = (x) => Math.max(0, Math.min(255, x)).toString(16).padStart(2, '0');
-        return `#${toHex(darkerR)}${toHex(darkerG)}${toHex(darkerB)}`;
-      } catch (e) {
-        console.error('Error generating border color:', e);
-        return '#2b3345';
-      }
-    }
-
-    // Color preset generators
-    function generateMonochromeColors(count) {
-      const baseHue = Math.floor(Math.random() * 360);
-      return Array.from({ length: count }, (_, i) => {
-        const lightness = 30 + i * (40 / count);
-        return `hsl(${baseHue}, 50%, ${lightness}%)`;
-      });
-    }
-
-    function generatePastelColors(count) {
-      return Array.from({ length: count }, (_, i) => {
-        const hue = Math.floor(Math.random() * 360);
-        return `hsl(${hue}, 60%, 85%)`;
-      });
-    }
-
-    function generateVibrantColors(count) {
-      return Array.from({ length: count }, (_, i) => {
-        const hue = Math.floor(Math.random() * 360);
-        return `hsl(${hue}, 80%, 50%)`;
-      });
-    }
-
-    function generateDefaultColors(count) {
-      return Array.from({ length: count }, (_, i) => defaultColor(i));
-    }
-
-    // Default options
-    function defaultOpts() {
-      return {
-        strokeWidth: 1,
-        strokeColor: "#2b3345",
-        strokeOpacity: 1,
-        strokeType: "solid",
-        strokeDash: "4 2",
-        fillOpacity: 0.95,
-        borderRadius: 6,
-        dropShadowEnabled: false,
-        dropShadowX: 2,
-        dropShadowY: 2,
-        dropShadowBlur: 4,
-        dropShadowColor: "#000000",
-        dropShadowOpacity: 0.35,
-        innerShadowEnabled: false,
-        innerShadowX: 0,
-        innerShadowY: 1,
-        innerShadowBlur: 3,
-        innerShadowColor: "#000000",
-        innerShadowOpacity: 0.3,
-        donut: false,
-        separated: false,
-        areaFill: false,
-        smooth: false,
-        lineWidth: 2,
-        pointShape: 'circle',
-        showPoints: true,
-        fontFamily: "Segoe UI",
-        fontSize: 12,
-        fontWeight: "normal",
-        fontColor: "#9aa4b2",
-        showGrid: true,
-        gridOpacity: 0.4,
-        showAxes: true,
-        backgroundTransparent: true,
-        backgroundColor: "#ffffff",
-        startAngle: 0,
-        horizontal: false,
-        stacked: false,
-        lineStyle: "solid",
-        pointSize: 6,
-        bins: 10,
-        normalize: false,
-      };
-    }
-
-    // ===== CHART RENDERING FUNCTIONS =====
-    // Math utilities for chart rendering
-    function scaleLinear(domain, range) {
-      const [d0, d1] = domain, [r0, r1] = range;
-      const m = (r1 - r0) / (d1 - d0 || 1);
-      return (v) => r0 + (v - d0) * m;
-    }
-
-    function dashFor(type, custom) {
-      if (type === "dashed") return "6 3";
-      if (type === "dotted") return "1 4";
-      if (type === "custom") return custom || "4 2";
-      return null;
-    }
-
-    // Background rectangle
-    function bgRect(W, H, opts) {
-      if (opts.backgroundTransparent) return `<rect width="100%" height="100%" fill="#fff" opacity="0"/>`;
-      return `<rect width="${W}" height="${H}" fill="${opts.backgroundColor}"/>`;
-    }
-
-    // Axes rendering
-    function axes(W, H, pad, showAxes) {
-      if (!showAxes) return "";
-      const x1 = pad, y1 = H - pad, x2 = W - pad, y2 = pad;
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#2b3345"/><line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y2}" stroke="#2b3345"/>`;
-    }
-
-    // Grid and ticks rendering
-    function gridAndTicks(x0, x1, y0, y1, maxY, opts) {
-      const ticks = 4;
-      const els = [];
-      for (let i = 0; i <= ticks; i++) {
-        const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = Math.round(t * maxY);
-        if (opts.showGrid) els.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        els.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
-      }
-      return els.join("");
-    }
-
-    // Stroke attributes
-    function shapeStrokeAttrs(opts, fillColor = null) {
-      const sw = +opts.strokeWidth;
-      if (sw <= 0) return "";
-      const borderColor = fillColor ? getBorderColor(fillColor) : opts.strokeColor;
-      const dash = dashFor(opts.strokeType, opts.strokeDash);
-      return `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${sw}" ${dash ? `stroke-dasharray="${dash}"` : ""}`;
-    }
-
-    // Pie chart rendering
-    function renderPie(data, colors, W, H, opts) {
-      const cx = W / 2, cy = H / 2, r = Math.min(W, H) * 0.32;
-      const total = sum(data.values);
-      let angle = (-Math.PI / 2) + (opts.startAngle * Math.PI / 180);
-      const pieces = [];
-      const padding = state.globalSettings.padding || 0;
-      const paddingFactor = Math.max(0, Math.min(0.4, padding / 100));
-      const sliceReduction = r * paddingFactor;
-      const explosionDistance = opts.separated ? r * 0.1 : 0;
-
-      data.values.forEach((v, i) => {
-        const sliceAngle = (v / total) * Math.PI * 2;
-        const midAngle = angle + sliceAngle / 2;
-        const explosionX = explosionDistance * Math.cos(midAngle);
-        const explosionY = explosionDistance * Math.sin(midAngle);
-        const innerRadius = opts.donut ? r * 0.2 : 0;
-        const paddedInnerRadius = Math.max(0, innerRadius + sliceReduction);
-        const paddedOuterRadius = Math.max(paddedInnerRadius, r - sliceReduction);
-        const slicePath = createPieSlicePath(cx + explosionX, cy + explosionY, paddedInnerRadius, paddedOuterRadius, angle, angle + sliceAngle, opts.borderRadius);
-        const sliceColor = colors.slices && colors.slices[i] ? colors.slices[i] : defaultColor(i);
-        const borderColor = colors.borders && colors.borders[i] ? colors.borders[i] : getBorderColor(sliceColor);
-        
-        pieces.push(`<path d="${slicePath}" fill="${sliceColor}" fill-opacity="${opts.fillOpacity}"/>`);
-        
-        if (opts.strokeWidth > 0) {
-          const strokePath = createPieSlicePath(cx + explosionX, cy + explosionY, innerRadius, r, angle, angle + sliceAngle, opts.borderRadius);
-          pieces.push(`<path d="${strokePath}" fill="none" stroke="${borderColor}" stroke-width="${opts.strokeWidth}" stroke-opacity="${opts.strokeOpacity}"/>`);
-        }
-
-        const labelRadius = r + 30 + explosionDistance;
-        const labelX = cx + labelRadius * Math.cos(midAngle);
-        const labelY = cy + labelRadius * Math.sin(midAngle);
-        const textAnchor = Math.cos(midAngle) > 0 ? 'start' : 'end';
-        pieces.push(`<text x="${labelX}" y="${labelY}" text-anchor="${textAnchor}" dominant-baseline="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${data.labels[i]} (${Math.round((v / total) * 100)}%)</text>`);
-        angle = angle + sliceAngle;
-      });
-
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${pieces.join('')}</svg>`;
-    }
-
-    // Pie slice path creation
-    function createPieSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle, borderRadius = 0) {
-      if (borderRadius <= 0 || outerRadius - innerRadius < borderRadius * 2) {
-        return createSimplePieSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle);
-      }
-      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
-      const x1 = cx + outerRadius * Math.cos(startAngle);
-      const y1 = cy + outerRadius * Math.sin(startAngle);
-      const x2 = cx + outerRadius * Math.cos(endAngle);
-      const y2 = cy + outerRadius * Math.sin(endAngle);
-      const x3 = cx + innerRadius * Math.cos(endAngle);
-      const y3 = cy + innerRadius * Math.sin(endAngle);
-      const x4 = cx + innerRadius * Math.cos(startAngle);
-      const y4 = cy + innerRadius * Math.sin(startAngle);
-
-      if (innerRadius === 0) {
-        return createRoundedPiePath(cx, cy, outerRadius, startAngle, endAngle, borderRadius);
-      }
-      return createRoundedDonutPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle, borderRadius);
-    }
-
-    function createSimplePieSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle) {
-      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
-      const x1 = cx + outerRadius * Math.cos(startAngle);
-      const y1 = cy + outerRadius * Math.sin(startAngle);
-      const x2 = cx + outerRadius * Math.cos(endAngle);
-      const y2 = cy + outerRadius * Math.sin(endAngle);
-      const x3 = cx + innerRadius * Math.cos(endAngle);
-      const y3 = cy + innerRadius * Math.sin(endAngle);
-      const x4 = cx + innerRadius * Math.cos(startAngle);
-      const y4 = cy + innerRadius * Math.sin(startAngle);
-
-      if (innerRadius > 0) {
-        return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Z`;
-      } else {
-        return `M ${cx} ${cy} L ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-      }
-    }
-
-    function createRoundedPiePath(cx, cy, radius, startAngle, endAngle, borderRadius) {
-      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
-      const startAngleWithRadius = startAngle + (borderRadius / radius);
-      const endAngleWithRadius = endAngle - (borderRadius / radius);
-      const x1 = cx + radius * Math.cos(startAngleWithRadius);
-      const y1 = cy + radius * Math.sin(startAngleWithRadius);
-      const x2 = cx + radius * Math.cos(endAngleWithRadius);
-      const y2 = cy + radius * Math.sin(endAngleWithRadius);
-      const controlDist = borderRadius * 0.8;
-      const control1X = cx + (radius - controlDist) * Math.cos(startAngle);
-      const control1Y = cy + (radius - controlDist) * Math.sin(startAngle);
-      const control2X = cx + (radius - controlDist) * Math.cos(endAngle);
-      const control2Y = cy + (radius - controlDist) * Math.sin(endAngle);
-
-      return `M ${cx} ${cy} L ${control1X} ${control1Y} Q ${cx + radius * Math.cos(startAngle)} ${cy + radius * Math.sin(startAngle)} ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Q ${cx + radius * Math.cos(endAngle)} ${cy + radius * Math.sin(endAngle)} ${control2X} ${control2Y} Z`;
-    }
-
-    function createRoundedDonutPath(cx, cy, innerRadius, outerRadius, startAngle, endAngle, borderRadius) {
-      const largeArc = (endAngle - startAngle) > Math.PI ? 1 : 0;
-      const outerStartAngle = startAngle + (borderRadius / outerRadius);
-      const outerEndAngle = endAngle - (borderRadius / outerRadius);
-      const innerStartAngle = startAngle + (borderRadius / innerRadius);
-      const innerEndAngle = endAngle - (borderRadius / innerRadius);
-      const x1 = cx + outerRadius * Math.cos(outerStartAngle);
-      const y1 = cy + outerRadius * Math.sin(outerStartAngle);
-      const x2 = cx + outerRadius * Math.cos(outerEndAngle);
-      const y2 = cy + outerRadius * Math.sin(outerEndAngle);
-      const x3 = cx + innerRadius * Math.cos(innerEndAngle);
-      const y3 = cy + innerRadius * Math.sin(innerEndAngle);
-      const x4 = cx + innerRadius * Math.cos(innerStartAngle);
-      const y4 = cy + innerRadius * Math.sin(innerStartAngle);
-      const outerControlDist = borderRadius * 0.8;
-      const innerControlDist = borderRadius * 0.8;
-      const outerControl1X = cx + (outerRadius - outerControlDist) * Math.cos(startAngle);
-      const outerControl1Y = cy + (outerRadius - outerControlDist) * Math.sin(startAngle);
-      const outerControl2X = cx + (outerRadius - outerControlDist) * Math.cos(endAngle);
-      const outerControl2Y = cy + (outerRadius - outerControlDist) * Math.sin(endAngle);
-      const innerControl1X = cx + (innerRadius + innerControlDist) * Math.cos(startAngle);
-      const innerControl1Y = cy + (innerRadius + innerControlDist) * Math.sin(startAngle);
-      const innerControl2X = cx + (innerRadius + innerControlDist) * Math.cos(endAngle);
-      const innerControl2Y = cy + (innerRadius + innerControlDist) * Math.sin(endAngle);
-
-      return `M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} Q ${cx + outerRadius * Math.cos(endAngle)} ${cy + outerRadius * Math.sin(endAngle)} ${outerControl2X} ${outerControl2Y} L ${innerControl2X} ${innerControl2Y} Q ${cx + innerRadius * Math.cos(endAngle)} ${cy + innerRadius * Math.sin(endAngle)} ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4} Q ${cx + innerRadius * Math.cos(startAngle)} ${cy + innerRadius * Math.sin(startAngle)} ${innerControl1X} ${innerControl1Y} L ${outerControl1X} ${outerControl1Y} Q ${cx + outerRadius * Math.cos(startAngle)} ${cy + outerRadius * Math.sin(startAngle)} ${x1} ${y1} Z`;
-    }
-
-    // Bar chart rendering
-    function renderBar(data, colors, W, H, pad, opts) {
-      const cats = data.categories;
-      const multi = data.series.length > 1 && !opts.stacked;
-      const stacked = data.series.length > 1 && opts.stacked;
-      const maxY = stacked ? max(cats.map((_, ci) => sum(data.series.map((s) => s.y[ci])))) : max(data.series.flatMap((s) => s.y));
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const toY = scaleLinear([0, maxY], [y0, y1]);
-      const band = (x1 - x0) / cats.length;
-      const gap = 6;
-      const barW = multi ? (band - 10) / data.series.length : band - 10;
-      const rx = Math.min(opts.borderRadius, 20 - data.series.length * 2, barW / 2 - gap);
-      const padding = state.globalSettings.padding  || 0 ;
-      const hasPadding = padding > 0;
-      let bars = "";
-
-      const drawBar = (x, y, w, h, fill, index) => {
-        const borderColor = colors.borders && colors.borders[index] ? colors.borders[index] : getBorderColor(fill);
-        const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
-        
-        if (hasPadding) {
-          const outerBar = `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="transparent" ${strokeAttrs}/>`;
-          const innerX = x + padding;
-          const innerY = y + padding;
-          const innerW = Math.max(0, w - padding * 2);
-          const innerH = Math.max(0, h - padding * 2);
-          const innerRx = Math.max(0, rx - padding);
-          const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
-          return outerBar + innerBar;
-        } else {
-          return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
-        }
-      };
-
-      cats.forEach((c, ci) => {
-        if (multi) {
-          data.series.forEach((s, si) => {
-            const v = s.y[ci];
-            const x = x0 + ci * band + 5 + si * barW;
-            const y = toY(v);
-            const h = y0 - y;
-            const fill = colors.series?.[si];
-            bars += drawBar(x, y, barW - gap, h, fill, si);
-          });
-        } else if (stacked) {
-          let acc = 0;
-          data.series.forEach((s, si) => {
-            const v = s.y[ci];
-            const y = toY(acc + v);
-            const h = toY(acc) - y;
-            const x = x0 + ci * band + 5;
-            const fill = colors.series?.[si];
-            bars += drawBar(x, y, barW - gap, h, fill, si);
-            acc += v;
-          });
-        } else {
-          const v = data.series[0].y[ci];
-          const x = x0 + ci * band + 5;
-          const y = toY(v);
-          const h = y0 - y;
-          const fill = colors.bars?.[ci];
-          bars += drawBar(x, y, barW - gap, h, fill, ci);
-        }
-      });
-
-      const catLabels = cats.map((c, ci) => {
-        const x = x0 + ci * band + band / 2;
-        return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${c}</text>`;
-      }).join("");
-
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${gridAndTicks(x0, x1, y0, y1, maxY, opts)}${bars}${catLabels}</svg>`;
-    }
-
-    // Line chart rendering
-function renderLine(data, colors, W, H, pad, opts) {
-  const X = data.x;
-  const maxY = Math.max(...data.series.flatMap(s => s.y));
-  const minY = Math.min(0, ...data.series.flatMap(s => s.y));
-  const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-  const toX = scaleLinear([0, X.length - 1], [x0, x1]);
-  const toY = scaleLinear([minY, maxY], [y0, y1]);
-  
-  let svgElements = [];
-  
-  // Render each series
-  data.series.forEach((series, seriesIndex) => {
-    const points = series.y.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
-    const dash = dashFor(opts.lineStyle || opts.strokeType, opts.strokeDash);
-    const lineColor = colors.series && colors.series[seriesIndex] 
-      ? colors.series[seriesIndex] 
-      : defaultColor(seriesIndex);
-    const borderColor = colors.borders && colors.borders[seriesIndex] 
-      ? colors.borders[seriesIndex] 
-      : getBorderColor(lineColor);
-    
-    const baseStroke = `stroke="${borderColor}" stroke-width="${Math.max(1, opts.lineWidth || 2)}" ${dash ? `stroke-dasharray="${dash}"` : ""} stroke-opacity="${opts.strokeOpacity}"`;
-    let linePath = `<polyline fill="none" ${baseStroke} points="${points}"/>`;
-    
-    // Smooth line rendering
-    if (opts.smooth && series.y.length > 1) {
-      const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
-      let d = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-      
-      for (let i = 1; i < pathPts.length - 1; i++) {
-        const [x0, y0] = pathPts[i - 1];
-        const [x1, y1] = pathPts[i];
-        const [x2, y2] = pathPts[i + 1];
-        const control1X = x0 + (x1 - x0) * 0.5;
-        const control1Y = y0 + (y1 - y0) * 0.5;
-        const control2X = x1 - (x2 - x0) * 0.1;
-        const control2Y = y1 - (y2 - y0) * 0.1;
-        d += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
-      }
-      
-      const lastIndex = pathPts.length - 1;
-      if (lastIndex > 0) {
-        const [prevX, prevY] = pathPts[lastIndex - 1];
-        const [lastX, lastY] = pathPts[lastIndex];
-        const controlX = prevX + (lastX - prevX) * 0.5;
-        const controlY = prevY + (lastY - prevY) * 0.5;
-        d += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
-      }
-      
-      linePath = `<path d="${d}" fill="none" ${baseStroke}/>`;
-    }
-    
-    svgElements.push(linePath);
-    
-    // Add points if enabled
-    if (opts.showPoints) {
-      const dots = series.y.map((v, i) => {
-        const cx = toX(i);
-        const cy = toY(v);
-        const r = 3;
-        switch (opts.pointShape) {
-          case 'square':
-            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
-          case 'triangle':
-            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
-          case 'none':
-            return '';
-          default:
-            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${lineColor}" fill-opacity="${opts.fillOpacity}" stroke="${borderColor}" stroke-width="${opts.strokeWidth}"/>`;
-        }
-      }).filter(Boolean).join("");
-      
-      if (dots) svgElements.push(dots);
-    }
-    
-    // Add area fill if enabled
-    if (opts.areaFill) {
-      if (opts.smooth && series.y.length > 1) {
-        const pathPts = series.y.map((v, i) => [toX(i), toY(v)]);
-        let areaD = `M ${pathPts[0][0]} ${pathPts[0][1]}`;
-        
-        for (let i = 1; i < pathPts.length - 1; i++) {
-          const [x0, y0] = pathPts[i - 1];
-          const [x1, y1] = pathPts[i];
-          const [x2, y2] = pathPts[i + 1];
-          const control1X = x0 + (x1 - x0) * 0.5;
-          const control1Y = y0 + (y1 - y0) * 0.5;
-          const control2X = x1 - (x2 - x0) * 0.1;
-          const control2Y = y1 - (y2 - y0) * 0.1;
-          areaD += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${x1} ${y1}`;
-        }
-        
-        const lastIndex = pathPts.length - 1;
-        if (lastIndex > 0) {
-          const [prevX, prevY] = pathPts[lastIndex - 1];
-          const [lastX, lastY] = pathPts[lastIndex];
-          const controlX = prevX + (lastX - prevX) * 0.5;
-          const controlY = prevY + (lastY - prevY) * 0.5;
-          areaD += ` S ${lastX} ${lastY}, ${lastX} ${lastY}`;
-        }
-        
-        areaD += ` L ${toX(X.length - 1)} ${y0} L ${toX(0)} ${y0} Z`;
-        const area = `<path d="${areaD}" fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}"/>`;
-        svgElements.push(area);
-      } else {
-        const area = `<polyline fill="${lineColor}" opacity="${opts.fillOpacity * 0.25}" points="${points} ${toX(X.length - 1)},${y0} ${toX(0)},${y0}"/>`;
-        svgElements.push(area);
-      }
-    }
-  });
-  
-  // Add X-axis labels
-  const xlabels = X.map((lbl, i) => `<text x="${toX(i)}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${lbl}</text>`).join("");
-  
-  // Add grid and ticks
-  const ticks = 4;
-  const tickEls = [];
-  for (let i = 0; i <= ticks; i++) {
-    const t = i / ticks;
-    const y = y0 - t * (y0 - y1);
-    const val = (minY + t * (maxY - minY)).toFixed(0);
-    if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-    tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
-  }
-  
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${svgElements.join("")}${xlabels}</svg>`;
-}
-
-    // Scatter chart rendering
-    function renderScatter(data, colors, W, H, pad, opts) {
-      const xs = data.points.map((p) => p.x);
-      const ys = data.points.map((p) => p.y);
-      const xmin = Math.min(...xs), xmax = Math.max(...xs);
-      const ymin = Math.min(...ys), ymax = Math.max(...ys);
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const toX = scaleLinear([xmin, xmax], [x0, x1]);
-      const toY = scaleLinear([ymin, ymax], [y0, y1]);
-      const stroke = shapeStrokeAttrs(opts);
-
-      const drawShape = (p) => {
-        const r = opts.pointSize || p.r || 6;
-        const cx = toX(p.x), cy = toY(p.y);
-        switch (opts.pointShape) {
-          case "square":
-            return `<rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
-          case "triangle":
-            return `<polygon points="${cx},${cy - r} ${cx - r},${cy + r} ${cx + r},${cy + r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
-          case "diamond":
-            return `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
-          default:
-            return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors.points}" fill-opacity="${opts.fillOpacity}" ${stroke}/>`;
-        }
-      };
-
-      const dots = data.points.map(drawShape).join("");
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
-        const tx = xmin + (i * (xmax - xmin)) / ticks;
-        const x = toX(tx);
-        if (opts.showGrid) tickEls.push(`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${Math.round(tx)}</text>`);
-      }
-      for (let i = 0; i <= ticks; i++) {
-        const ty = ymin + (i * (ymax - ymin)) / ticks;
-        const y = toY(ty);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${Math.round(ty)}</text>`);
-      }
-
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${dots}</svg>`;
-    }
-
-    // Histogram rendering
-    function renderHistogram(data, colors, W, H, pad, opts) {
-      const vals = data.values.slice().sort((a, b) => a - b);
-      const minv = data.range?.[0] ?? vals[0];
-      const maxv = data.range?.[1] ?? vals[vals.length - 1];
-      const bins = data.bins || opts.bins || Math.ceil(Math.sqrt(vals.length));
-      const step = (maxv - minv) / bins;
-      const edges = Array.from({ length: bins + 1 }, (_, i) => minv + i * step);
-      const counts = new Array(bins).fill(0);
-      vals.forEach((v) => {
-        if (v < minv || v > maxv) return;
-        let b = Math.min(bins - 1, Math.floor((v - minv) / step));
-        counts[b]++;
-      });
-      const total = sum(counts);
-      const countsOrDensity = opts.normalize ? counts.map((c) => c / (total * step)) : counts;
-      const x0 = pad, x1 = W - pad, y0 = H - pad, y1 = pad;
-      const band = (x1 - x0) / bins;
-      const maxC = Math.max(1, ...countsOrDensity);
-      const toY = scaleLinear([0, maxC], [y0, y1]);
-      const stroke = shapeStrokeAttrs(opts);
-      const rx = Math.min(opts.borderRadius, 20);
-      const padding = state.globalSettings.padding  || 0;
-      const hasPadding = padding > 0;
-      const borderColor = colors.border || getBorderColor(colors.bins);
-      const strokeAttrs = `stroke="${borderColor}" stroke-opacity="${opts.strokeOpacity}" stroke-width="${opts.strokeWidth}"`;
-
-      const drawBar = (x, y, w, h, fill) => {
-        if (hasPadding) {
-          const outerBar = `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="transparent" ${strokeAttrs}/>`;
-          const innerX = x + padding;
-          const innerY = y + padding;
-          const innerW = Math.max(0, w - padding * 2);
-          const innerH = Math.max(0, h - padding * 2);
-          const innerRx = Math.max(0, rx - padding);
-          const innerBar = `<rect x="${innerX}" y="${innerY}" width="${innerW}" height="${Math.max(0, innerH)}" rx="${innerRx}" fill="${fill}" fill-opacity="${opts.fillOpacity}"/>`;
-          return outerBar + innerBar;
-        } else {
-          return `<rect x="${x}" y="${y}" width="${w}" height="${Math.max(0, h)}" rx="${rx}" fill="${fill}" fill-opacity="${opts.fillOpacity}" ${strokeAttrs}/>`;
-        }
-      };
-
-      const bars = countsOrDensity.map((c, i) => {
-        const x = x0 + i * band + 2;
-        const y = toY(c);
-        const h = y0 - y;
-        const w = band - 4;
-        const fill = colors.bins;
-        return drawBar(x, y, w, h, fill);
-      }).join("");
-
-      const xlabels = counts.map((_, i) => {
-        const x = x0 + i * band + band / 2;
-        const lbl = `${edges[i].toFixed(0)}–${edges[i + 1].toFixed(0)}`;
-        return `<text x="${x}" y="${y0 + 16}" text-anchor="middle" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${lbl}</text>`;
-      }).join("");
-
-      const ticks = 4;
-      const tickEls = [];
-      for (let i = 0; i <= ticks; i++) {
-        const t = i / ticks;
-        const y = y0 - t * (y0 - y1);
-        const val = (t * maxC).toFixed(0);
-        if (opts.showGrid) tickEls.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#202635" opacity="${opts.gridOpacity}"/>`);
-        tickEls.push(`<text x="${x0 - 6}" y="${y + 4}" text-anchor="end" style="font-family:${opts.fontFamily};font-size:${opts.fontSize}px;font-weight:${opts.fontWeight};fill:${opts.fontColor}">${val}</text>`);
-      }
-
-      return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bgRect(W, H, opts)}${axes(W, H, pad, opts.showAxes)}${tickEls.join("")}${bars}${xlabels}</svg>`;
-    }
-
-    // ===== CHART UPDATE AND COLOR FUNCTIONS =====
-    // Update chart preview
-    function updatePreview() {
-      const svgHost = document.getElementById("svg-host");
-      if (!state.currentData) {
-        svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;"><p>Please configure your data to see the chart preview</p></div>`;
-        return;
-      }
-
-      const currentOpts = state.opts[state.chartType];
-      currentOpts.backgroundColor = state.globalSettings.backgroundColor;
-      currentOpts.fontSize = state.globalSettings.fontSize;
-      currentOpts.borderRadius = state.globalSettings.borderRadius;
-      currentOpts.backgroundTransparent = false;
-
-      if (state.chartType === "pie") {
-        currentOpts.showGrid = false;
-        currentOpts.showAxes = false;
-      } else {
-        currentOpts.showGrid = state.globalSettings.showGrid;
-        currentOpts.showAxes = state.globalSettings.showAxes;
-      }
-
-      applyChartSpecificPadding(state.chartType, state.globalSettings.padding, currentOpts);
-      const colors = state.colors || generateColors(state.chartType, state.currentData);
-      const previewCanvas = document.getElementById("svg-host");
-      const W = previewCanvas.clientWidth;
-      const H = previewCanvas.clientHeight;
-      const pad = Math.min(W, H) * 0.07;
-
-      try {
-        let svg = "";
-        switch (state.chartType) {
-          case "pie":
-            svg = renderPie(state.currentData, colors, W, H, currentOpts);
-            break;
-          case "bar":
-            svg = renderBar(state.currentData, colors, W, H, pad, currentOpts);
-            break;
-          case "line":
-            svg = renderLine(state.currentData, colors, W, H, pad, currentOpts);
-            break;
-          case "scatter":
-            svg = renderScatter(state.currentData, colors, W, H, pad, currentOpts);
-            break;
-          case "histogram":
-            svg = renderHistogram(state.currentData, colors, W, H, pad, currentOpts);
-            break;
-          default:
-            svg = renderBar(state.currentData, colors, W, H, pad, currentOpts);
-        }
-        svgHost.innerHTML = svg;
-        setTimeout(() => { addChartElementInteractivity(); }, 100);
-      } catch (error) {
-        console.error("Chart rendering error:", error);
-        svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;"><p>Error rendering chart. Please check your data.</p><p style="font-size:12px; color:var(--ink-2);">${error.message}</p></div>`;
-      }
-    }
-
-    // Apply chart-specific padding
-    function applyChartSpecificPadding(chartType, padding, opts) {
-      switch (chartType) {
-        case "bar":
-          opts.barSpacing = padding;
-          break;
-        case "pie":
-          break;
-        case "scatter":
-          opts.pointSpacing = padding;
-          break;
-        case "histogram":
-          opts.barSpacing = padding;
-          break;
-        default:
-          break;
-      }
-    }
-
-    // Generate colors for charts
-    function generateColors(chartType, data, presetColors = null) {
-      const colors = {};
-      const colorArray = presetColors || Array.from({ length: 10 }, (_, i) => defaultColor(i));
-
-      switch (chartType) {
-        case "pie":
-          colors.slices = data.labels.map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
-          colors.borders = colors.slices.map(fillColor => getBorderColor(fillColor));
-          break;
-        case "bar":
-          if (data.series.length > 1) {
-            colors.series = data.series.map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
-            colors.borders = colors.series.map(fillColor => getBorderColor(fillColor));
-          } else {
-            colors.bars = data.categories.map((_, i) => colorArray[i % colorArray.length] || defaultColor(i));
-            colors.borders = colors.bars.map(fillColor => getBorderColor(fillColor));
-          }
-          break;
-        case "line":
-          colors.line = colorArray[0] || defaultColor(0);
-          colors.border = getBorderColor(colors.line);
-          colors.series = data.series.map(
-            (_, i) => colorArray[i % colorArray.length] || defaultColor(i)
-          );
-          colors.borders = colors.series.map(fillColor => getBorderColor(fillColor));
-          break;
-        case "scatter":
-          colors.points = colorArray[0] || defaultColor(0);
-          colors.border = getBorderColor(colors.points);
-          break;
-        case "histogram":
-          colors.bins = colorArray[0] || defaultColor(0);
-          colors.border = getBorderColor(colors.bins);
-          break;
-      }
-      return colors;
-    }
-
-    // Apply color preset
-    function applyColorPreset(preset) {
-      const data = state.currentData;
-      let colorCount = 0;
-      switch (state.chartType) {
-        case "pie":
-          colorCount = data.labels.length;
-          break;
-        case "bar":
-          colorCount = data.series.length > 1 ? data.series.length : data.categories.length;
-          break;
-        case "line":
-          colorCount = data.series ? data.series.length : 1;
-          break;
-        case "scatter":
-          colorCount = 1;
-          break;
-        case "histogram":
-          colorCount = 1;
-          break;
-      }
-
-      let newColors = [];
-      switch (preset) {
-        case "monochrome":
-          newColors = generateMonochromeColors(colorCount);
-          break;
-        case "pastel":
-          newColors = generatePastelColors(colorCount);
-          break;
-        case "vibrant":
-          newColors = generateVibrantColors(colorCount);
-          break;
-        default:
-          newColors = generateDefaultColors(colorCount);
-      }
-
-      state.colors = generateColors(state.chartType, state.currentData, newColors);
-      updatePreview();
-    }
-
-    // ===== DROPDOWN MANAGEMENT =====
-    // Dropdown positioning and management
-    function positionDropdown(button, dropdown) {
-      const rect = button.getBoundingClientRect();
-      dropdown.style.position = "fixed";
-      dropdown.style.left = rect.left + "px";
-      dropdown.style.top = rect.bottom + 5 + "px";
-    }
-
-    function closeAllDropdowns() {
-      colorPresetDropdown.classList.remove("visible");
-      fontSizePopup.classList.remove("visible");
-      paddingPopup.classList.remove("visible");
-      borderRadiusPopup.classList.remove("visible");
-      moreDropdown.classList.remove("visible");
-      lineWidthPopup.classList.remove("visible"); 
-      pointShapesPopup.classList.remove("visible");
-      scatterPointShapesPopup.classList.remove("visible");
-    }
-
-    // ===== TOOLBAR MANAGEMENT =====
-    // Update global toolbar values
-    function updateGlobalToolbarValues() {
-      globalBgColor.value = state.globalSettings.backgroundColor;
-      popupFontSize.value = state.globalSettings.fontSize;
-      fontSizeValue.textContent = state.globalSettings.fontSize + "px";
-      popupPadding.value = state.globalSettings.padding;
-      paddingValue.textContent = state.globalSettings.padding + "%";
-      popupBorderRadius.value = state.globalSettings.borderRadius;
-      borderRadiusValue.textContent = state.globalSettings.borderRadius + "px";
-
-      if (state.globalSettings.showGrid) {
-        document.getElementById("global-grid-toggle").classList.add("active");
-      } else {
-        document.getElementById("global-grid-toggle").classList.remove("active");
-      }
-
-      if (state.globalSettings.showAxes) {
-        document.getElementById("global-axes-toggle").classList.add("active");
-      } else {
-        document.getElementById("global-axes-toggle").classList.remove("active");
-      }
-    }
-
-    // Update toolbar for chart type
-    function updateToolbarForChartType() {
-      const gridAxesControls = document.getElementById('grid-axes-controls');
-      const pieControls = document.getElementById('pie-controls');
-      const lineControls = document.getElementById('line-controls');
-      const scatterControls = document.getElementById('scatter-controls');
-      const paddingBtn = document.getElementById('padding-btn').closest('.toolbar-item');
-      const borderRadiusBtn = document.getElementById('border-radius-btn').closest('.toolbar-item');
-      const gridToggle = document.getElementById('global-grid-toggle').closest('.toolbar-item');
-      const axesToggle = document.getElementById('global-axes-toggle').closest('.toolbar-item');
-
-      gridAxesControls.style.display = 'none';
-      pieControls.style.display = 'none';
-      lineControls.style.display = 'none';
-      scatterControls.style.display = 'none';
-      paddingBtn.classList.remove('hidden');
-      borderRadiusBtn.classList.remove('hidden');
-      gridToggle.classList.remove('hidden');
-      axesToggle.classList.remove('hidden');
-
-      if (state.chartType === 'line') {
-        lineControls.style.display = 'flex';
-        gridAxesControls.style.display = 'flex';
-        paddingBtn.classList.add('hidden');
-        borderRadiusBtn.classList.add('hidden');
-        document.getElementById('line-area-toggle').classList.toggle('active', state.opts.line.areaFill);
-        document.getElementById('line-curve-toggle').classList.toggle('active', state.opts.line.smooth);
-        updatePointShapeIcon(state.opts.line.pointShape);
-        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
-        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
-      } else if (state.chartType === 'pie') {
-        pieControls.style.display = 'flex';
-        gridToggle.classList.add('hidden');
-        axesToggle.classList.add('hidden');
-        document.getElementById('pie-gap-toggle').classList.toggle('active', state.opts.pie.separated);
-        document.getElementById('pie-donut-toggle').classList.toggle('active', state.opts.pie.donut > 0);
-      } else if (state.chartType === 'scatter') {
-        scatterControls.style.display = 'flex';
-        gridAxesControls.style.display = 'flex';
-        paddingBtn.classList.add('hidden');
-        borderRadiusBtn.classList.add('hidden');
-        updateScatterPointShapeIcon(state.opts.scatter.pointShape);
-        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
-        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
-      } else {
-        gridAxesControls.style.display = 'flex';
-        document.getElementById('global-grid-toggle').classList.toggle('active', state.globalSettings.showGrid);
-        document.getElementById('global-axes-toggle').classList.toggle('active', state.globalSettings.showAxes);
-      }
-    }
-
-    // Update point shape icons
-    function updatePointShapeIcon(shape) {
-      const pointShapesBtn = document.getElementById('point-shapes-btn');
-      let iconHTML = '';
-      switch (shape) {
-        case 'none':
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15"><path fill="currentColor" d="M7.5.877c1.648 0 3.155.604 4.315 1.6l.832-.83a.5.5 0 0 1 .707.707l-.832.83a6.623 6.623 0 0 1-9.337 9.337l-.831.833a.5.5 0 0 1-.707-.707l.83-.832A6.623 6.623 0 0 1 7.499.877M3.856 11.85a5.673 5.673 0 0 0 7.991-7.991zM7.5 1.826A5.674 5.674 0 0 0 1.826 7.5a5.65 5.65 0 0 0 1.325 3.642l7.99-7.99a5.65 5.65 0 0 0-3.642-1.325"/></svg>`;
-          break;
-        case 'square':
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/></svg>`;
-          break;
-        case 'triangle':
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/></svg>`;
-          break;
-        default:
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/></svg>`;
-      }
-      pointShapesBtn.innerHTML = iconHTML;
-    }
-
-    function updateScatterPointShapeIcon(shape) {
-      const scatterPointShapesBtn = document.getElementById('scatter-point-shapes-btn');
-      let iconHTML = '';
-      switch (shape) {
-        case 'square':
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M5.616 20q-.672 0-1.144-.472T4 18.385V5.615q0-.67.472-1.143Q4.944 4 5.616 4h12.769q.67 0 1.143.472q.472.472.472 1.144v12.769q0 .67-.472 1.143q-.472.472-1.143.472zm0-1h12.769q.269 0 .442-.173t.173-.442V5.615q0-.269-.173-.442T18.385 5H5.615q-.269 0-.442.173T5 5.616v12.769q0 .269.173.442t.443.173M5 19V5z"/></svg>`;
-          break;
-        case 'triangle':
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.98 10.762C8.608 5.587 9.92 3 12 3s3.393 2.587 6.02 7.762l.327.644c2.182 4.3 3.274 6.45 2.287 8.022C19.648 21 17.208 21 12.327 21h-.654c-4.88 0-7.321 0-8.307-1.572s.105-3.722 2.287-8.022z"/></svg>`;
-          break;
-        case 'diamond':
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4.511 13.542c-.681-.852-.681-2.232 0-3.084l6.256-7.82c.68-.85 1.785-.85 2.467 0l6.255 7.82c.681.852.681 2.232 0 3.084l-6.256 7.82c-.68.85-1.785.85-2.466 0z"/></svg>`;
-          break;
-        default:
-          iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/></svg>`;
-      }
-      scatterPointShapesBtn.innerHTML = iconHTML;
-    }
-
-    // ===== CHART TYPE AND DATA SOURCE MANAGEMENT =====
-    // Handle chart type change
-    function handleChartTypeChange(chartType) {
-      state.chartType = chartType;
-      currentSeries = 1;
-      state.currentData = getDefaultData(chartType);
-      updateModernDataTableForChartType();
-      updateToolbarForChartType();
-      updatePreview();
-    }
-
-    // Initialize chart type selector
-    function initChartTypeSelector() {
-      const chartSelect = document.getElementById('chart-type-select');
-      const selectedOption = chartSelect.querySelector('.selected-option');
-      const chartOptions = chartSelect.querySelectorAll('.chart-option');
-
-      selectedOption.addEventListener('click', (e) => {
-        e.stopPropagation();
-        chartSelect.classList.toggle('active');
-      });
-
-      chartOptions.forEach(option => {
-        option.addEventListener('click', () => {
-          const chartType = option.dataset.value;
-          const iconHTML = option.querySelector('.chart-icon').innerHTML;
-          const name = option.querySelector('span').textContent;
-          chartSelect.querySelector('.chart-icon').innerHTML = iconHTML;
-          chartSelect.querySelector('.chart-name').textContent = name;
-          chartOptions.forEach(opt => opt.classList.remove('active'));
-          option.classList.add('active');
-          chartSelect.classList.remove('active');
-          handleChartTypeChange(chartType);
-        });
-      });
-
-      document.addEventListener('click', () => {
-        chartSelect.classList.remove('active');
-      });
-    }
-
-    // Initialize data source selector
-    function initDataSourceSelector() {
-      const dataSourceSelect = document.getElementById('data-source-select');
-      const selectedOption = dataSourceSelect.querySelector('.selected-option');
-      const sourceOptions = dataSourceSelect.querySelectorAll('.source-option');
-
-      selectedOption.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dataSourceSelect.classList.toggle('active');
-      });
-
-      sourceOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-          if (option.classList.contains('disabled')) {
-            e.stopPropagation();
-            return;
-          }
-          const sourceType = option.dataset.value;
-          const name = option.querySelector('span').textContent;
-          dataSourceSelect.querySelector('.source-name').textContent = name;
-          sourceOptions.forEach(opt => opt.classList.remove('active'));
-          option.classList.add('active');
-          dataSourceSelect.classList.remove('active');
-          handleDataSourceChange(sourceType);
-        });
-      });
-
-      document.addEventListener('click', () => {
-        dataSourceSelect.classList.remove('active');
-      });
-    }
-
-    // Handle data source change
-    function handleDataSourceChange(sourceType) {
-      const defaultDataSection = document.getElementById('default-data-section');
-      const manualDataSection = document.getElementById('manual-data-section');
-      defaultDataSection.style.display = 'none';
-      manualDataSection.style.display = 'none';
-
-      switch (sourceType) {
-        case 'default':
-          defaultDataSection.style.display = 'flex';
-          state.currentData = getDefaultData(state.chartType);
-          updateModernDataTableForChartType();
-          updatePreview();
-          break;
-        case 'manual':
-          manualDataSection.style.display = 'flex';
-          dataInput.value = JSON.stringify(state.currentData, null, 2);
-          break;
-        case 'csv':
-        case 'excel':
-        case 'sheets':
-        case 'json':
-          alert('This feature is coming soon!');
-          break;
-      }
-      updatePreview();
-    }
-
-    // Get default data for chart types with random values
-    function getDefaultData(type) {
-      const getRandomValue = (min = 10, max = 100) => Math.floor(Math.random() * (max - min + 1)) + min;
-      
-      switch (type) {
-        case "bar":
-          const barCount = 8;
-          const categories = Array.from({ length: barCount }, (_, i) => `Category ${String.fromCharCode(65 + i)}`);
-          return { 
-            categories, 
-            series: [{ label: "Series 1", y: Array.from({ length: barCount }, () => getRandomValue()) }] 
-          };
-        case "pie":
-          const pieCount = 4;
-          const labels = Array.from({ length: pieCount }, (_, i) => `Slice ${String.fromCharCode(65 + i)}`);
-          return { 
-            labels, 
-            values: Array.from({ length: pieCount }, () => getRandomValue(15, 50)) 
-          };
-        case "line":
-          const lineCount = 8;
-          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
-          const x = months.slice(0, lineCount);
-          return { 
-            x, 
-            series: [{ label: "Series 1", y: Array.from({ length: lineCount }, () => getRandomValue()) }] 
-          };
-        case "scatter":
-          const scatterCount = 8;
-          return { 
-            points: Array.from({ length: scatterCount }, (_, i) => ({
-              x: getRandomValue(5, 95),
-              y: getRandomValue(5, 95),
-              r: getRandomValue(4, 10),
-              label: `Point ${String.fromCharCode(65 + i)}`
-            })) 
-          };
-        case "histogram":
-          const histCount = 20;
-          return { 
-            values: Array.from({ length: histCount }, () => getRandomValue(10, 40)) 
-          };
-        default:
-          return getDefaultData("bar");
-      }
-    }
-
-    // Apply manual data
-    function applyManualData() {
-      try {
-        const parsedData = JSON.parse(dataInput.value);
-        state.currentData = parsedData;
-        updatePreview();
-      } catch (e) {
-        showCustomAlert(
-          "Invalid JSON data format. Please check your input and ensure it follows the required structure for the selected chart type.",
-          'error',
-          'Invalid Data Format'
-        );
-      }
-    }
-
-    // ===== DATA TABLE CONFIGURATION =====
-    // Data table configuration for different chart types with random data
-    const dataTableConfig = {
-      bar: { 
-        headers: ['Category', 'Value'], 
-        types: ['text', 'number'], 
-        maxRows: 15, 
-        maxSeries: 4, 
-        getDefaultRowData: (index) => [`Category ${String.fromCharCode(65 + index)}`, Math.floor(Math.random() * 91) + 10]
-      },
-      pie: { 
-        headers: ['Label', 'Value'], 
-        types: ['text', 'number'], 
-        maxRows: 8, 
-        maxSeries: 1, 
-        getDefaultRowData: (index) => [`Slice ${String.fromCharCode(65 + index)}`, Math.floor(Math.random() * 36) + 15]
-      },
-      line: { 
-        headers: ['X-Axis', 'Value'], 
-        types: ['text', 'number'], 
-        maxRows: 15, 
-        maxSeries: 5, 
-        getDefaultRowData: (index) => {
-          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          return [months[index] || `Point ${index + 1}`, Math.floor(Math.random() * 91) + 10];
-        }
-      },
-      scatter: { 
-        headers: ['X', 'Y', 'Size', 'Label'], 
-        types: ['number', 'number', 'number', 'text'], 
-        maxRows: 20, 
-        maxSeries: 1, 
-        getDefaultRowData: (index) => [
-          Math.floor(Math.random() * 91) + 5, 
-          Math.floor(Math.random() * 91) + 5, 
-          Math.floor(Math.random() * 7) + 4, 
-          `Point ${String.fromCharCode(65 + index)}`
-        ]
-      },
-      histogram: { 
-        headers: ['Value'], 
-        types: ['number'], 
-        maxRows: 50, 
-        maxSeries: 1, 
-        getDefaultRowData: () => [Math.floor(Math.random() * 31) + 10]
-      }
-    };
-
-    // Initialize modern data table
-    function initModernDataTable() {
-      const addRowBtn = document.getElementById('btn-add-row-modern');
-      const addSeriesBtn = document.getElementById('btn-add-series-modern');
-      addRowBtn.addEventListener('click', addNewRow);
-      addSeriesBtn.addEventListener('click', addNewSeries);
-    }
-
-    // Update modern data table for chart type
-    function updateModernDataTableForChartType() {
-      const config = dataTableConfig[state.chartType];
-      const headersContainer = document.getElementById('modern-data-table-headers');
-      const bodyContainer = document.getElementById('modern-data-table-body');
-      const addSeriesBtn = document.getElementById('btn-add-series-modern');
-      const seriesCount = document.getElementById('modern-series-count');
-      
-      if (config.maxSeries > 1) {
-        addSeriesBtn.style.display = 'flex';
-        seriesCount.style.display = 'block';
-        seriesCount.textContent = `${currentSeries} series`;
-        currentSeries = Math.min(currentSeries, config.maxSeries);
-      } else {
-        addSeriesBtn.style.display = 'none';
-        seriesCount.style.display = 'none';
-        currentSeries = 1;
-      }
-      
-      headersContainer.innerHTML = generateModernTableHeaders(config);
-      
-      if (!state.currentData || !isValidDataForChart(state.currentData, state.chartType)) {
-        const defaultRowCount = getDefaultRowCountForChartType(state.chartType);
-        const defaultTableData = Array.from({ length: defaultRowCount }, (_, index) => 
-          config.getDefaultRowData(index)
-        );
-        state.currentData = convertTableDataToChartData(defaultTableData, state.chartType);
-      }
-      
-      bodyContainer.innerHTML = generateModernTableRows(getTableDataFromChartData(state.currentData, state.chartType), config);
-      updateModernRowCount();
-      updateModernDataLimits();
-    }
-
-    // Generate modern table headers
-    function generateModernTableHeaders(config) {
-      let headers = config.headers.slice();
-      if (currentSeries > 1 && state.chartType !== 'pie') {
-        const baseHeaders = headers.slice(0, 1);
-        for (let i = 1; i <= currentSeries; i++) {
-          baseHeaders.push(`Series ${i}`);
-        }
-        headers = baseHeaders;
-      }
-      headers.push('Actions');
-      
-      return `<tr>${headers.map((header, index) => {
-        const isSeriesColumn = currentSeries > 1 && state.chartType !== 'pie' && index > 0 && index < headers.length - 1;
-        if (isSeriesColumn) {
-          return `<th><div class="series-header-modern"><span>${header}</span><button class="delete-series-btn" data-series="${index}" title="Delete series"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T10 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg></button></div></th>`;
-        } else {
-          return `<th>${header}</th>`;
-        }
-      }).join('')}</tr>`;
-    }
-
-    // Generate modern table rows
-    function generateModernTableRows(data, config) {
-      return data.map((row, rowIndex) => {
-        let actualRowData = row;
-        if (currentSeries > 1 && state.chartType !== 'pie' && row.length < currentSeries + 1) {
-          actualRowData = [row[0]];
-          for (let i = 1; i <= currentSeries; i++) {
-            actualRowData.push(row[i] || '');
-          }
-        }
-        
-        return `<tr data-row="${rowIndex}">${actualRowData.map((cell, cellIndex) => {
-          let inputType = 'text';
-          if (state.chartType === 'pie') {
-            inputType = cellIndex === 0 ? 'text' : 'number';
-          } else if (currentSeries > 1 && state.chartType !== 'pie') {
-            inputType = cellIndex === 0 ? 'text' : 'number';
-          } else {
-            inputType = config.types[cellIndex] || 'text';
-          }
-          
-          if (inputType === 'color') {
-            return `<td class="color-cell-modern"><div class="color-preview-modern" style="background: ${cell}"></div><input type="color" value="${cell}" data-cell="${cellIndex}" title="Choose color"></td>`;
-          } else {
-            return `<td><input type="${inputType}" value="${cell}" data-cell="${cellIndex}" ${inputType === 'number' ? 'min="0" step="1"' : ''}></td>`;
-          }
-        }).join('')}<td class="row-actions-modern"><button class="delete-row-btn" data-row="${rowIndex}" title="Delete row"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T10 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg></button></td></tr>`;
-      }).join('');
-    }
-
-    // Update modern row count
-    function updateModernRowCount() {
-      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
-      document.getElementById('modern-row-count').textContent = `${currentData.length} row${currentData.length !== 1 ? 's' : ''}`;
-    }
-
-    // Update modern data limits
-    function updateModernDataLimits() {
-      const config = dataTableConfig[state.chartType];
-      const seriesText = config.maxSeries > 1 ? `, ${currentSeries}/${config.maxSeries} series` : '';
-      document.getElementById('modern-data-limits').textContent = `Max: ${config.maxRows} rows${seriesText}`;
-      const seriesCount = document.getElementById('modern-series-count');
-      if (config.maxSeries > 1) {
-        seriesCount.textContent = `${currentSeries} series`;
-      }
-    }
-
-    // Setup modern table event listeners
-    function setupModernTableEventListeners() {
-      const table = document.getElementById('modern-data-table');
-      table.addEventListener('focusin', (e) => {
-          if (e.target.matches('input')) {
-            const cell = e.target.closest('td');
-            cell.classList.add('editing');
-          }
-        });
-        
-        table.addEventListener('focusout', (e) => {
-          if (e.target.matches('input')) {
-            const cell = e.target.closest('td');
-            cell.classList.remove('editing');
-          }
-        });
-
-      table.addEventListener('input', (e) => {
-        if (e.target.matches('input')) {
-          const row = e.target.closest('tr');
-          const rowIndex = parseInt(row.dataset.row);
-          const cellIndex = parseInt(e.target.dataset.cell);
-          const newValue = e.target.value;
-          handleCellEdit(rowIndex, cellIndex, newValue);
-        }
-      });
-      
-      table.addEventListener('click', (e) => {
-        if (e.target.matches('.delete-row-btn') || e.target.closest('.delete-row-btn')) {
-          const btn = e.target.matches('.delete-row-btn') ? e.target : e.target.closest('.delete-row-btn');
-          const rowIndex = parseInt(btn.dataset.row);
-          deleteRow(rowIndex);
-        }
-        if (e.target.matches('.delete-series-btn') || e.target.closest('.delete-series-btn')) {
-          const btn = e.target.matches('.delete-series-btn') ? e.target : e.target.closest('.delete-series-btn');
-          const seriesIndex = parseInt(btn.dataset.series);
-          deleteSeries(seriesIndex);
-        }
-      });
-    }
-
-    // Data table operations
-    function addNewRow() {
-      const config = dataTableConfig[state.chartType];
-      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
-      
-      if (currentData.length >= config.maxRows) {
-        showCustomAlert(
-          `Maximum ${config.maxRows} rows allowed for ${state.chartType} charts. Consider simplifying your data or using a different chart type.`,
-          'warning',
-          'Data Limit Reached'
-        );
-        return;
-      }
-      
-      // Generate random default data for the new row
-      const newRow = config.getDefaultRowData(currentData.length);
-      
-      currentData.push(newRow);
-      state.currentData = convertTableDataToChartData(currentData, state.chartType);
-      updateModernDataTableForChartType();
-      updatePreview();
-    }
-
-    function addNewSeries() {
-      const config = dataTableConfig[state.chartType];
-      if (currentSeries >= config.maxSeries) {
-        showCustomAlert(
-          `Maximum ${config.maxSeries} data series allowed for ${state.chartType} charts. You can create multiple charts for additional series.`,
-          'warning',
-          'Series Limit Reached'
-        );
-        return;
-      }
-      
-      currentSeries++;
-      
-      // Update existing data structure to include new series with random values
-      const currentTableData = getTableDataFromChartData(state.currentData, state.chartType);
-      
-      // Add new series column with random data to each row
-      currentTableData.forEach(row => {
-        const randomValue = Math.floor(Math.random() * 91) + 10;
-        row.push(randomValue);
-      });
-      
-      state.currentData = convertTableDataToChartData(currentTableData, state.chartType);
-      updateModernDataTableForChartType();
-      updatePreview();
-    }
-
-    function deleteRow(rowIndex) {
-      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
-      if (currentData.length <= 1) {
-        showCustomAlert(
-          'Cannot delete the last row. Charts require at least one data point to display properly.',
-          'warning',
-          'Data Required'
-        );
-        return;
-      }
-      currentData.splice(rowIndex, 1);
-      state.currentData = convertTableDataToChartData(currentData, state.chartType);
-      updateModernDataTableForChartType();
-      updatePreview();
-    }
-
-    function deleteSeries(seriesIndex) {
-      if (currentSeries <= 1) {
-        showCustomAlert(
-          'Cannot delete the last series. Charts require at least one data series to display properly.',
-          'warning',
-          'Series Required'
-        );
-        return;
-      }
-      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
-      currentData.forEach(row => { row.splice(seriesIndex, 1); });
-      currentSeries--;
-      state.currentData = convertTableDataToChartData(currentData, state.chartType);
-      updateModernDataTableForChartType();
-      updatePreview();
-    }
-
-    function handleCellEdit(rowIndex, cellIndex, newValue) {
-      const currentData = getTableDataFromChartData(state.currentData, state.chartType);
-      if (currentData[rowIndex]) {
-        currentData[rowIndex][cellIndex] = newValue;
-        state.currentData = convertTableDataToChartData(currentData, state.chartType);
-        updatePreview();
-      }
-    }
-
-    // Data conversion functions
-    function getTableDataFromChartData(chartData, chartType) {
-      switch (chartType) {
-        case 'bar':
-          return chartData.categories.map((category, index) => {
-            const row = [category];
-            chartData.series.forEach(series => { row.push(series.y[index]); });
-            return row;
-          });
-        case 'pie':
-          return chartData.labels.map((label, index) => [label, chartData.values[index]]);
-        case 'line':
-          return chartData.x.map((xValue, index) => {
-            const row = [xValue];
-            chartData.series.forEach(series => { row.push(series.y[index]); });
-            return row;
-          });
-        case 'scatter':
-          return chartData.points.map(point => [point.x, point.y, point.r || 6, point.label || '']);
-        case 'histogram':
-          return chartData.values.map(value => [value]);
-        default:
-          return [];
-      }
-    }
-
-    function convertTableDataToChartData(tableData, chartType) {
-      switch (chartType) {
-        case 'bar':
-          const categories = tableData.map(row => row[0]);
-          const series = [];
-          for (let i = 1; i < tableData[0].length; i++) {
-            series.push({ label: `Series ${i}`, y: tableData.map(row => parseInt(row[i]) || 0) });
-          }
-          return { categories, series };
-        case 'pie':
-          const labels = tableData.map(row => row[0]);
-          const values = tableData.map(row => parseInt(row[1]) || 0);
-          return { labels, values };
-        case 'line':
-          const x = tableData.map(row => row[0]);
-          const lineSeries = [];
-          for (let i = 1; i < tableData[0].length; i++) {
-            lineSeries.push({ label: `Series ${i}`, y: tableData.map(row => parseInt(row[i]) || 0) });
-          }
-          return { x, series: lineSeries };
-        case 'scatter':
-          const points = tableData.map(row => ({
-            x: parseInt(row[0]) || 0,
-            y: parseInt(row[1]) || 0,
-            r: parseInt(row[2]) || 6,
-            label: row[3] || ''
-          }));
-          return { points };
-        case 'histogram':
-          const histogramValues = tableData.map(row => parseInt(row[0]) || 0);
-          return { values: histogramValues };
-        default:
-          return tableData;
-      }
-    }
-
-    function isValidDataForChart(data, chartType) {
-      if (!data) return false;
-      switch (chartType) {
-        case 'bar': return data.categories && data.series && data.series.length > 0;
-        case 'pie': return data.labels && data.values && data.labels.length === data.values.length;
-        case 'line': return data.x && data.series && data.series.length > 0;
-        case 'scatter': return data.points && Array.isArray(data.points);
-        case 'histogram': return data.values && Array.isArray(data.values);
-        default: return false;
-      }
-    }
-
-    // Get default row count for each chart type
-    function getDefaultRowCountForChartType(chartType) {
-      switch (chartType) {
-        case 'bar': return 8;
-        case 'pie': return 4;
-        case 'line': return 8;
-        case 'scatter': return 8;
-        case 'histogram': return 20;
-        default: return 4;
-      }
-    }
-
-    // ===== CONTEXT TOOLBAR HELPER FUNCTIONS =====
-
-    // Show slider popup for numeric controls
-    function showSliderPopup(type, button, currentValue) {
-      closeAllSliderPopups();
-      
-      let popup, slider, valueDisplay;
-      
-      switch(type) {
-        case 'border-radius':
-          popup = document.getElementById('border-radius-popup-toolbar');
-          slider = document.getElementById('popup-border-radius-toolbar');
-          valueDisplay = document.getElementById('border-radius-value-toolbar');
-          break;
-        case 'padding':
-          popup = document.getElementById('padding-popup-toolbar');
-          slider = document.getElementById('popup-padding-toolbar');
-          valueDisplay = document.getElementById('padding-value-toolbar');
-          break;
-        case 'slice-padding':
-          popup = document.getElementById('slice-padding-popup-toolbar');
-          slider = document.getElementById('popup-slice-padding-toolbar');
-          valueDisplay = document.getElementById('slice-padding-value-toolbar');
-          break;
-      }
-      
-      if (popup && slider && valueDisplay) {
-        slider.value = currentValue;
-        valueDisplay.textContent = currentValue + (type === 'padding' || type === 'slice-padding' ? '%' : 'px');
-        
-        positionSliderPopup(button, popup);
-        popup.classList.add('visible');
-      }
-    }
-
-    // Position slider popup relative to icon button
-    function positionSliderPopup(button, popup) {
-      const rect = button.getBoundingClientRect();
-      const toolbarRect = contextToolbar.getBoundingClientRect();
-      
-      popup.style.position = 'fixed';
-      popup.style.left = (rect.left + rect.width / 2 - popup.offsetWidth / 2) + 'px';
-      popup.style.top = (toolbarRect.bottom + 5) + 'px';
-    }
-
-    // Close all slider popups
-    function closeAllSliderPopups() {
-      document.querySelectorAll('.slider-popup').forEach(popup => {
-        popup.classList.remove('visible');
-      });
-    }
-
-    // Toggle bar value display
-    function toggleBarValueDisplay(button) {
-      if (state.selectedElement && state.chartType === 'bar') {
-        const isActive = button.classList.toggle('active');
-        state.selectedElement.setAttribute('data-show-value', isActive.toString());
-        updatePreview();
-      }
-    }
-
-    // Toggle pie label display
-    function togglePieLabelDisplay(button) {
-      if (state.selectedElement && state.chartType === 'pie') {
-        const isActive = button.classList.toggle('active');
-        state.selectedElement.setAttribute('data-show-label', isActive.toString());
-        updatePreview();
-      }
-    }
-
-    // Store element-specific data
-    let currentElementData = { type: null, index: null, originalStyles: null };
-
-    // ===== ENHANCED USER PROFILE MANAGEMENT =====
-    function updateUserProfile(userData) {
-      const userNameElement = document.getElementById('user-name');
-      const userAvatarElement = document.getElementById('user-avatar');
-      const userProfileElement = document.getElementById('user-profile');
-      
-      // Remove loading state if present
-      userProfileElement.classList.remove('loading');
-      
-      if (userData.name) {
-        // Display first name only for cleaner UI
-        const firstName = userData.name.split(' ')[0];
-        userNameElement.textContent = firstName;
-      }
-      
-      if (userData.photoUrl) {
-        // Create and set user photo
-        const img = document.createElement('img');
-        img.src = userData.photoUrl;
-        img.alt = userData.name || 'User';
-        img.onload = () => {
-          userAvatarElement.innerHTML = '';
-          userAvatarElement.appendChild(img);
-          userAvatarElement.classList.add('has-photo');
-          
-          // Add loaded animation
-          userProfileElement.classList.add('data-loaded');
-          
-          // Add status indicator for active user
-          addUserStatus();
-        };
-        img.onerror = () => {
-          // If image fails to load, fall back to initials
-          showUserInitials(userData.name, userAvatarElement);
-          userProfileElement.classList.add('data-loaded');
-          addUserStatus();
-        };
-      } else {
-        // No photo URL, show initials
-        showUserInitials(userData.name, userAvatarElement);
-        userProfileElement.classList.add('data-loaded');
-        addUserStatus();
-      }
-    }
-
-    function showUserInitials(userName, avatarElement) {
-      avatarElement.innerHTML = ''; // Clear existing content
-      if (userName) {
-        const initials = getUserInitials(userName);
-        const initialsSpan = document.createElement('span');
-        initialsSpan.textContent = initials;
-        avatarElement.appendChild(initialsSpan);
-      } else {
-        // Fallback to icon if no name
-        avatarElement.innerHTML = `
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
-          </svg>
-        `;
-      }
-    }
-
-    function getUserInitials(name) {
-      return name
-        .split(' ')
-        .map(part => part.charAt(0).toUpperCase())
-        .slice(0, 2)
-        .join('');
-    }
-
-    function addUserStatus() {
-      const userAvatarElement = document.getElementById('user-avatar');
-      let statusElement = document.getElementById('user-status');
-      
-      if (!statusElement) {
-        statusElement = document.createElement('div');
-        statusElement.id = 'user-status';
-        statusElement.className = 'user-status';
-        userAvatarElement.appendChild(statusElement);
-      }
-      
-      // You can customize status based on user activity
-      statusElement.className = 'user-status'; // Default online status
-    }
-
-    // Add loading state initially
-    document.addEventListener('DOMContentLoaded', () => {
-      const userProfileElement = document.getElementById('user-profile');
-      userProfileElement.classList.add('loading');
-    });
-
-    // Listen for user data from Figma (your existing code)
-    window.addEventListener('message', (event) => {
-      if (event.data.pluginMessage && event.data.pluginMessage.type === 'USER_DATA') {
-        updateUserProfile(event.data.pluginMessage.user);
-      }
-    });
-
-    // ===== CUSTOM ALERT SYSTEM =====
-    function showCustomAlert(message, type = 'info', title = null) {
-      const overlay = document.getElementById('custom-alert-overlay');
-      const alertElement = document.getElementById('custom-alert');
-      const alertIcon = document.getElementById('alert-icon');
-      const alertTitle = document.getElementById('alert-title');
-      const alertMessage = document.getElementById('alert-message');
-      const alertConfirm = document.getElementById('alert-confirm');
-
-      // Set alert type and styling
-      alertElement.className = 'custom-alert';
-      alertIcon.className = 'custom-alert-icon';
-      
-      // Configure based on type
-      switch(type) {
-        case 'warning':
-          alertIcon.classList.add('warning');
-          alertTitle.textContent = title || 'Warning';
-          alertElement.classList.add('limit-warning');
-          break;
-        case 'error':
-          alertIcon.classList.add('error');
-          alertTitle.textContent = title || 'Error';
-          alertElement.classList.add('error-alert');
-          break;
-        case 'success':
-          alertIcon.classList.add('success');
-          alertTitle.textContent = title || 'Success';
-          alertElement.classList.add('success-alert');
-          break;
-        default:
-          alertIcon.classList.add('info');
-          alertTitle.textContent = title || 'Information';
-          alertElement.classList.add('feature-coming');
-      }
-
-      alertMessage.textContent = message;
-      
-      // Show the alert
-      overlay.classList.add('visible');
-      
-      // Handle confirmation
-      return new Promise((resolve) => {
-        const handleConfirm = () => {
-          overlay.classList.remove('visible');
-          alertConfirm.removeEventListener('click', handleConfirm);
-          resolve(true);
-        };
-        
-        alertConfirm.addEventListener('click', handleConfirm);
-        
-        // Also close when clicking outside the alert
-        overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) {
-            handleConfirm();
-          }
-        });
-      });
-    }
-
-    // ===== THEME MANAGEMENT =====
-    // Toggle theme
-      /*const isDark = document.documentElement.style.getPropertyValue("--bg") === "#0b0c0f" || !document.documentElement.style.getPropertyValue("--bg");
-      if (isDark) {
-        applyLightTheme();
-        themeToggle.innerHTML = "<span>☀️</span><span>Light Mode</span>";
-      } else {
-        applyDarkTheme();
-        themeToggle.innerHTML = "<span>🌙</span><span>Dark Mode</span>";
-      }
-      updatePreview(); */
-    
-
-    // Apply light theme
-    function applyLightTheme() {
-      document.documentElement.style.setProperty("--bg", "#f8fafc");
-      document.documentElement.style.setProperty("--panel", "#ffffff");
-      document.documentElement.style.setProperty("--panel-2", "#f6f7fb");
-      document.documentElement.style.setProperty("--ink", "#0f172a");
-      document.documentElement.style.setProperty("--ink-2", "#334155");
-      document.documentElement.style.setProperty("--muted", "#64748b");
-      document.documentElement.style.setProperty("--line", "#e5e7eb");
-      document.documentElement.style.setProperty("--brand", "#2563eb");
-      document.documentElement.style.setProperty("--brand-2", "#60a5fa");
-      document.documentElement.style.setProperty("--accent", "#8b5cf6");
-    }
-
-    // Apply dark theme
-    function applyDarkTheme() {
-      document.documentElement.style.removeProperty("--bg");
-      document.documentElement.style.removeProperty("--panel");
-      document.documentElement.style.removeProperty("--panel-2");
-      document.documentElement.style.removeProperty("--ink");
-      document.documentElement.style.removeProperty("--ink-2");
-      document.documentElement.style.removeProperty("--muted");
-      document.documentElement.style.removeProperty("--line");
-      document.documentElement.style.removeProperty("--brand");
-      document.documentElement.style.removeProperty("--brand-2");
-      document.documentElement.style.removeProperty("--accent");
-    }
-
-    // ===== EXPORT FUNCTIONS =====
-    // Export SVG
-    function exportSVG() {
-      const svg = document.querySelector("#svg-host svg");
-      if (!svg) {
-        alert("No chart to export. Please generate a chart first.");
-        return;
-      }
-      const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `chart-${state.chartType}.svg`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    // Export PNG
-    function exportPNG() {
-      const svg = document.querySelector("#svg-host svg");
-      if (!svg) {
-        alert("No chart to export. Please generate a chart first.");
-        return;
-      }
-      const xml = new XMLSerializer().serializeToString(svg);
-      const img = new Image();
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = 800;
-      canvas.height = 380;
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0);
-        const url = canvas.toDataURL("image/png");
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `chart-${state.chartType}.png`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      };
-      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
-    }
-
-    // Export to Figma
-    function exportToFigma() {
-      const svg = document.querySelector("#svg-host svg");
-      if (!svg) {
-        alert("No chart to export. Please generate a chart first.");
-        return;
-      }
-      if (typeof parent !== "undefined" && parent.postMessage) {
-        parent.postMessage({ pluginMessage: { type: "EXPORT_SVG", svg: svg.outerHTML } }, "*");
-        showCustomAlert(
-          "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
-          'success',
-          'Export Complete'
-        );
-      } else {
-        alert("Figma export is only available when running as a Figma plugin");
-      }
-    }
-
-    // ===== EVENT LISTENERS SETUP =====
-    // Setup event listeners
-    function setupEventListeners() {
-      // Hamburger Menu
-      hamburgerMenu.addEventListener("click", (e) => {
-        e.stopPropagation();
-        dropdownMenu.classList.toggle("visible");
-      });
-      document.addEventListener("click", () => {
-        dropdownMenu.classList.remove("visible");
-      });
-
-      // Theme Toggle
-      // themeToggle.addEventListener("click", toggleTheme);
-      // Replace with:
-      themeToggle.addEventListener("click", (e) => {
-        e.preventDefault();
-        showCustomAlert(
-          "Dark mode is coming soon! Currently only light mode is available.", 
-          'info', 
-          'Feature Coming Soon'
-        );
-      });
-
-      // Info Modal
-      infoBtn.addEventListener("click", () => {
-        infoModal.classList.add("visible");
-        dropdownMenu.classList.remove("visible");
-      });
-      modalClose.addEventListener("click", () => {
-        infoModal.classList.remove("visible");
-      });
-      infoModal.addEventListener("click", (e) => {
-        if (e.target === infoModal) {
-          infoModal.classList.remove("visible");
-        }
-      });
-
-      // Apply Manual Data
-      btnApplyData.addEventListener("click", applyManualData);
-
-      // Global Toolbar Controls
-      globalBgColor.addEventListener("input", (e) => {
-        state.globalSettings.backgroundColor = e.target.value;
-        state.opts[state.chartType].backgroundColor = e.target.value;
-        state.opts[state.chartType].backgroundTransparent = false;
-        updatePreview();
-      });
-
-      // Grid Toggle
-      document.getElementById("global-grid-toggle").addEventListener("click", function() {
-        if (state.chartType === 'pie') return;
-        this.classList.toggle("active");
-        state.globalSettings.showGrid = this.classList.contains("active");
-        if (state.chartType !== "pie") {
-          state.opts[state.chartType].showGrid = state.globalSettings.showGrid;
-        }
-        updatePreview();
-      });
-
-      // Axes Toggle  
-      document.getElementById("global-axes-toggle").addEventListener("click", function() {
-        if (state.chartType === 'pie') return;
-        this.classList.toggle("active");
-        state.globalSettings.showAxes = this.classList.contains("active");
-        if (state.chartType !== "pie") {
-          state.opts[state.chartType].showAxes = state.globalSettings.showAxes;
-        }
-        updatePreview();
-      });
-
-      resetStylesBtn.addEventListener("click", () => {
-        state.globalSettings = {
-          backgroundColor: "#111318",
-          showGrid: true,
-          showAxes: true,
-          fontSize: 12,
-          padding: 0,
-          borderRadius: 6,
-        };
-        updateGlobalToolbarValues();
-        updatePreview();
-      });
-
-      // Close all dropdowns when clicking outside
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".has-dropdown") && !e.target.closest(".dropdown-menu") && !e.target.closest(".slider-popup") && !e.target.closest(".color-preset-dropdown")) {
-          closeAllDropdowns();
-        }
-      });
-
-      // Export Buttons
-      btnExportSvg.addEventListener("click", exportSVG);
-      btnExportPng.addEventListener("click", exportPNG);
-      btnExportFigma.addEventListener("click", exportToFigma);
-
-      // Line chart controls
-      lineAreaToggle.addEventListener('click', () => {
-        lineAreaToggle.classList.toggle('active');
-        state.opts.line.areaFill = lineAreaToggle.classList.contains('active');
-        updatePreview();
-      });
-
-      lineCurveToggle.addEventListener('click', () => {
-        lineCurveToggle.classList.toggle('active');
-        state.opts.line.smooth = lineCurveToggle.classList.contains('active');
-        updatePreview();
-      });
-
-      lineWidthBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(lineWidthBtn, lineWidthPopup);
-        lineWidthPopup.classList.toggle('visible');
-      });
-
-      popupLineWidth.addEventListener('input', (e) => {
-        state.opts.line.lineWidth = parseInt(e.target.value);
-        lineWidthValue.textContent = e.target.value + 'px';
-        updatePreview();
-      });
-
-      pointShapesBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(pointShapesBtn, pointShapesPopup);
-        pointShapesPopup.classList.toggle('visible');
-      });
-
-      document.querySelectorAll('.shape-option').forEach(option => {
-        option.addEventListener('click', (e) => {
-          const shape = e.currentTarget.dataset.shape;
-          document.querySelectorAll('.shape-option').forEach(opt => { opt.classList.remove('active'); });
-          e.currentTarget.classList.add('active');
-          state.opts.line.pointShape = shape;
-          state.opts.line.showPoints = shape !== 'none';
-          updatePointShapeIcon(shape);
-          updatePreview();
-          pointShapesPopup.classList.remove('visible');
-        });
-      });
-
-      // Pie chart controls
-      pieGapToggle.addEventListener('click', () => {
-        pieGapToggle.classList.toggle('active');
-        state.opts.pie.separated = pieGapToggle.classList.contains('active');
-        updatePreview();
-      });
-
-      pieDonutToggle.addEventListener('click', () => {
-        pieDonutToggle.classList.toggle('active');
-        state.opts.pie.donut = pieDonutToggle.classList.contains('active');
-        updatePreview();
-      });
-
-      // Color preset dropdown
-      colorPresetBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(colorPresetBtn, colorPresetDropdown);
-        colorPresetDropdown.classList.toggle("visible");
-      });
-
-      // Font size popup
-      fontSizeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(fontSizeBtn, fontSizePopup);
-        fontSizePopup.classList.toggle("visible");
-      });
-
-      // More options dropdown
-      moreOptionsBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(moreOptionsBtn, moreDropdown);
-        moreDropdown.classList.toggle("visible");
-      });
-
-      // Padding popup
-      paddingBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(paddingBtn, paddingPopup);
-        paddingPopup.classList.toggle("visible");
-      });
-
-      // Border radius popup
-      borderRadiusBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(borderRadiusBtn, borderRadiusPopup);
-        borderRadiusPopup.classList.toggle("visible");
-      });
-
-      // Popup slider events
-      popupFontSize.addEventListener("input", (e) => {
-        state.globalSettings.fontSize = parseInt(e.target.value);
-        fontSizeValue.textContent = e.target.value + "px";
-        updatePreview();
-      });
-
-      popupPadding.addEventListener("input", (e) => {
-        state.globalSettings.padding = parseInt(e.target.value);
-        paddingValue.textContent = e.target.value + "%";
-        updatePreview();
-      });
-
-      popupBorderRadius.addEventListener("input", (e) => {
-        state.globalSettings.borderRadius = parseInt(e.target.value);
-        borderRadiusValue.textContent = e.target.value + "px";
-        updatePreview();
-      });
-
-      // Color preset options
-      document.querySelectorAll(".color-preset-option").forEach((option) => {
-        option.addEventListener("click", (e) => {
-          const preset = e.currentTarget.dataset.preset;
-          applyColorPreset(preset);
-          colorPresetDropdown.classList.remove("visible");
-        });
-      });
-
-      // Scatter point shapes popup
-      scatterPointShapesBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllDropdowns();
-        positionDropdown(scatterPointShapesBtn, scatterPointShapesPopup);
-        scatterPointShapesPopup.classList.toggle('visible');
-      });
-
-      document.querySelectorAll('#scatter-point-shapes-popup .shape-option').forEach(option => {
-        option.addEventListener('click', (e) => {
-          const shape = e.currentTarget.dataset.shape;
-          document.querySelectorAll('#scatter-point-shapes-popup .shape-option').forEach(opt => { opt.classList.remove('active'); });
-          e.currentTarget.classList.add('active');
-          state.opts.scatter.pointShape = shape;
-          updateScatterPointShapeIcon(shape);
-          updatePreview();
-          scatterPointShapesPopup.classList.remove('visible');
-        });
-      });
-    }
-
-    // ===== INITIALIZATION =====
-    // Initialize the application
-    function init() {
-      applyLightTheme();
-      setupEventListeners();
-      initChartTypeSelector();
-      initDataSourceSelector();
-      initModernDataTable();
-      setupModernTableEventListeners();
-      updateModernDataTableForChartType();
-      updateToolbarForChartType();
-      updatePreview();
-      updateGlobalToolbarValues();
-      // Request user data from Figma
-      if (typeof parent !== "undefined" && parent.postMessage) {
-        parent.postMessage({ pluginMessage: { type: "GET_USER_DATA" } }, "*");
-      }
-    }
-
-    // Initialize the application when DOM is loaded
-    document.addEventListener("DOMContentLoaded", init);
-  </script>
-</body>
+  <script src="ui.data.js"></script>
+  <script src="ui.utils.js"></script>
+  <script src="ui.renderers.js"></script>
+  <script src="ui.export.js"></script>
+  <script src="ui.ui.js"></script>
+  <script src="ui.js"></script>
+
+  </body>
 </html>
+
+
+
+
+
+
+

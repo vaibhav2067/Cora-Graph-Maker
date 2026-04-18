@@ -1,0 +1,54 @@
+﻿/* ===== CSS VARIABLES & RESET ===== */
+:root {
+  --bg: #0b0c0f;
+  --panel: #111318;
+  --panel-2: #151922;
+  --ink: #e9ecf1;
+  --ink-2: #b7c0cc;
+  --muted: #8a93a0;
+  --line: #232938;
+  --brand: #6aa2ff;
+  --brand-2: #8ec5ff;
+  --accent: #a78bfa;
+  --radius: 12px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.25);
+  --ring: 0 0 0 2px rgba(106, 162, 255, 0.55);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --panel-2: #f6f7fb;
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --muted: #64748b;
+    --line: #e5e7eb;
+    --brand: #2563eb;
+    --brand-2: #60a5fa;
+    --accent: #8b5cf6;
+    --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+    --shadow-soft: 0 2px 10px rgba(2, 6, 23, 0.06);
+    --ring: 0 0 0 2px rgba(37, 99, 235, 0.45);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font: 13px/1.55 ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+

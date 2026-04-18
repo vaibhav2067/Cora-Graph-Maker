@@ -5,7 +5,14 @@
   "main": "code.js",
   "ui": {
     "main": "ui.html",
-    "styles": "ui.css"
+    "styles": "ui.css",
+    "utils": "ui.utils.js",
+    "data": "ui.data.js",
+    "exports": "ui.export.js",
+    "animation": "ui.animation.js",
+    "uihelpers": "ui.ui.js",
+    "renderers": "ui.renderers.js",
+    "script": "ui.js"
   },
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
@@ -14,7 +21,11 @@
     "allowedDomains": [
       "https://api.example.com",
       "https://cdn.jsdelivr.net",
-      "https://raw.githubusercontent.com"
+      "https://raw.githubusercontent.com",
+      "https://discord.gg",
+      "https://www.figma.com",
+      "https://*.figma.com",
+      "https://*.figmausercontent.com"
     ]
   }
 }
