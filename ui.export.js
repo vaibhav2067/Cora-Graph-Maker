@@ -55,34 +55,6 @@
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
   }
 
-  function exportToFigma(optionsOrCallback, onSuccess) {
-    const svg = getCurrentSvg();
-    if (!svg) {
-      alert("No chart to export. Please generate a chart first.");
-      return;
-    }
-
-    const options = typeof optionsOrCallback === "function" ? {} : (optionsOrCallback || {});
-    const successCallback = typeof optionsOrCallback === "function" ? optionsOrCallback : onSuccess;
-
-    if (typeof parent !== "undefined" && parent.postMessage) {
-      parent.postMessage({
-        pluginMessage: {
-          type: "EXPORT_SVG",
-          svg: svg.outerHTML,
-          animation: options.animation || null,
-          exportStyle: options.exportStyle || null,
-        }
-      }, "*");
-      if (typeof successCallback === "function") {
-        successCallback();
-      }
-      return;
-    }
-
-    alert("Figma export is only available when running as a Figma plugin");
-  }
-
   function requestUserData() {
     if (typeof parent !== "undefined" && parent.postMessage) {
       parent.postMessage({ pluginMessage: { type: "GET_USER_DATA" } }, "*");

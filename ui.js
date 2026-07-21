@@ -1,7 +1,6 @@
 ﻿// ===== DOM ELEMENTS =====
     // Main UI elements
     const defaultApp = document.getElementById("default-app");
-    const aiApp = document.getElementById("ai-app");
     const animationApp = document.getElementById("animation-app");
     const settingsOverlay = document.getElementById("settings-overlay");
     const settingsBackdrop = document.getElementById("settings-backdrop");
@@ -15,37 +14,13 @@
     const headerLayoutBtnIcon = document.getElementById("header-layout-btn-icon");
     const headerLayoutMenu = document.getElementById("header-layout-menu");
     const headerLayoutOptions = Array.from(document.querySelectorAll(".header-layout-option"));
-    const aiHamburgerMenu = document.getElementById("ai-hamburger-menu");
-    const aiDropdownMenu = document.getElementById("ai-dropdown-menu");
-    const aiHomeBtn = document.getElementById("ai-home-btn");
-    const aiThemeToggle = document.getElementById("ai-theme-toggle");
-    const aiThemeToggleState = document.getElementById("ai-theme-toggle-state");
-    const aiInfoBtn = document.getElementById("ai-info-btn");
     const themeToggle = document.getElementById("theme-toggle");
     const themeToggleState = document.getElementById("theme-toggle-state");
     const infoBtn = document.getElementById("info-btn");
     const settingsBtn = document.getElementById("settings-btn");
-    const aiSettingsBtn = document.getElementById("ai-settings-btn");
     const joinUsBtn = document.getElementById("join-us-btn");
-    const aiJoinUsBtn = document.getElementById("ai-join-us-btn");
     const communityBtn = document.getElementById("community-btn");
-    const aiCommunityBtn = document.getElementById("ai-community-btn");
     const versionNoteBtn = document.getElementById("version-note-btn");
-    const aiVersionNoteBtn = document.getElementById("ai-version-note-btn");
-    const footerAnimationStudioBtn = document.getElementById("footer-animation-studio-btn");
-    const aiFooterAnimationStudioBtn = document.getElementById("ai-footer-animation-studio-btn");
-    const animationHomeBtn = document.getElementById("animation-home-btn");
-    const animationPreviewBtn = document.getElementById("animation-preview-btn");
-    const animationSaveBtn = document.getElementById("animation-save-btn");
-    const animationPresetSelect = document.getElementById("animation-preset-select");
-    const animationTriggerSelect = document.getElementById("animation-trigger-select");
-    const animationEasingSelect = document.getElementById("animation-easing-select");
-    const animationDirectionSelect = document.getElementById("animation-direction-select");
-    const animationDurationRange = document.getElementById("animation-duration-range");
-    const animationDurationValue = document.getElementById("animation-duration-value");
-    const animationPresetCopy = document.getElementById("animation-preset-copy");
-    const animationStateSummary = document.getElementById("animation-state-summary");
-    const animationChartTypeLabel = document.getElementById("animation-chart-type-label");
     const settingsHomeBtn = document.getElementById("settings-home-btn");
     const settingsCancelBtn = document.getElementById("settings-cancel-btn");
     const settingsResetBtn = document.getElementById("settings-reset-btn");
@@ -110,13 +85,6 @@
     const customColorHue = document.getElementById("custom-color-hue");
     const customColorFormat = document.getElementById("custom-color-format");
     const customColorValue = document.getElementById("custom-color-value");
-    const aiChatShell = document.getElementById("ai-chat-shell");
-    const aiSuggestionGrid = document.getElementById("ai-suggestion-grid");
-    const aiChatMessages = document.getElementById("ai-chat-messages");
-    const aiChatForm = document.getElementById("ai-chat-form");
-    const aiChatInput = document.getElementById("ai-chat-input");
-    const aiBtnOpenDataModal = document.getElementById("ai-btn-open-data-modal");
-    const ANIMATION_STUDIO_ENABLED = false;
 
     // Global toolbar elements
     const colorPresetBtn = document.getElementById("color-preset-btn");
@@ -173,14 +141,6 @@
     const btnExportPng = document.getElementById("btn-export-png");
     const btnExportFigma = document.getElementById("btn-export-figma");
     let selectedExportType = "figma";
-    const aiBtnExportPrimary = document.getElementById("ai-btn-export-primary");
-    const aiBtnExportToggle = document.getElementById("ai-btn-export-toggle");
-    const aiExportDropdown = document.getElementById("ai-export-dropdown");
-    const aiExportLabel = document.getElementById("ai-export-label");
-    const aiBtnExportSvg = document.getElementById("ai-btn-export-svg");
-    const aiBtnExportPng = document.getElementById("ai-btn-export-png");
-    const aiBtnExportFigma = document.getElementById("ai-btn-export-figma");
-    let aiSelectedExportType = "figma";
     let jsonInputMode = "editor";
     const PLUGIN_COMMUNITY_URL = "https://www.figma.com/@dimastudio";
     const DISCORD_COMMUNITY_URL = "https://discord.gg/Y6aMPdx4mX";
@@ -287,15 +247,6 @@
       applyDarkTheme,
     } = window.UiUi;
     const {
-      bindAnimationControls,
-      createDefaultAnimationSettings,
-      enterAnimationStudioMode: openAnimationStudio,
-      exitAnimationStudioMode: closeAnimationStudio,
-      getPresetConfig: getAnimationPresetConfig,
-      saveAnimationSettings,
-      syncAnimationStudioForChart,
-    } = window.UiAnimation;
-    const {
       renderPie,
       renderBar,
       renderLine,
@@ -333,7 +284,6 @@
       },
       selectedElement: null,
       currentData: null,
-      animationSettings: createDefaultAnimationSettings(),
       aiPreviewReady: false,
       opts: createDefaultChartOptions(),
       dataRegistry: null,
@@ -687,185 +637,10 @@
     }
 
     // ===== CHART UPDATE AND COLOR FUNCTIONS =====
-    function getActiveSvgHost() {
-      if (aiApp && !aiApp.hidden && !state.aiPreviewReady) {
-        return null;
-      }
-      if (animationApp && !animationApp.hidden) {
-        return document.getElementById("animation-svg-host");
-      }
-      if (aiApp && !aiApp.hidden) {
-        return document.getElementById("ai-svg-host");
-      }
-      return document.getElementById("svg-host");
-    }
-
-    function getPreviewAnimationEasing(easing) {
-      switch (easing) {
-        case "ease-in":
-          return "cubic-bezier(0.42, 0, 1, 1)";
-        case "ease-in-out":
-          return "cubic-bezier(0.42, 0, 0.58, 1)";
-        case "linear":
-          return "linear";
-        case "gentle":
-          return "cubic-bezier(0.2, 0.8, 0.2, 1)";
-        case "quick":
-          return "cubic-bezier(0.35, 0, 0.15, 1)";
-        case "ease-out":
-        default:
-          return "cubic-bezier(0, 0, 0.2, 1)";
-      }
-    }
-
-    function resetAnimationPreviewPlayback() {
-      if (animationPreviewResetTimer) {
-        clearTimeout(animationPreviewResetTimer);
-        animationPreviewResetTimer = null;
-      }
-
-      const animationHost = document.getElementById("animation-svg-host");
-      if (!animationHost) return;
-
-      animationHost.querySelectorAll(".is-preview-playing").forEach((node) => {
-        node.classList.remove(
-          "is-preview-playing",
-          "axis-vertical",
-          "axis-horizontal",
-          "flow-up",
-          "flow-right",
-          "flow-down",
-          "flow-left",
-          "flow-smart",
-          "effect-grow",
-          "effect-draw",
-          "effect-pop",
-          "effect-pulse",
-          "effect-sweep",
-          "effect-bloom",
-          "effect-rise",
-          "effect-radial",
-          "effect-spin"
-        );
-        node.style.removeProperty("--preview-duration");
-        node.style.removeProperty("--preview-delay");
-        node.style.removeProperty("--preview-easing");
-        node.style.removeProperty("--preview-stroke-length");
-        node.style.removeProperty("--bar-grow-duration");
-        node.style.removeProperty("--bar-grow-delay");
-        node.style.removeProperty("--bar-grow-easing");
-        if (node.dataset.previewStrokeDasharray) {
-          node.style.strokeDasharray = node.dataset.previewStrokeDasharray;
-        } else {
-          node.style.removeProperty("stroke-dasharray");
-        }
-        if (node.dataset.previewStrokeDashoffset) {
-          node.style.strokeDashoffset = node.dataset.previewStrokeDashoffset;
-        } else {
-          node.style.removeProperty("stroke-dashoffset");
-        }
-      });
-    }
-
-    function syncAnimationPreviewButton() {
-      if (!animationPreviewBtn) return;
-      const isReady = !!state.currentData;
-      animationPreviewBtn.disabled = !isReady;
-      animationPreviewBtn.textContent = isReady ? "See Animation" : "No Preview Data";
-      animationPreviewBtn.title = isReady
-        ? "Play the current animation preset in the preview"
-        : "Animation preview is available once the current graph has data";
-    }
-
-    function getAnimationPreviewTargets() {
-      switch (state.chartType) {
-        case "pie":
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-pie-slice"));
-        case "line":
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-line-animatable"));
-        case "radar":
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-radar-animatable"));
-        case "scatter":
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-scatter-point"));
-        case "dot":
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-dot-animatable"));
-        case "histogram":
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-histogram-bar"));
-        case "bar":
-        default:
-          return Array.from(document.querySelectorAll("#animation-svg-host .preview-bar-animatable"));
-      }
-    }
-
-    function prepareDrawPreviewTarget(node) {
-      if (typeof node.getTotalLength !== "function") return;
-      try {
-        const totalLength = node.getTotalLength();
-        if (!Number.isFinite(totalLength) || totalLength <= 0) return;
-        node.dataset.previewStrokeDasharray = node.style.strokeDasharray || "";
-        node.dataset.previewStrokeDashoffset = node.style.strokeDashoffset || "";
-        node.style.setProperty("--preview-stroke-length", `${totalLength}`);
-        node.style.strokeDasharray = `${totalLength}`;
-        node.style.strokeDashoffset = `${totalLength}`;
-      } catch (error) {
-        // Some SVG nodes do not support path length calculations.
-      }
-    }
-
-    function playAnimationPreview() {
-      if (!animationApp || animationApp.hidden) {
-        syncAnimationPreviewButton();
-        return;
-      }
-
-      const animationHost = document.getElementById("animation-svg-host");
-      if (!animationHost) return;
-
-      const targets = getAnimationPreviewTargets();
-      if (!targets.length) return;
-
-      resetAnimationPreviewPlayback();
-
-      const isHorizontal = !!state.opts.bar.horizontal;
-      const selectedDirection = String(state.animationSettings.direction || "smart");
-      const flowDirection = isHorizontal
-        ? (selectedDirection === "left" || selectedDirection === "right" ? selectedDirection : "right")
-        : (selectedDirection === "up" || selectedDirection === "down" ? selectedDirection : "up");
-      const axisClass = isHorizontal ? "axis-horizontal" : "axis-vertical";
-      const easing = getPreviewAnimationEasing(state.animationSettings.easing);
-      const duration = Math.max(100, parseInt(state.animationSettings.durationMs, 10) || 450);
-      const effectName = String(state.animationSettings.previewEffect || "grow");
-      const uniqueTargetCount = new Set(
-        targets.map((target) => String(target.dataset.animationIndex || target.dataset.barIndex || "0"))
-      ).size || 1;
-      const staggerStep = Math.min(80, Math.round(duration / Math.max(4, uniqueTargetCount * 1.5)));
-
-      targets.forEach((target, index) => {
-        const animationIndex = parseInt(target.dataset.animationIndex || target.dataset.barIndex || String(index), 10) || 0;
-        target.style.setProperty("--preview-duration", `${duration}ms`);
-        target.style.setProperty("--preview-delay", `${animationIndex * staggerStep}ms`);
-        target.style.setProperty("--preview-easing", easing);
-        target.style.setProperty("--bar-grow-duration", `${duration}ms`);
-        target.style.setProperty("--bar-grow-delay", `${animationIndex * staggerStep}ms`);
-        target.style.setProperty("--bar-grow-easing", easing);
-        if (effectName === "draw") {
-          prepareDrawPreviewTarget(target);
-        }
-        target.classList.add("is-preview-playing", `effect-${effectName}`);
-        if (effectName === "grow") {
-          target.classList.add(axisClass, `flow-${flowDirection}`);
-        }
-      });
-
-      animationPreviewResetTimer = window.setTimeout(() => {
-        resetAnimationPreviewPlayback();
-      }, duration + ((uniqueTargetCount - 1) * staggerStep) + 160);
-    }
 
     // Update chart preview
     function updatePreview() {
       const svgHost = getActiveSvgHost();
-      syncAnimationPreviewButton();
       if (!svgHost) return;
       if (!state.currentData) {
         svgHost.innerHTML = `<div style="color:var(--muted); text-align:center; padding:40px;"><p>Please configure your data to see the chart preview</p></div>`;
@@ -1533,54 +1308,11 @@
         maybeShowExperienceModal();
         return;
       }
-      exportToFigma({ animation: state.animationSettings, exportStyle: getFigmaExportStyle() }, () => {
+      exportToFigma({ exportStyle: getFigmaExportStyle() }, () => {
         showCustomAlert(
           "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
           'success',
           'Export Complete'
-        );
-        maybeShowExperienceModal();
-      });
-    }
-
-    function setAiSelectedExport(type) {
-      if (!aiExportLabel) return;
-      aiSelectedExportType = type;
-      if (aiBtnExportSvg) aiBtnExportSvg.classList.remove("active");
-      if (aiBtnExportPng) aiBtnExportPng.classList.remove("active");
-      if (aiBtnExportFigma) aiBtnExportFigma.classList.remove("active");
-
-      if (type === "svg") {
-        if (aiBtnExportSvg) aiBtnExportSvg.classList.add("active");
-        aiExportLabel.textContent = "Export SVG";
-        return;
-      }
-      if (type === "png") {
-        if (aiBtnExportPng) aiBtnExportPng.classList.add("active");
-        aiExportLabel.textContent = "Export PNG";
-        return;
-      }
-
-      if (aiBtnExportFigma) aiBtnExportFigma.classList.add("active");
-      aiExportLabel.textContent = "Add to Figma";
-    }
-
-    function runAiSelectedExport() {
-      if (aiSelectedExportType === "svg") {
-        exportSVG(state.chartType);
-        maybeShowExperienceModal();
-        return;
-      }
-      if (aiSelectedExportType === "png") {
-        exportPNG(state.chartType);
-        maybeShowExperienceModal();
-        return;
-      }
-      exportToFigma({ animation: state.animationSettings, exportStyle: getFigmaExportStyle() }, () => {
-        showCustomAlert(
-          "Chart successfully sent to Figma canvas! Your visualization is now available in your Figma document.",
-          "success",
-          "Export Complete"
         );
         maybeShowExperienceModal();
       });
@@ -2337,17 +2069,6 @@
       updateChartDataModalMeta();
       updateToolbarForChartType();
       updateColorPresetSelection(state.selectedColorPreset);
-      syncAnimationStudioForChart(state, {
-        animationPresetSelect,
-        animationTriggerSelect,
-        animationEasingSelect,
-        animationDirectionSelect,
-        animationDurationRange,
-        animationDurationValue,
-        animationPresetCopy,
-        animationStateSummary,
-        animationChartTypeLabel,
-      }, chartType);
       updatePreview();
     }
 
@@ -3487,135 +3208,6 @@
       chartOptions.forEach((opt) => opt.classList.toggle("active", opt === selected));
     }
 
-    function appendAiChatMessage(role, text) {
-      if (!aiChatMessages) return;
-      const message = document.createElement("div");
-      message.className = `ai-chat-message ${role}`;
-      message.textContent = text;
-      aiChatMessages.appendChild(message);
-      syncAiChatLayout();
-      aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-    }
-
-    function syncAiChatLayout() {
-      if (!aiChatShell || !aiChatMessages) return;
-      aiChatShell.classList.toggle("has-conversation", aiChatMessages.childElementCount > 0);
-    }
-
-    function ensureAiChatSeedMessages() {
-      syncAiChatLayout();
-    }
-
-    function clearAiPreview() {
-      const aiSvgHost = document.getElementById("ai-svg-host");
-      if (!aiSvgHost) return;
-      aiSvgHost.innerHTML = "";
-    }
-
-    function syncAiPlaygroundDataAccess() {
-      if (!aiBtnOpenDataModal) return;
-      aiBtnOpenDataModal.disabled = false;
-      aiBtnOpenDataModal.setAttribute("aria-disabled", "false");
-      aiBtnOpenDataModal.title = "";
-    }
-
-    function parseChartTypeFromPrompt(prompt) {
-      const normalized = prompt.toLowerCase();
-      if (normalized.includes("pie") || normalized.includes("donut")) return "pie";
-      if (normalized.includes("line")) return "line";
-      if (normalized.includes("radar")) return "radar";
-      if (normalized.includes("scatter")) return "scatter";
-      if (normalized.includes("dot plot") || normalized.includes("dotplot") || normalized.includes("dot")) return "dot";
-      if (normalized.includes("histogram")) return "histogram";
-      if (normalized.includes("bar")) return "bar";
-      return null;
-    }
-
-    function handleAiPrompt(prompt) {
-      state.aiPreviewReady = true;
-      syncAiPlaygroundDataAccess();
-      const requestedChartType = parseChartTypeFromPrompt(prompt);
-      if (requestedChartType) {
-        syncChartTypeSelectorUi(requestedChartType);
-        handleChartTypeChange(requestedChartType);
-      } else {
-        updatePreview();
-      }
-
-      if (requestedChartType) {
-        appendAiChatMessage(
-          "assistant",
-          `Generated a ${requestedChartType} chart on the right panel. You can refine it with another prompt.`
-        );
-        return;
-      }
-
-      appendAiChatMessage(
-        "assistant",
-        "Graph generated on the right panel. Mention a chart type like bar, pie, line, radar, scatter, dot, or histogram to switch."
-      );
-    }
-
-    function enterAiPlaygroundMode() {
-      if (!defaultApp || !aiApp) return;
-      defaultApp.hidden = true;
-      defaultApp.style.display = "none";
-      aiApp.hidden = false;
-      aiApp.style.display = "grid";
-      if (dropdownMenu) dropdownMenu.classList.remove("visible");
-      if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-      closeAllDropdowns();
-      ensureAiChatSeedMessages();
-      if (aiChatInput) aiChatInput.focus();
-      syncAiChatLayout();
-      state.aiPreviewReady = false;
-      syncAiPlaygroundDataAccess();
-      clearAiPreview();
-    }
-
-    function exitAiPlaygroundMode() {
-      if (!defaultApp || !aiApp) return;
-      aiApp.hidden = true;
-      aiApp.style.display = "none";
-      defaultApp.hidden = false;
-      defaultApp.style.display = "grid";
-      if (dropdownMenu) dropdownMenu.classList.remove("visible");
-      if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-      closeAllDropdowns();
-      updateToolbarForChartType();
-      updatePreview();
-    }
-
-    function enterAnimationStudioMode() {
-      if (!ANIMATION_STUDIO_ENABLED) return;
-      syncAnimationStudioForChart(state, {
-        animationPresetSelect,
-        animationTriggerSelect,
-        animationEasingSelect,
-        animationDirectionSelect,
-        animationDurationRange,
-        animationDurationValue,
-        animationPresetCopy,
-        animationStateSummary,
-        animationChartTypeLabel,
-      }, state.chartType);
-      openAnimationStudio(
-        { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
-        { closeAllDropdowns, updatePreview }
-      );
-      window.requestAnimationFrame(() => {
-        playAnimationPreview();
-      });
-    }
-
-    function exitAnimationStudioMode() {
-      resetAnimationPreviewPlayback();
-      closeAnimationStudio(
-        { animationApp, defaultApp, aiApp, dropdownMenu, aiDropdownMenu },
-        { closeAllDropdowns, updateToolbarForChartType, updatePreview }
-      );
-    }
-
     function openSettingsDrawer(triggerSource = null) {
       if (!settingsOverlay || !settingsDrawer) return;
       closeVersionDrawer();
@@ -3706,13 +3298,6 @@
         e.stopPropagation();
         dropdownMenu.classList.toggle("visible");
       });
-      if (aiHamburgerMenu) {
-        const aiHamburgerBtn = aiHamburgerMenu.querySelector(".hamburger-btn");
-        aiHamburgerBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          aiDropdownMenu.classList.toggle("visible");
-        });
-      }
       document.addEventListener("click", () => {
         dropdownMenu.classList.remove("visible");
         if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
@@ -3725,12 +3310,6 @@
           toggleTheme();
         });
       }
-      if (aiThemeToggle) {
-        aiThemeToggle.addEventListener("click", (e) => {
-          e.preventDefault();
-          toggleTheme();
-        });
-      }
 
       // Info Modal
       if (infoBtn) {
@@ -3739,21 +3318,9 @@
           dropdownMenu.classList.remove("visible");
         });
       }
-      if (aiInfoBtn) {
-        aiInfoBtn.addEventListener("click", () => {
-          infoModal.classList.add("visible");
-          if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-        });
-      }
       if (settingsBtn) {
         settingsBtn.addEventListener("click", () => {
           const trigger = hamburgerMenu ? hamburgerMenu.querySelector(".hamburger-btn") : settingsBtn;
-          openSettingsDrawer(trigger);
-        });
-      }
-      if (aiSettingsBtn) {
-        aiSettingsBtn.addEventListener("click", () => {
-          const trigger = aiHamburgerMenu ? aiHamburgerMenu.querySelector(".hamburger-btn") : aiSettingsBtn;
           openSettingsDrawer(trigger);
         });
       }
@@ -3763,33 +3330,15 @@
           if (dropdownMenu) dropdownMenu.classList.remove("visible");
         });
       }
-      if (aiJoinUsBtn) {
-        aiJoinUsBtn.addEventListener("click", () => {
-          openExternalLink(DISCORD_COMMUNITY_URL);
-          if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-        });
-      }
       if (communityBtn) {
         communityBtn.addEventListener("click", () => {
           openExternalLink(PLUGIN_COMMUNITY_URL);
           if (dropdownMenu) dropdownMenu.classList.remove("visible");
         });
       }
-      if (aiCommunityBtn) {
-        aiCommunityBtn.addEventListener("click", () => {
-          openExternalLink(PLUGIN_COMMUNITY_URL);
-          if (aiDropdownMenu) aiDropdownMenu.classList.remove("visible");
-        });
-      }
       if (versionNoteBtn) {
         versionNoteBtn.addEventListener("click", () => {
           const trigger = hamburgerMenu ? hamburgerMenu.querySelector(".hamburger-btn") : versionNoteBtn;
-          openVersionDrawer(trigger);
-        });
-      }
-      if (aiVersionNoteBtn) {
-        aiVersionNoteBtn.addEventListener("click", () => {
-          const trigger = aiHamburgerMenu ? aiHamburgerMenu.querySelector(".hamburger-btn") : aiVersionNoteBtn;
           openVersionDrawer(trigger);
         });
       }
@@ -3934,85 +3483,6 @@
           );
         });
       }
-      if (aiSuggestionGrid) {
-        aiSuggestionGrid.addEventListener("click", (e) => {
-          const card = e.target.closest(".ai-suggestion-card");
-          if (!card || !aiChatInput) return;
-          aiChatInput.value = card.dataset.prompt || "";
-          aiChatInput.focus();
-        });
-      }
-      if (footerAnimationStudioBtn) {
-        footerAnimationStudioBtn.addEventListener("click", () => {
-          if (!ANIMATION_STUDIO_ENABLED) return;
-          if (footerAnimationStudioBtn.disabled || footerAnimationStudioBtn.getAttribute("aria-disabled") === "true") return;
-          enterAnimationStudioMode();
-        });
-      }
-      if (aiFooterAnimationStudioBtn) {
-        aiFooterAnimationStudioBtn.addEventListener("click", () => {
-          if (!ANIMATION_STUDIO_ENABLED) return;
-          if (aiFooterAnimationStudioBtn.disabled || aiFooterAnimationStudioBtn.getAttribute("aria-disabled") === "true") return;
-          enterAnimationStudioMode();
-        });
-      }
-      if (animationHomeBtn) {
-        animationHomeBtn.addEventListener("click", () => {
-          exitAnimationStudioMode();
-        });
-      }
-      if (animationPreviewBtn) {
-        animationPreviewBtn.addEventListener("click", () => {
-          playAnimationPreview();
-        });
-      }
-      if (animationSaveBtn) {
-        animationSaveBtn.addEventListener("click", () => {
-          saveAnimationSettings(state, state.chartType);
-          exitAnimationStudioMode();
-          showCustomAlert(
-            translateText("Animation settings saved. Figma export will include animation metadata."),
-            "success",
-            translateText("Animation Saved")
-          );
-        });
-      }
-      bindAnimationControls(state, {
-        animationPresetSelect,
-        animationTriggerSelect,
-        animationEasingSelect,
-        animationDirectionSelect,
-        animationDurationRange,
-        animationDurationValue,
-        animationPresetCopy,
-        animationStateSummary,
-        animationChartTypeLabel,
-      });
-      [animationPresetSelect, animationEasingSelect, animationDirectionSelect, animationDurationRange]
-        .filter(Boolean)
-        .forEach((control) => {
-          const eventName = control === animationDurationRange ? "input" : "change";
-          control.addEventListener(eventName, () => {
-            if (animationApp && !animationApp.hidden) {
-              playAnimationPreview();
-            }
-          });
-        });
-      if (aiHomeBtn) {
-        aiHomeBtn.addEventListener("click", () => {
-          exitAiPlaygroundMode();
-        });
-      }
-      if (aiChatForm && aiChatInput) {
-        aiChatForm.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const prompt = aiChatInput.value.trim();
-          if (!prompt) return;
-          appendAiChatMessage("user", prompt);
-          aiChatInput.value = "";
-          handleAiPrompt(prompt);
-        });
-      }
       modalClose.addEventListener("click", () => {
         infoModal.classList.remove("visible");
       });
@@ -4048,11 +3518,6 @@
       btnOpenDataModal.addEventListener("click", () => {
         openChartDataModalForCurrentSource();
       });
-      if (aiBtnOpenDataModal) {
-        aiBtnOpenDataModal.addEventListener("click", () => {
-          openChartDataModalForCurrentSource();
-        });
-      }
       chartDataModalClose.addEventListener("click", () => {
         chartDataModal.classList.remove("visible");
       });
@@ -4327,7 +3792,6 @@
 
       // Export dropdown and export actions
       setSelectedExport("figma");
-      setAiSelectedExport("figma");
 
       btnExportPrimary.addEventListener("click", () => {
         closeAllDropdowns();
@@ -4360,45 +3824,6 @@
         closeAllDropdowns();
         runSelectedExport();
       });
-      if (aiBtnExportPrimary) {
-        aiBtnExportPrimary.addEventListener("click", () => {
-          closeAllDropdowns();
-          runAiSelectedExport();
-        });
-      }
-      if (aiBtnExportToggle) {
-        aiBtnExportToggle.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const isVisible = aiExportDropdown.classList.contains("visible");
-          closeAllDropdowns();
-          if (!isVisible) {
-            positionDropdown(aiBtnExportPrimary, aiExportDropdown);
-            aiExportDropdown.classList.add("visible");
-            aiBtnExportToggle.setAttribute("aria-expanded", "true");
-          }
-        });
-      }
-      if (aiBtnExportSvg) {
-        aiBtnExportSvg.addEventListener("click", () => {
-          setAiSelectedExport("svg");
-          closeAllDropdowns();
-          runAiSelectedExport();
-        });
-      }
-      if (aiBtnExportPng) {
-        aiBtnExportPng.addEventListener("click", () => {
-          setAiSelectedExport("png");
-          closeAllDropdowns();
-          runAiSelectedExport();
-        });
-      }
-      if (aiBtnExportFigma) {
-        aiBtnExportFigma.addEventListener("click", () => {
-          setAiSelectedExport("figma");
-          closeAllDropdowns();
-          runAiSelectedExport();
-        });
-      }
 
       // Line chart controls
       lineAreaToggle.addEventListener('click', () => {
@@ -4868,8 +4293,6 @@
     async function init() {
       if (defaultApp) defaultApp.hidden = false;
       if (defaultApp) defaultApp.style.display = "grid";
-      if (aiApp) aiApp.hidden = true;
-      if (aiApp) aiApp.style.display = "none";
       if (animationApp) animationApp.hidden = true;
       if (animationApp) animationApp.style.display = "none";
       if (settingsOverlay) settingsOverlay.hidden = true;

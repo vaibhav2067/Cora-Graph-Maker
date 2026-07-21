@@ -9,7 +9,6 @@
     "utils": "ui.utils.js",
     "data": "ui.data.js",
     "exports": "ui.export.js",
-    "animation": "ui.animation.js",
     "uihelpers": "ui.ui.js",
     "renderers": "ui.renderers.js",
     "script": "ui.js"
